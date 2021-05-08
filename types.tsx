@@ -3,20 +3,15 @@
  * https://reactnavigation.org/docs/typescript/
  */
 
-export type RootStackParamList = {
-  Root: undefined;
-  NotFound: undefined;
+import { StackScreenProps } from '@react-navigation/stack';
+
+export type MainStackParamList = {
+  Home: undefined;
+  NewEmployee: undefined;
+  RegisterAttendance: undefined;
+  Settings: undefined;
 };
 
-export type BottomTabParamList = {
-  TabOne: undefined;
-  TabTwo: undefined;
-};
-
-export type TabOneParamList = {
-  TabOneScreen: undefined;
-};
-
-export type TabTwoParamList = {
-  TabTwoScreen: undefined;
+export type MainStackScreensProps = {
+  [Screen in keyof MainStackParamList]: StackScreenProps<MainStackParamList, Screen>;
 };

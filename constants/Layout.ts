@@ -8,5 +8,7 @@ export default {
     width,
     height,
   },
-  isSmallDevice: width < 375,
+  // According to https://material.io/design/layout/responsive-layout-grid.html#breakpoints:
+  isSmallDevice: width < 720,
+  padding: width < 720? 16 : 24,
 };
