@@ -14,9 +14,7 @@ interface APIEmployee {
   lastName: string,
   email?: string,
   sex?: 'M' | 'F' | 'I',
-  /** What's this? */
-  faceListId: string,
-  dateBirth?: string,
+  dateBirth?: Date,
 };
 
 const sexApiSexBiMap = new BiDirectionalMap<Employee['sex'], APIEmployee['sex']>({
@@ -32,8 +30,9 @@ function mapEmployeeToApiEmployee(employee: Employee): APIEmployee {
     lastName: employee.lastName,
     email: employee.email,
     sex: employee.sex && sexApiSexBiMap.getValue(employee.sex),
-    faceListId: 'prueba',
-    dateBirth: employee.birthDate?.toISOString(),
+    // It seems yup doesn't cast employee.birthDate to a Date if the initial
+    // value is '' (a string), so we'll have to do it ourselves:
+    dateBirth: employee.birthDate && new Date(employee.birthDate),
     //photo: employee.photo, is not expected by the `insertEmployee` action,
     //                       we have to send it to the `associateFace` action
   };
@@ -42,12 +41,23 @@ function mapEmployeeToApiEmployee(employee: Employee): APIEmployee {
 interface AddEmployeePhotoParams {
   documentId: string;
   encodeImage: string;
+  faceListId: string;
 }
 
 export async function addEmployeePhoto(params: AddEmployeePhotoParams) {
   const endpoint = getEndpoint('AssociateImage');
   console.log('POST', endpoint, params);
   return await (await post(endpoint, params)).text();
+}
+
+function mapEmployeeToAddEmployeePhotoParams(employee: Employee)
+  : AddEmployeePhotoParams
+{
+  return {
+    documentId: employee.idDoc,
+    encodeImage: employee.photo!,
+    faceListId: 'prueba',
+  };
 }
 
 export async function createEmployee(employee: Employee) {
@@ -58,10 +68,8 @@ export async function createEmployee(employee: Employee) {
   if (!employee.photo) {
     return insertEmployeeResponse;
   } else {
-    const associateFaceResponse = await addEmployeePhoto({
-      documentId: employee.idDoc,
-      encodeImage: employee.photo,
-    });
+    const associateFaceResponse = await addEmployeePhoto(
+      mapEmployeeToAddEmployeePhotoParams(employee));
     return JSON.stringify({ insertEmployeeResponse, associateFaceResponse });
   }
 }
