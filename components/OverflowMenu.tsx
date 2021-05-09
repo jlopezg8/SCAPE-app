@@ -4,8 +4,8 @@ import React from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { IconButton, Menu } from 'react-native-paper';
 
-import Layout from '../constants/layout';
-import useMenu from '../hooks/useMenu';
+import Layout from '../constants/Layout';
+import useVisible from '../hooks/useVisible';
 
 export type OverflowMenuProps = {
   navigation: StackNavigationProp<ParamListBase, keyof ParamListBase>;
@@ -31,22 +31,23 @@ const MenuContext =
 export default function OverflowMenu(
   { navigation, children }: OverflowMenuProps
 ) {
-  const { visible, openMenu, closeMenu, closeMenuAfter } = useMenu();
+  const menu = useVisible();
   const insets = useSafeAreaInsets();
   return (
     <Menu
-      visible={visible}
-      onDismiss={closeMenu}
+      visible={menu.visible}
+      onDismiss={menu.close}
       anchor={
         <IconButton
           icon="dots-vertical"
-          onPress={openMenu}
+          onPress={menu.open}
           style={{ marginRight: Layout.padding }}
         />
       }
       statusBarHeight={insets.top}
     >
-      <MenuContext.Provider value={{ closeMenuAfter, navigation }}
+      <MenuContext.Provider
+        value={{ closeMenuAfter: menu.closeAfter, navigation }}
         /*
          * For some reason we have to directly wrap the children with the
          * context provider. If instead we wrap `Menu` with it, the children

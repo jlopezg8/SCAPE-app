@@ -17,7 +17,7 @@ export interface Employee {
   photo?: string;
 }
 
-/*
+/**
  * We tried getting the initial values from the yup scheme by adding a
  * .default('') to each of its fields, but this made sex and birthDate
  * required, since '' would fail those fields validations.
@@ -40,7 +40,7 @@ export const employeeSchema: yup.SchemaOf<Employee> = yup.object({
   lastName: yup.string().required(),
   email: yup.string().email(),
   // oneOf([...[v1, v2, ...] as const]) is a workaround for
-  // https://github.com/jquense/yup/issues/1298
+  // https://github.com/jquense/yup/issues/1298:
   sex: yup.mixed<Sex>().oneOf([...sexValues]),
   // There's no way to set the type error message in setLocale, so we have to
   // do it here:

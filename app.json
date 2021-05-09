@@ -4,7 +4,7 @@
     "slug": "SCAPE-app",
     "version": "1.0.0",
     "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
+    "scheme": "scape-app",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/images/splash.png",

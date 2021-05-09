@@ -9,6 +9,7 @@ npm-debug.*
 *.orig.*
 web-build/
 .scannerwork/
+sonar-project.properties
 
 # macOS
 .DS_Store

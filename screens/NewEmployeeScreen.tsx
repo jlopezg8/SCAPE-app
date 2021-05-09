@@ -1,5 +1,5 @@
 import { Formik, FormikHelpers } from 'formik';
-import * as React from 'react';
+import React from 'react';
 
 import {
   PhotoPicker,
@@ -15,31 +15,22 @@ import {
   employeeInitialValues,
   employeeSchema,
 } from '../models/Employee';
+import { replaceEmptyValuesWithNull } from '../utils';
 
-// TODO: move somewhere else, and maybe add types
-function replaceEmptyValuesWithNull(obj: any) {
-  const newObj = Object.assign({}, obj);
-  for (const [key, val] of Object.entries(obj)) {
-    newObj[key] = val || null;
-  }
-  return newObj;
-}
-
-function createSubmit(createEmployee: ReturnType<typeof useEmployeeCreator>) {
-  return async function submit(
-    employee: Employee,
-    { resetForm, setStatus }: FormikHelpers<Employee>
-  ) {
-    try {
-      const employeeWithoutEmptyValues = replaceEmptyValuesWithNull(employee);
-      const response = await createEmployee(employeeWithoutEmptyValues);
-      console.log(response);
-      resetForm();
-      setStatus('Empleado creado');
-    } catch (err) {
-      setStatus('No se pudo crear el empleado');
-      console.error(err);
-    }
+async function _submit(
+  createEmployee: ReturnType<typeof useEmployeeCreator>,
+  employee: Employee,
+  { resetForm, setStatus }: FormikHelpers<Employee>
+) {
+  try {
+    const response = await createEmployee(
+      replaceEmptyValuesWithNull(employee));
+    console.log(response);
+    resetForm();
+    setStatus('Empleado creado');
+  } catch (err) {
+    setStatus('No se pudo crear el empleado');
+    console.error(err);
   }
 }
 
@@ -47,11 +38,17 @@ const EmployeeTextField: TextFieldType<Employee> = TextField;
 
 /**
  * @requires react-native-paper.Provider for the Material Design components
+ * @requires react-query.QueryClientProvider for mutating data
+ * expo-image-picker can be mocked
+ * ../api/employees/createEmployee can be mocked
  */
 export default function NewEmployeeScreen() {
   const createEmployee = useEmployeeCreator();
   const submit = React.useCallback(
-    createSubmit(createEmployee), [createEmployee]);
+    (employee: Employee, formikHelpers: FormikHelpers<Employee>) =>
+      _submit(createEmployee, employee, formikHelpers),
+    [createEmployee]
+  );
   return (
     <Formik
       initialValues={employeeInitialValues}

@@ -8,7 +8,7 @@
     "eject": "expo eject",
     "test": "jest",
     "watchTests": "jest --watchAll",
-    "analysis": "sonar-scanner.bat -D\"sonar.projectKey=SCAPE-app\" -D\"sonar.sources=.\" -D\"sonar.host.url=http://localhost:9000\" -D\"sonar.login=3377be74ecdaef04ad1489214f695fd4494b726b\""
+    "analysis": "sonar-scanner"
   },
   "jest": {
     "preset": "jest-expo"

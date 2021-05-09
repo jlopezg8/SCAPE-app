@@ -14,7 +14,7 @@ import {
 } from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import useMenu from '../hooks/useMenu';
+import useVisible from '../hooks/useVisible';
 
 abstract class ImagePickerBase {
   setStatus: (status: string) => void;
@@ -89,45 +89,42 @@ function useActions(
   setStatus: ImagePickerBase['setStatus'],
   setBase64Image: ImagePickerBase['setBase64Image'],
 ) {
-  const [photoUri, setImageURI] = React.useState<string | null>(null);
+  const [imageURI, setImageURI] = React.useState<string | null>(null);
   const options = { setStatus, setImageURI, setBase64Image };
   const pickerFromImageLibrary = new PickerFromImageLibrary(options);
   const pickImage = pickerFromImageLibrary.launch.bind(pickerFromImageLibrary);
   const pickerFromCamera = new PickerFromCamera(options);
   const takePhoto = pickerFromCamera.launch.bind(pickerFromCamera);
   const removePhoto = () => { setImageURI(''); setBase64Image(''); };
-  return { photoUri, pickImage, takePhoto, removePhoto };
+  return { imageURI, pickImage, takePhoto, removePhoto };
 }
 
 type PhotoPickerProps = {
   setStatus: ImagePickerBase['setStatus'];
   setBase64Image: ImagePickerBase['setBase64Image'];
-  disabled?: boolean;
 };
 
 /**
- * @requires formik.Formik for Formik state and helpers
  * @requires react-native-paper.Provider for the Material Design components
  * expo-image-picker can be mocked
  */
 export function PhotoPicker(
-  { setStatus, setBase64Image, disabled = false } : PhotoPickerProps
+  { setStatus, setBase64Image } : PhotoPickerProps
 ) {
-  const { visible: menuVisible, openMenu, closeMenu, closeMenuAfter } =
-    useMenu();
-  const { photoUri, pickImage: pickPhoto, takePhoto, removePhoto } =
+  const menu = useVisible();
+  const { imageURI, pickImage: pickPhoto, takePhoto, removePhoto } =
     useActions(setStatus, setBase64Image);
-  const avatar = photoUri
-    ? <Avatar.Image size={avatarSize} source={{ uri: photoUri }} />
+  const avatar = imageURI
+    ? <Avatar.Image size={avatarSize} source={{ uri: imageURI }} />
     : <Avatar.Icon size={avatarSize} icon="image-plus" />;
   const insets = useSafeAreaInsets();
   return (
     <View style={styles.container}>
       <Menu
-        visible={!disabled && menuVisible}
-        onDismiss={closeMenu}
+        visible={menu.visible}
+        onDismiss={menu.close}
         anchor={
-          <TouchableRipple onPress={openMenu}>
+          <TouchableRipple onPress={menu.open}>
             {avatar}
           </TouchableRipple>
         }
@@ -135,16 +132,15 @@ export function PhotoPicker(
         style={styles.menu}
       >
         <Menu.Item
-          /* TODO: add icon="camera" */
-          onPress={closeMenuAfter(takePhoto)}
+          onPress={menu.closeAfter(takePhoto)}
           title="Tomar foto"
         />
         <Menu.Item
-          onPress={closeMenuAfter(pickPhoto)}
+          onPress={menu.closeAfter(pickPhoto)}
           title="Elegir una foto"
         />
-        {photoUri && <Menu.Item
-          onPress={closeMenuAfter(removePhoto)}
+        {imageURI && <Menu.Item
+          onPress={menu.closeAfter(removePhoto)}
           title="Remover foto"
         />}
       </Menu>

@@ -1,6 +1,6 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import Constants from 'expo-constants';
-import * as React from 'react';
+import React from 'react';
 
 import OverflowMenu from '../components/OverflowMenu';
 import HomeScreen from '../screens/HomeScreen';
@@ -15,7 +15,7 @@ export default function MainNavigator() {
   return (
     <Stack.Navigator
       initialRouteName="Home"
-      // TODO: https://callstack.github.io/react-native-paper/integrate-app-bar-with-react-navigation.html
+      // TODO: maybe: https://callstack.github.io/react-native-paper/integrate-app-bar-with-react-navigation.html
     >
       <Stack.Screen
         name="Home"

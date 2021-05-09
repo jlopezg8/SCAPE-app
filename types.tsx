@@ -13,5 +13,6 @@ export type MainStackParamList = {
 };
 
 export type MainStackScreensProps = {
-  [Screen in keyof MainStackParamList]: StackScreenProps<MainStackParamList, Screen>;
+  [Screen in keyof MainStackParamList]:
+    StackScreenProps<MainStackParamList, Screen>;
 };

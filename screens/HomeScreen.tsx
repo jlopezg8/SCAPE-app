@@ -1,6 +1,7 @@
-import * as React from 'react';
+import React from 'react';
 
 import { FAB, Surface } from '../components/styled';
+import Layout from '../constants/Layout';
 import { MainStackScreensProps } from '../types';
 
 /**
@@ -16,7 +17,8 @@ export default function HomeScreen(
       <FAB
         icon="camera-account"
         onPress={() => navigation.navigate('RegisterAttendance')}
-        style={{ bottom: 16*2+56 }}
+        // To offset from the first FAB (screen padding + FAB size + margin):
+        style={{ bottom: Layout.padding + 56 + 16 }}
       />
     </Surface>
   );

@@ -5,11 +5,11 @@
  */
 
 import { LinkingOptions } from '@react-navigation/native';
-import * as Linking from 'expo-linking';
+import { makeUrl as makeLinkingURL } from 'expo-linking';
 
 let linking: LinkingOptions;
 export default linking = {
-  prefixes: [Linking.makeUrl('/')],
+  prefixes: [makeLinkingURL('/')],
   config: {
     screens: {
       Root: {

@@ -1,100 +1,74 @@
-import { Formik, FormikHelpers } from 'formik';
-import * as React from 'react';
-import { Image, KeyboardAvoidingView, Platform, StyleSheet, Text } from 'react-native';
-import { ActivityIndicator, List } from 'react-native-paper';
+import React from 'react';
 
-import {
-  StatusSnackbar,
-  SubmitButton,
-  TextField,
-  TextFieldType,
-} from '../components/formik';
 import { PhotoPicker } from '../components/PhotoPicker';
-// TODO: decide what surface to use
-import { Surface } from '../components/styled';
-import { useAttendanceRegister, useEmployeeCreator } from '../hooks/useEmployees';
 import {
-  Employee,
-  employeeInitialValues,
-  employeeSchema,
-} from '../models/Employee';
+  ListItem,
+  ScreenProgressBar,
+  Snackbar,
+  Surface,
+} from '../components/styled';
+import { useAttendanceRegister } from '../hooks/useEmployees';
+import usePhotoPicker from '../hooks/usePhotoPicker';
+import { Employee } from '../models/Employee';
 
-// TODO: move somewhere else, and maybe add types
-function replaceEmptyValuesWithNull(obj: any) {
-  const newObj = Object.assign({}, obj);
-  for (const [key, val] of Object.entries(obj)) {
-    newObj[key] = val || null;
-  }
-  return newObj;
-}
-
-function createSubmit(createEmployee: ReturnType<typeof useEmployeeCreator>) {
-  return async function (
-    employee: Employee,
-    { resetForm, setStatus }: FormikHelpers<Employee>
-  ) {
-    try {
-      const employeeWithoutEmptyValues = replaceEmptyValuesWithNull(employee);
-      const response = await createEmployee(employeeWithoutEmptyValues);
-      console.log(response);
-      setStatus('Empleado creado');
-      resetForm();
-    } catch (err) {
-      setStatus('No se pudo crear el empleado');
-      console.error(err);
+function useAttendanceRegisterSettingErrors(
+  base64Photo: string | undefined, setStatus: (status: string) => void
+) {
+  const { isLoading, data: employee, isError, error } =
+    useAttendanceRegister(base64Photo);
+  React.useEffect(() => {
+    if (isError) {
+      console.error((error as Error).message);
+      setStatus('No se pudo registrar la asistencia');
     }
-  }
+  }, [error]);
+  return { employee, isLoading };
 }
-
-const EmployeeTextField: TextFieldType<Employee> = TextField;
 
 /**
  * @requires react-native-paper.Provider for the Material Design components
+ * @requires react-query.QueryClientProvider for queries
+ * expo-image-picker can be mocked
+ * ../api/employees/getEmployeeByPhoto can be mocked
+ * FIXME: high: pressing "Remover foto" crashes the app on mobile
  */
 export default function RegisterAttendanceScreen() {
-  return <Surface><RealRegisterAttendanceScreen /></Surface>;;
-}
-
-function RealRegisterAttendanceScreen() {
-  const [photo, setPhoto] = React.useState<string | undefined>(undefined);
-  const { status, data: employee, error } = useAttendanceRegister(photo);
-  switch (status) {
-    case 'idle':
-      return <PhotoPicker setStatus={() => void(0)} setBase64Image={setPhoto} />
-    case 'loading':
-      return <ActivityIndicator />;
-    case 'error':
-      return (
-        <>
-          <PhotoPicker setStatus={() => void(0)} setBase64Image={setPhoto} />
-          <Text>{error.message}</Text>
-        </>
-      );
-    case 'success':
-      return <EmployeeViewer employee={employee} />;
-    default:
-      console.error(`WTF? status === ${status}`);
-      return null;
-  }
-}
-
-function EmployeeViewer({ employee }: { employee: Employee }) {
+  const {
+    base64Photo,
+    setBase64Photo,
+    status,
+    setStatus,
+    hasStatus,
+    clearStatus,
+  } = usePhotoPicker();
+  const { employee, isLoading } =
+    useAttendanceRegisterSettingErrors(base64Photo, setStatus);
   return (
-    <>
-      {employee.photo && <Image style={styles.photo} source={{ uri: `data:image/jpeg;base64,${employee.photo}` }} />}
-      {employee.idDoc && <List.Item title={employee.idDoc} description="Documento de identidad" />}
-      {employee.firstName && <List.Item title={employee.firstName} description="Nombre" />}
-      {employee.lastName && <List.Item title={employee.lastName} description="Apellido" />}
-      {employee.email && <List.Item title={employee.email} description="Correo electrónico" />}
-      {employee.sex && <List.Item title={employee.sex} description="Sexo" />}
-      {employee.birthDate && <List.Item title={employee.birthDate} description="Fecha de nacimiento" />}
-    </>
+    <Surface>
+      <ScreenProgressBar visible={isLoading} />
+      <PhotoPicker setStatus={setStatus} setBase64Image={setBase64Photo} />
+      {employee && <EmployeeViewer employee={employee} />}
+      <Snackbar
+        visible={hasStatus}
+        onDismiss={clearStatus}
+        message={status}
+      />
+    </Surface>
   );
 }
 
-const styles = StyleSheet.create({
-  photo: {
-    width: '100%',
-    height: 500,
-  },
-});
+function EmployeeViewer({ employee }: { employee: Employee }) {
+  const Item = (label: string, value?: string) => (
+    value && <ListItem title={value} description={label} />
+  );
+  return (
+    <>
+      {Item('Documento de identidad', employee.idDoc)}
+      {Item('Nombre', employee.firstName)}
+      {Item('Apellido', employee.lastName)}
+      {Item('Correo electrónico', employee.email)}
+      {Item('Sexo', employee.sex)}
+      {Item('Fecha de nacimiento', employee.birthDate?.toLocaleDateString())}
+    </>
+  );
+}

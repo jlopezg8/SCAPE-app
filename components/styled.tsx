@@ -4,17 +4,22 @@ import {
   Button as DefaultButton,
   FAB as DefaultFAB,
   HelperText,
+  List,
+  ProgressBar,
   Snackbar as DefaultSnackbar,
   Surface as DefaultSurface,
   TextInput,
 } from 'react-native-paper';
 
-import Layout from '../constants/layout';
+import Layout from '../constants/Layout';
 
 export type ButtonProps =
   Omit<React.ComponentProps<typeof DefaultButton>, 'children'>
   & { label: string; };
 
+/**
+ * @requires react-native-paper.Provider for the Material Design components
+ */
 export function Button({ style, label, ...otherProps }: ButtonProps) {
   return (
     <DefaultButton
@@ -27,12 +32,45 @@ export function Button({ style, label, ...otherProps }: ButtonProps) {
   );
 }
 
+/**
+ * @requires react-native-paper.Provider for the Material Design components
+ */
 export function FAB(props: React.ComponentProps<typeof DefaultFAB>) {
   const { style, ...otherProps } = props;
   return <DefaultFAB style={[styles.fab, style]} {...otherProps} />;
 }
 
-export function ScrollingSurface(props: React.ComponentProps<typeof DefaultSurface>) {
+/**
+ * @requires react-native-paper.Provider for the Material Design components
+ */
+export function ListItem(props: React.ComponentProps<typeof List.Item>) {
+  const { style, ...otherProps } = props;
+  return <List.Item style={[styles.listItem, style]} {...otherProps} />;
+}
+
+/**
+ * @requires react-native-paper.Provider for the Material Design components
+ */
+export function ScreenProgressBar(
+  props: React.ComponentProps<typeof ProgressBar>
+) {
+  const { indeterminate, visible, style, ...otherProps } = props;
+  return (
+    <ProgressBar
+      indeterminate={indeterminate ?? true}
+      visible={visible}
+      style={[styles.screenProgressBar, style]}
+      {...otherProps}
+    />
+  );
+}
+
+/**
+ * @requires react-native-paper.Provider for the Material Design components
+ */
+export function ScrollingSurface(
+  props: React.ComponentProps<typeof DefaultSurface>
+) {
   const { style, children, ...otherProps } = props;
   return (
     <DefaultSurface style={{ flex: 1 }} {...otherProps}>
@@ -84,6 +122,9 @@ export function Snackbar({ visible, onDismiss, message }: SnackbarProps) {
   );
 }
 
+/**
+ * @requires react-native-paper.Provider for the Material Design components
+ */
 export function Surface(props: React.ComponentProps<typeof DefaultSurface>) {
   const { style, ...otherProps } = props;
   return <DefaultSurface style={[styles.container, style]} {...otherProps} />;
@@ -96,7 +137,8 @@ export type TextFieldProps =
 /**
  * @requires react-native-paper.Provider for the Material Design components
  */
-export function TextField({ label, error, errorText, helperText, ...otherProps }: TextFieldProps) {
+export function TextField(props: TextFieldProps) {
+  let { label, error, errorText, helperText, ...otherProps } = props;
   // Leave ' ' as is. '' makes the HelperText not take space
   helperText = helperText || (label?.endsWith('*') ? '*Requerido' : ' ');
   errorText = errorText || ' ';
@@ -127,10 +169,19 @@ const styles = StyleSheet.create({
   },
   fab: {
     position: 'absolute',
-    end: 16,
-    bottom: 16,
+    end: Layout.padding,
+    bottom: Layout.padding,
   },
   helperText: {
     marginBottom: 8,
+  },
+  listItem: {
+    paddingHorizontal: 0, // override its `paddingHorizontal: 8`
+  },
+  screenProgressBar: {
+    position: 'absolute',
+    top: -Layout.padding,
+    left: -Layout.padding,
+    right: -Layout.padding,
   },
 });
