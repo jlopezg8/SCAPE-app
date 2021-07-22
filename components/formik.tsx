@@ -15,8 +15,16 @@ import {
 export function DatePicker(
   { label, name }: { label: string; name: string; }
 ) {
-  const [field] = useField(name);
-  return <StyledDatePicker label={label} setISODate={field.onChange(name)} />;
+  const [field, meta] = useField(name);
+  const hasError = Boolean(meta.touched && meta.error);
+  return (
+    <StyledDatePicker
+      label={label}
+      setISODate={field.onChange(name)}
+      error={hasError}
+      errorText={meta.error}
+    />
+  );
 }
 
 export type DropDownProps = {
@@ -26,13 +34,16 @@ export type DropDownProps = {
 };
 
 export function DropDown({ label, name, options }: DropDownProps) {
-  const [field] = useField(name);
+  const [field, meta] = useField(name);
+  const hasError = Boolean(meta.touched && meta.error);
   return (
     <StyledDropDown
       value={field.value}
       setValue={field.onChange(name)}
       label={label}
       options={options}
+      error={hasError}
+      errorText={meta.error}
     />
   );
 }

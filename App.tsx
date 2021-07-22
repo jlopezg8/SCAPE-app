@@ -4,6 +4,7 @@ import { Provider as PaperProvider } from 'react-native-paper';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { QueryClient, QueryClientProvider } from 'react-query';
 
+import './androidIntlPolyfill';
 //import useCachedResources from './hooks/useCachedResources';
 import Navigation from './navigation';
 

@@ -3,7 +3,7 @@ import { Platform, ScrollView, StyleSheet } from 'react-native';
 import {
   Button as DefaultButton,
   FAB as DefaultFAB,
-  HelperText,
+  HelperText as DefaultHelperText,
   List,
   ProgressBar,
   Snackbar as DefaultSnackbar,
@@ -35,87 +35,93 @@ export function Button({ style, label, ...otherProps }: ButtonProps) {
   );
 }
 
-
-
-
-
-
-
-
 export type DatePickerProps = {
   label: string;
   setISODate: (dateAsString: string) => void;
+  error?: boolean;
+  helperText?: string;
+  errorText?: string;
 };
 
-export function DatePicker({ label, setISODate }: DatePickerProps) {
+export function DatePicker(
+  { label, setISODate, error, helperText, errorText }: DatePickerProps
+) {
   const picker = useVisible();
   const [localeDate, setLocaleDate] = React.useState('');
   const onConfirmSingle = ({ date }: { date: Date }) => {
-    setISODate(date.toISOString());
-    setLocaleDate(date.toLocaleDateString());
+    if (date) {
+      setISODate(date.toISOString());
+      setLocaleDate(date.toLocaleDateString());
+    }
     picker.close();
   };
-
   return (
     <>
       <TextInput
         value={localeDate}
-        //style={{ margin: 8, width: '100%' }}
         label={label}
         dense
         mode="outlined"
         onFocus={picker.open}
-        //left={<TextInput.Icon name="calendar"/>}
         right={<TextInput.Icon name="menu-down"/>}
       />
+     <HelperText
+        label={label}
+        error={error}
+        helperText={helperText}
+        errorText={errorText}
+      />
       <DatePickerModal
-        // locale={'en'} optional, default: automatic
+        locale="es"
         mode="single"
         visible={picker.visible}
         onDismiss={picker.close}
+        // @ts-ignore: This prop should only expect a function that handles
+        // single dates, but its type is wrong and ends up expecting a function
+        // that also handles data ranges:
         onConfirm={onConfirmSingle}
-        // validRange={{
-        //   startDate: new Date(2021, 1, 2),  // optional
-        //   endDate: new Date(), // optional
-        // }}
-        // onChange={} // same props as onConfirm but triggered without confirmed by user
-        // saveLabel="Save" // optional
-        // label="Select date" // optional
-        // animationType="slide" // optional, default is 'slide' on ios/android and 'none' on web
+        saveLabel="Aceptar"
+        label={label}
       />
     </>
   );
 }
-
-
-
-
-
-
-
 
 export type DropDownProps = {
   value: string;
   setValue: (value: string) => void;
   label: string;
   options: { label: string; value: string }[];
+  error?: boolean;
+  helperText?: string;
+  errorText?: string;
 };
 
-export function DropDown({ value, setValue, label, options }: DropDownProps) {
+export function DropDown(
+  { value, setValue, label, options, error, helperText, errorText }: DropDownProps
+) {
   const dropDown = useVisible();
   const _setValue = (value: string | number) => setValue(value.toString());
   return (
-    <DefaultDropDown
-      visible={dropDown.visible}
-      onDismiss={dropDown.close}
-      showDropDown={dropDown.open}
-      value={value}
-      setValue={_setValue}
-      label={label}
-      mode="outlined"
-      inputProps={{ right: <TextInput.Icon name="menu-down" /> }}
-      list={options}
-    />
+    <>
+      <DefaultDropDown
+        visible={dropDown.visible}
+        onDismiss={dropDown.close}
+        showDropDown={dropDown.open}
+        value={value}
+        setValue={_setValue}
+        label={label}
+        mode="outlined"
+        inputProps={{ right: <TextInput.Icon name="menu-down" />, dense: true }}
+        list={options}
+      />
+      <HelperText
+        label={label}
+        error={error}
+        helperText={helperText}
+        errorText={errorText}
+      />
+    </>
   );
 }
 
@@ -125,6 +131,29 @@ export function DropDown({ value, setValue, label, options }: DropDownProps) {
 export function FAB(props: React.ComponentProps<typeof DefaultFAB>) {
   const { style, ...otherProps } = props;
   return <DefaultFAB style={[styles.fab, style]} {...otherProps} />;
+}
+
+type HelperTextProps = {
+  label?: string;
+  error?: boolean;
+  helperText?: string;
+  errorText?: string;
+};
+
+function HelperText(
+  { label, error, helperText, errorText }: HelperTextProps
+) {
+  // Leave ' ' as is. '' makes the HelperText not take space
+  helperText = helperText || (label?.endsWith('*') ? '*Requerido' : ' ');
+  errorText = errorText || ' ';
+  return (
+    <DefaultHelperText
+      type={error ? 'error' : 'info'}
+      style={styles.helperText}
+    >
+      {error ? errorText : helperText}
+    </DefaultHelperText>
+  );
 }
 
 /**
@@ -189,11 +218,11 @@ export function Snackbar({ visible, onDismiss, message }: SnackbarProps) {
       /*
        * Fixes a bug where the snackbar would have a width of 100% of the
        * parent's padding box (not the content box), and thus overflow.
-       * 
+       *
        * Also, this style has to be a plain old JS object (can't come from
        * Stylesheet.create), so that it's defined as an inline style and
        * doesn't get overridden.
-       * 
+       *
        * Also, we can't use `padding: 'inherit'` since that crashes on mobile,
        * so we have to recalculate it.
        */
@@ -225,10 +254,7 @@ export type TextFieldProps =
  * @requires react-native-paper.Provider for the Material Design components
  */
 export function TextField(props: TextFieldProps) {
-  let { label, error, errorText, helperText, ...otherProps } = props;
-  // Leave ' ' as is. '' makes the HelperText not take space
-  helperText = helperText || (label?.endsWith('*') ? '*Requerido' : ' ');
-  errorText = errorText || ' ';
+  const { label, error, errorText, helperText, ...otherProps } = props;
   return (
     <>
       <TextInput
@@ -238,9 +264,12 @@ export function TextField(props: TextFieldProps) {
         dense
         {...otherProps}
       />
-      <HelperText type={error ? 'error' : 'info'} style={styles.helperText}>
-        {error ? errorText : helperText}
-      </HelperText>      
+      <HelperText
+        label={label}
+        error={error}
+        helperText={helperText}
+        errorText={errorText}
+      />
     </>
   );
 }
@@ -265,13 +294,6 @@ const styles = StyleSheet.create({
   listItem: {
     paddingHorizontal: 0, // override its `paddingHorizontal: 8`
   },
-  menu: {/*
-    position: 'absolute',
-    left: 16,
-    right: 16,
-    marginTop: 64,
-    //width: '100%',
-  */},
   screenProgressBar: {
     position: 'absolute',
     top: -Layout.padding,
