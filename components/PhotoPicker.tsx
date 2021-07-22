@@ -1,3 +1,4 @@
+import { manipulateAsync as manipulateImageAsync } from 'expo-image-manipulator';
 import {
   launchCameraAsync,
   launchImageLibraryAsync,
@@ -31,6 +32,7 @@ abstract class ImagePickerBase {
     this.setBase64Image = options.setBase64Image;
   }
 
+  // TODO: medium: refactor this method
   async launch() {
     const { granted } = await this.requestPermissions();
     if (!granted) {
@@ -50,6 +52,15 @@ abstract class ImagePickerBase {
       base64: true,
     });
     if (!result.cancelled) {
+      // For optimal results [...] use faces [...] with a min size of 200x200 px
+      // https://westus.dev.cognitive.microsoft.com/docs/services/563879b61984550e40cbbe8d/operations/563879b61984550f30395236
+      const { width, height } = result;
+      const resizeFactor = Math.sqrt((400 * 400) / (width * height));
+      const resizedImage = await manipulateImageAsync(
+        result.uri,
+        [{ resize: { width: resizeFactor * width, height: resizeFactor * height } }],
+        { compress: 0.5, base64: true }
+      );
       /*
        * On web, base64 is not included despite using the base64 option.
        * Instead, uri is set to the base64 image prefixed with
@@ -57,9 +68,10 @@ abstract class ImagePickerBase {
        * 
        * On Android, base64 is included and uri points to a file.
        */
-      this.setImageURI(result.uri);
+      this.setImageURI(resizedImage.uri);
       this.setBase64Image(
-        result.base64 ?? result.uri.replace(/^data:image\/.*?;base64,/, ''));
+        resizedImage.base64
+        ?? resizedImage.uri.replace(/^data:image\/.*?;base64,/, ''));
     }
     // FIXME: maybe: make sure to handle MainActivity destruction on Android
     // See https://docs.expo.io/versions/v41.0.0/sdk/imagepicker/#imagepickergetpendingresultasync

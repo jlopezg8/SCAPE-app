@@ -64,6 +64,7 @@ export function DatePicker(
         mode="outlined"
         onFocus={picker.open}
         right={<TextInput.Icon name="menu-down"/>}
+        showSoftInputOnFocus={false}
       />
      <HelperText
         label={label}
