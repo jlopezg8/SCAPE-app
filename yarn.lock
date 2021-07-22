@@ -6973,6 +6973,11 @@ react-native-paper-dates@^0.4.5:
   resolved "https://registry.yarnpkg.com/react-native-paper-dates/-/react-native-paper-dates-0.4.5.tgz#d3013ec1ed4c1bbf4e7bc53c8425016893e29925"
   integrity sha512-8eJoR35qE79c9JeTv97MBqt+BX2yT3TJ39vWPMgGQITzAPXk845jH5iSaQHpBUZLBCOhUfnEzbQXv4Se656Muw==
 
+react-native-paper-dropdown@^1.0.6:
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/react-native-paper-dropdown/-/react-native-paper-dropdown-1.0.6.tgz#080317e6df41e2024f77c7362111fe1baf4a6467"
+  integrity sha512-7itnh7MT/orT2EhCuExVMfyE4vidcIR+hQPiwV175SjDsbiGBiSxr9YkdNA38rHSOyKMpaU1HYvw1vyCksyGjQ==
+
 react-native-paper@^4.7.2:
   version "4.7.2"
   resolved "https://registry.yarnpkg.com/react-native-paper/-/react-native-paper-4.7.2.tgz#a40d1da87af5b030d45b525313cd703d490876ff"

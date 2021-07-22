@@ -35,7 +35,7 @@ export const employeeInitialValues =
   _employeeInitialValues as unknown as Employee;
 
 export const employeeSchema: yup.SchemaOf<Employee> = yup.object({
-  idDoc: yup.string().required(),
+  idDoc: yup.string().required().matches(/^\d+$/, 'Debe ser un número'),
   firstName: yup.string().required(),
   lastName: yup.string().required(),
   email: yup.string().email(),

@@ -10,8 +10,11 @@ import {
   Surface as DefaultSurface,
   TextInput,
 } from 'react-native-paper';
+import { DatePickerModal } from 'react-native-paper-dates';
+import DefaultDropDown from 'react-native-paper-dropdown';
 
 import Layout from '../constants/Layout';
+import useVisible from '../hooks/useVisible';
 
 export type ButtonProps =
   Omit<React.ComponentProps<typeof DefaultButton>, 'children'>
@@ -29,6 +32,90 @@ export function Button({ style, label, ...otherProps }: ButtonProps) {
     >
       {label}
     </DefaultButton>
+  );
+}
+
+
+
+
+
+
+
+
+export type DatePickerProps = {
+  label: string;
+  setISODate: (dateAsString: string) => void;
+};
+
+export function DatePicker({ label, setISODate }: DatePickerProps) {
+  const picker = useVisible();
+  const [localeDate, setLocaleDate] = React.useState('');
+  const onConfirmSingle = ({ date }: { date: Date }) => {
+    setISODate(date.toISOString());
+    setLocaleDate(date.toLocaleDateString());
+    picker.close();
+  };
+
+  return (
+    <>
+      <TextInput
+        value={localeDate}
+        //style={{ margin: 8, width: '100%' }}
+        label={label}
+        dense
+        mode="outlined"
+        onFocus={picker.open}
+        //left={<TextInput.Icon name="calendar"/>}
+        right={<TextInput.Icon name="menu-down"/>}
+      />
+      <DatePickerModal
+        // locale={'en'} optional, default: automatic
+        mode="single"
+        visible={picker.visible}
+        onDismiss={picker.close}
+        onConfirm={onConfirmSingle}
+        // validRange={{
+        //   startDate: new Date(2021, 1, 2),  // optional
+        //   endDate: new Date(), // optional
+        // }}
+        // onChange={} // same props as onConfirm but triggered without confirmed by user
+        // saveLabel="Save" // optional
+        // label="Select date" // optional
+        // animationType="slide" // optional, default is 'slide' on ios/android and 'none' on web
+      />
+    </>
+  );
+}
+
+
+
+
+
+
+
+
+export type DropDownProps = {
+  value: string;
+  setValue: (value: string) => void;
+  label: string;
+  options: { label: string; value: string }[];
+};
+
+export function DropDown({ value, setValue, label, options }: DropDownProps) {
+  const dropDown = useVisible();
+  const _setValue = (value: string | number) => setValue(value.toString());
+  return (
+    <DefaultDropDown
+      visible={dropDown.visible}
+      onDismiss={dropDown.close}
+      showDropDown={dropDown.open}
+      value={value}
+      setValue={_setValue}
+      label={label}
+      mode="outlined"
+      inputProps={{ right: <TextInput.Icon name="menu-down" /> }}
+      list={options}
+    />
   );
 }
 
@@ -178,6 +265,13 @@ const styles = StyleSheet.create({
   listItem: {
     paddingHorizontal: 0, // override its `paddingHorizontal: 8`
   },
+  menu: {/*
+    position: 'absolute',
+    left: 16,
+    right: 16,
+    marginTop: 64,
+    //width: '100%',
+  */},
   screenProgressBar: {
     position: 'absolute',
     top: -Layout.padding,

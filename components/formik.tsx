@@ -2,7 +2,40 @@ import { useField, useFormikContext } from "formik";
 import React from 'react';
 
 import { PhotoPicker as DefaultPhotoPicker } from './PhotoPicker';
-import { Button, Snackbar, TextField as StyledTextField } from './styled';
+import {
+  Button,
+  Snackbar,
+  DatePicker as StyledDatePicker,
+  DropDown as StyledDropDown,
+  DropDownProps as StyledDropDownProps,
+  TextField as StyledTextField,
+  TextFieldProps as StyledTextFieldProps
+} from './styled';
+
+export function DatePicker(
+  { label, name }: { label: string; name: string; }
+) {
+  const [field] = useField(name);
+  return <StyledDatePicker label={label} setISODate={field.onChange(name)} />;
+}
+
+export type DropDownProps = {
+  label: string;
+  name: string;
+  options: StyledDropDownProps['options'];
+};
+
+export function DropDown({ label, name, options }: DropDownProps) {
+  const [field] = useField(name);
+  return (
+    <StyledDropDown
+      value={field.value}
+      setValue={field.onChange(name)}
+      label={label}
+      options={options}
+    />
+  );
+}
 
 /**
  * @requires formik.Formik for Formik state and helpers
@@ -50,7 +83,7 @@ export function SubmitButton({ label }: { label: string }) {
   );
 }
 
-export type TextFieldProps<Model> = {
+export type TextFieldProps<Model> = StyledTextFieldProps & {
   label: string;
   name: keyof Model & string;
 };
@@ -66,14 +99,14 @@ export function TextField<Model>({ label, name }: TextFieldProps<Model>) {
   const [field, meta] = useField(name);
   const hasError = Boolean(meta.touched && meta.error);
   return (
-      <StyledTextField
-        label={label}
-        value={field.value}
-        onChangeText={field.onChange(name)}
-        onBlur={field.onBlur(name)}
-        error={hasError}
-        errorText={meta.error}
-      />
+    <StyledTextField
+      label={label}
+      value={field.value}
+      onChangeText={field.onChange(name)}
+      onBlur={field.onBlur(name)}
+      error={hasError}
+      errorText={meta.error}
+    />
   );
 }
 
