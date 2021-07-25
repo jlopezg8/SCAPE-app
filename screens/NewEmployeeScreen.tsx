@@ -40,6 +40,7 @@ const EmployeeTextField: TextFieldType<Employee> = TextField;
 
 /**
  * @requires react-native-paper.Provider for the Material Design components
+ * @requires react-native-safe-area-context.SafeAreaProvider for safe area insets
  * @requires react-query.QueryClientProvider for mutating data
  * expo-image-picker can be mocked
  * ../api/employees/createEmployee can be mocked

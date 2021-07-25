@@ -114,15 +114,19 @@ function useActions(
 type PhotoPickerProps = {
   setStatus: ImagePickerBase['setStatus'];
   setBase64Image: ImagePickerBase['setBase64Image'];
+  accessibilityLabel?: string;
 };
 
 /**
  * @requires react-native-paper.Provider for the Material Design components
+ * @requires react-native-safe-area-context.SafeAreaProvider for safe area insets
  * expo-image-picker can be mocked
  */
-export function PhotoPicker(
-  { setStatus, setBase64Image } : PhotoPickerProps
-) {
+export function PhotoPicker({
+  setStatus,
+  setBase64Image,
+  accessibilityLabel = 'Tomar o elegir foto',
+} : PhotoPickerProps) {
   const menu = useVisible();
   const { imageURI, pickImage: pickPhoto, takePhoto, removePhoto } =
     useActions(setStatus, setBase64Image);
@@ -136,7 +140,10 @@ export function PhotoPicker(
         visible={menu.visible}
         onDismiss={menu.close}
         anchor={
-          <TouchableRipple onPress={menu.open}>
+          <TouchableRipple
+            onPress={menu.open}
+            accessibilityLabel={accessibilityLabel}
+          >
             {avatar}
           </TouchableRipple>
         }

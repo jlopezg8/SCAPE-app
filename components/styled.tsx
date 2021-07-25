@@ -41,8 +41,12 @@ export type DatePickerProps = {
   error?: boolean;
   helperText?: string;
   errorText?: string;
+  accessibilityLabel?: string;
 };
 
+/**
+ * @requires react-native-paper.Provider for the Material Design components
+ */
 export function DatePicker(
   { label, setISODate, error, helperText, errorText }: DatePickerProps
 ) {
@@ -98,6 +102,9 @@ export type DropDownProps = {
   errorText?: string;
 };
 
+/**
+ * @requires react-native-paper.Provider for the Material Design components
+ */
 export function DropDown(
   { value, setValue, label, options, error, helperText, errorText }: DropDownProps
 ) {
@@ -115,6 +122,7 @@ export function DropDown(
         mode="outlined"
         inputProps={{ right: <TextInput.Icon name="menu-down" />, dense: true }}
         list={options}
+        accessibilityLabel={label}
       />
       <HelperText
         label={label}
@@ -141,6 +149,9 @@ type HelperTextProps = {
   errorText?: string;
 };
 
+/**
+ * @requires react-native-paper.Provider for the Material Design components
+ */
 function HelperText(
   { label, error, helperText, errorText }: HelperTextProps
 ) {
@@ -263,6 +274,7 @@ export function TextField(props: TextFieldProps) {
         mode="outlined"
         error={error}
         dense
+        accessibilityLabel={label}
         {...otherProps}
       />
       <HelperText

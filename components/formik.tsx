@@ -12,6 +12,10 @@ import {
   TextFieldProps as StyledTextFieldProps
 } from './styled';
 
+/**
+ * @requires formik.Formik for Formik state and helpers
+ * @requires react-native-paper.Provider for the Material Design components
+ */
 export function DatePicker(
   { label, name }: { label: string; name: string; }
 ) {
@@ -33,6 +37,10 @@ export type DropDownProps = {
   options: StyledDropDownProps['options'];
 };
 
+/**
+ * @requires formik.Formik for Formik state and helpers
+ * @requires react-native-paper.Provider for the Material Design components
+ */
 export function DropDown({ label, name, options }: DropDownProps) {
   const [field, meta] = useField(name);
   const hasError = Boolean(meta.touched && meta.error);
@@ -51,6 +59,7 @@ export function DropDown({ label, name, options }: DropDownProps) {
 /**
  * @requires formik.Formik for Formik state and helpers
  * @requires react-native-paper.Provider for the Material Design components
+ * @requires react-native-safe-area-context.SafeAreaProvider for safe area insets
  * expo-image-picker can be mocked
  */
  export function PhotoPicker({ name } : { name: string }) {

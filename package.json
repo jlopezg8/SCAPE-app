@@ -10,8 +10,17 @@
     "watchTests": "jest --watchAll",
     "analysis": "sonar-scanner"
   },
+  "//": [
+    "https://stackoverflow.com/questions/49263429/jest-gives-an-error-syntaxerror-unexpected-token-export",
+    "https://stackoverflow.com/questions/49603939/message-async-callback-was-not-invoked-within-the-5000-ms-timeout-specified-by"
+  ],
   "jest": {
-    "preset": "jest-expo"
+    "preset": "jest-expo",
+    "setupFiles": ["./jest.setup.js"],
+    "transformIgnorePatterns": [
+      "node_modules/(?!@ngrx|(?!deck.gl)|ng-dynamic)"
+    ],
+    "testTimeout": 10000
   },
   "dependencies": {
     "@expo/vector-icons": "^12.0.0",
@@ -58,6 +67,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.9.0",
+    "@testing-library/react-native": "^7.2.0",
     "@types/react": "~16.9.35",
     "@types/react-native": "~0.63.2",
     "jest-expo": "~41.0.0",
