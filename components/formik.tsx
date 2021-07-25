@@ -2,11 +2,64 @@ import { useField, useFormikContext } from "formik";
 import React from 'react';
 
 import { PhotoPicker as DefaultPhotoPicker } from './PhotoPicker';
-import { Button, Snackbar, TextField as StyledTextField } from './styled';
+import {
+  Button,
+  Snackbar,
+  DatePicker as StyledDatePicker,
+  DropDown as StyledDropDown,
+  DropDownProps as StyledDropDownProps,
+  TextField as StyledTextField,
+  TextFieldProps as StyledTextFieldProps
+} from './styled';
 
 /**
  * @requires formik.Formik for Formik state and helpers
  * @requires react-native-paper.Provider for the Material Design components
+ */
+export function DatePicker(
+  { label, name }: { label: string; name: string; }
+) {
+  const [field, meta] = useField(name);
+  const hasError = Boolean(meta.touched && meta.error);
+  return (
+    <StyledDatePicker
+      label={label}
+      setISODate={field.onChange(name)}
+      error={hasError}
+      errorText={meta.error}
+    />
+  );
+}
+
+export type DropDownProps = {
+  label: string;
+  name: string;
+  options: StyledDropDownProps['options'];
+};
+
+/**
+ * @requires formik.Formik for Formik state and helpers
+ * @requires react-native-paper.Provider for the Material Design components
+ */
+export function DropDown({ label, name, options }: DropDownProps) {
+  const [field, meta] = useField(name);
+  const hasError = Boolean(meta.touched && meta.error);
+  return (
+    <StyledDropDown
+      value={field.value}
+      setValue={field.onChange(name)}
+      label={label}
+      options={options}
+      error={hasError}
+      errorText={meta.error}
+    />
+  );
+}
+
+/**
+ * @requires formik.Formik for Formik state and helpers
+ * @requires react-native-paper.Provider for the Material Design components
+ * @requires react-native-safe-area-context.SafeAreaProvider for safe area insets
  * expo-image-picker can be mocked
  */
  export function PhotoPicker({ name } : { name: string }) {
@@ -50,7 +103,7 @@ export function SubmitButton({ label }: { label: string }) {
   );
 }
 
-export type TextFieldProps<Model> = {
+export type TextFieldProps<Model> = StyledTextFieldProps & {
   label: string;
   name: keyof Model & string;
 };
@@ -66,14 +119,14 @@ export function TextField<Model>({ label, name }: TextFieldProps<Model>) {
   const [field, meta] = useField(name);
   const hasError = Boolean(meta.touched && meta.error);
   return (
-      <StyledTextField
-        label={label}
-        value={field.value}
-        onChangeText={field.onChange(name)}
-        onBlur={field.onBlur(name)}
-        error={hasError}
-        errorText={meta.error}
-      />
+    <StyledTextField
+      label={label}
+      value={field.value}
+      onChangeText={field.onChange(name)}
+      onBlur={field.onBlur(name)}
+      error={hasError}
+      errorText={meta.error}
+    />
   );
 }
 

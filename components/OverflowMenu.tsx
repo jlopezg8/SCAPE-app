@@ -19,7 +19,7 @@ export type OverflowMenuProps = {
 type MenuContextType = {
   closeMenuAfter: (fn: () => void) => () => void;
   navigation: OverflowMenuProps['navigation'];
-}
+};
 
 const MenuContext =
   React.createContext<MenuContextType | undefined>(undefined);

@@ -15,7 +15,7 @@ interface APIEmployee {
   email?: string,
   sex?: 'M' | 'F' | 'I',
   dateBirth?: Date,
-};
+}
 
 const sexApiSexBiMap = new BiDirectionalMap<Employee['sex'], APIEmployee['sex']>({
   hombre: 'M',

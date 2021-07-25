@@ -2,6 +2,8 @@ import { Formik, FormikHelpers } from 'formik';
 import React from 'react';
 
 import {
+  DatePicker,
+  DropDown,
   PhotoPicker,
   StatusSnackbar,
   SubmitButton,
@@ -38,6 +40,7 @@ const EmployeeTextField: TextFieldType<Employee> = TextField;
 
 /**
  * @requires react-native-paper.Provider for the Material Design components
+ * @requires react-native-safe-area-context.SafeAreaProvider for safe area insets
  * @requires react-query.QueryClientProvider for mutating data
  * expo-image-picker can be mocked
  * ../api/employees/createEmployee can be mocked
@@ -57,12 +60,17 @@ export default function NewEmployeeScreen() {
     >
       <ScrollingSurface>
         <PhotoPicker name="photo" />
-        <EmployeeTextField label="Documento de identidad*" name="idDoc" />
+        {/* It seems react-native-paper.TextInput ignores the keyboardType prop */}
+        <EmployeeTextField label="Documento de identidad*" name="idDoc" keyboardType="number-pad" />
         <EmployeeTextField label="Nombre*" name="firstName" />
         <EmployeeTextField label="Apellido*" name="lastName" />
-        <EmployeeTextField label="Correo electrónico" name="email" />
-        <EmployeeTextField label="Sexo" name="sex" />
-        <EmployeeTextField label="Fecha de nacimiento" name="birthDate" />
+        <EmployeeTextField label="Correo electrónico" name="email" keyboardType="email-address" />
+        <DropDown label="Sexo" name="sex" options={[
+          { label: 'Hombre', value: 'hombre' },
+          { label: 'Mujer', value: 'mujer' },
+          { label: 'Intersexo', value: 'intersexo' },
+        ]} />
+        <DatePicker label="Fecha de nacimiento" name="birthDate" />
         <SubmitButton label="Guardar" />
         <StatusSnackbar />
       </ScrollingSurface>

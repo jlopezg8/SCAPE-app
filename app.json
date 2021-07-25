@@ -29,7 +29,7 @@
     "web": {
       "favicon": "./assets/images/favicon.png"
     },
-    "description": "",
+    "description": "App para el control de asistencia del personal mediante biometría (reconocimiento facial) y georreferenciación.\n\nPresentado como proyecto de la asignatura de Ingeniería de Software III 2021-1 del programa de Ingeniería en Sistemas y Computación de la Universidad de Caldas.",
     "githubUrl": "https://github.com/jlopezg8/SCAPE-app"
   }
 }
