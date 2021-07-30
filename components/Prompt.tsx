@@ -1,3 +1,5 @@
+// TODO: low: use react-native-paper.Dialog instead
+
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Modal, Surface } from 'react-native-paper';

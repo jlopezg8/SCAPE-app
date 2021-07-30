@@ -30,9 +30,11 @@ async function _submit(
     console.log(response);
     resetForm();
     setStatus('Empleado creado');
-  } catch (err) {
-    setStatus('No se pudo crear el empleado');
-    console.error(err);
+  } catch (error) {
+    setStatus(error.name === 'BadRequestError'
+                ? error.message
+                : 'No se pudo crear el empleado. Ponte en contacto con Soporte.');
+    console.error(error);
   }
 }
 

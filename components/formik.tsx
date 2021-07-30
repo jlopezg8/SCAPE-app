@@ -73,6 +73,8 @@ export function DropDown({ label, name, options }: DropDownProps) {
   );
 }
 
+// TODO: medium: make a PhotoPickerWithHelperText?
+
 /**
  * @requires formik.Formik for Formik state and helpers
  * @requires react-native-paper.Provider for the Material Design components
@@ -94,7 +96,6 @@ export function SubmitButton({ label }: { label: string }) {
   const { submitForm, isSubmitting } = useFormikContext();
   return (
     <Button
-      mode="contained"
       onPress={submitForm}
       loading={isSubmitting}
       disabled={isSubmitting}

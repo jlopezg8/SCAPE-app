@@ -5,7 +5,7 @@ import React from 'react';
 import OverflowMenu from '../components/OverflowMenu';
 import HomeScreen from '../screens/HomeScreen';
 import NewEmployeeScreen from '../screens/NewEmployeeScreen';
-import RegisterAttendanceScreen from '../screens/RegisterAttendanceScreen';
+import RecordAttendanceScreen from '../screens/RecordAttendanceScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import { MainStackParamList } from '../types';
 
@@ -40,8 +40,8 @@ export default function MainNavigator() {
         options={{ headerTitle: 'Crear empleado' }}
       />
       <Stack.Screen
-        name="RegisterAttendance"
-        component={RegisterAttendanceScreen}
+        name="RecordAttendance"
+        component={RecordAttendanceScreen}
         options={{ headerTitle: 'Registrar asistencia' }}
       />
     </Stack.Navigator>
