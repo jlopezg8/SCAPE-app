@@ -8,7 +8,7 @@ import { StackScreenProps } from '@react-navigation/stack';
 export type MainStackParamList = {
   Home: undefined;
   NewEmployee: undefined;
-  RegisterAttendance: undefined;
+  RecordAttendance: undefined;
   Settings: undefined;
 };
 

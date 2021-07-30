@@ -152,7 +152,7 @@ type HelperTextProps = {
 /**
  * @requires react-native-paper.Provider for the Material Design components
  */
-function HelperText(
+export function HelperText(
   { label, error, helperText, errorText }: HelperTextProps
 ) {
   // Leave ' ' as is. '' makes the HelperText not take space

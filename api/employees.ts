@@ -1,8 +1,10 @@
+// TODO: high: break this into submodules, find another way to do localization
+
 import { BiDirectionalMap } from 'bi-directional-map/dist';
 
 import { createEndpointGetter } from './serverURL';
 // TODO: low: shouldn't need to specify `/index`, maybe need to change a setting?
-import { post } from './utils/index';
+import { post, translateBadRequestErrorMessage as t } from './utils/index';
 import { Employee } from "../models/Employee";
 
 const baseEndpoint = 'api/employee';
@@ -17,7 +19,9 @@ interface APIEmployee {
   dateBirth?: Date,
 }
 
-const sexApiSexBiMap = new BiDirectionalMap<Employee['sex'], APIEmployee['sex']>({
+const sexApiSexBiMap = new BiDirectionalMap<
+  Employee['sex'], APIEmployee['sex']
+>({
   hombre: 'M',
   mujer: 'F',
   intersexo: 'I',
@@ -38,16 +42,62 @@ function mapEmployeeToApiEmployee(employee: Employee): APIEmployee {
   };
 }
 
+const addEmployeeErrorTranslations = new Map<string, string>([
+  [
+    'The document, name and lastname fields are required',
+    'Introduce el documento de identidad, el nombre y el apellido'
+  ],
+  [
+    'Email address entered is not valid',
+    'Correo inválido'
+  ],
+  [
+    'Document entered is not valid',
+    'Usa 10 dígitos, y sólo dígitos, para el documento de identidad'
+  ],
+  [
+    'Sex entered is not valid',
+    'Sexo no reconocido. Ponte en contacto con Soporte.'
+  ],
+  [
+    'An employee with the same document id has already been registered',
+    'Ya se ha registrado un empleado con ese documento de identidad'
+  ],
+  [
+    'An employee with the same email has already been registered',
+    'Ese correo ya está en uso. Prueba con otro.'
+  ],
+]);
+
+async function addEmployee(employee: Employee) {
+  const apiEmployee = mapEmployeeToApiEmployee(employee);
+  return await (
+    await t(post(getEndpoint(), apiEmployee), addEmployeeErrorTranslations)
+  ).text();
+}
+
 interface AddEmployeePhotoParams {
   documentId: string;
   encodeImage: string;
   faceListId: string;
 }
 
-export async function addEmployeePhoto(params: AddEmployeePhotoParams) {
+const addEmployeePhotoErrorTranslations = new Map<string, string>([
+  [
+    'The image must contain only one face',
+    'Usa una foto que contenga una, y sólo una, cara'
+  ],
+  [
+    'The image has already been associated with an employee',
+    'Esa foto corresponde a un empleado ya registrado'
+  ],
+]);
+
+async function addEmployeePhoto(params: AddEmployeePhotoParams) {
   const endpoint = getEndpoint('AssociateImage');
-  console.log('POST', endpoint, params);
-  return await (await post(endpoint, params)).text();
+  return await (
+    await t(post(endpoint, params), addEmployeePhotoErrorTranslations)
+  ).text();
 }
 
 function mapEmployeeToAddEmployeePhotoParams(employee: Employee)
@@ -61,16 +111,13 @@ function mapEmployeeToAddEmployeePhotoParams(employee: Employee)
 }
 
 export async function createEmployee(employee: Employee) {
-  const apiEmployee = mapEmployeeToApiEmployee(employee);
-  console.log('POST', getEndpoint(), apiEmployee);
-  const insertEmployeeResponse = await (
-    await post(getEndpoint(), apiEmployee)).text();
+  const addEmployeeResponse = await addEmployee(employee);
   if (!employee.photo) {
-    return insertEmployeeResponse;
+    return addEmployeeResponse;
   } else {
-    const associateFaceResponse = await addEmployeePhoto(
+    const addEmployeePhotoResponse = await addEmployeePhoto(
       mapEmployeeToAddEmployeePhotoParams(employee));
-    return JSON.stringify({ insertEmployeeResponse, associateFaceResponse });
+    return JSON.stringify({ addEmployeeResponse, addEmployeePhotoResponse });
   }
 }
 
@@ -79,7 +126,22 @@ interface AssociateImageParams {
   encodeImage: string;
 }
 
-function mapEmployeeApiToEmployee(employee: APIEmployee): Employee {
+const getEmployeeByPhotoErrorTranslations = new Map<string, string>([
+  [
+    'The image must contain only one face',
+    'Usa una foto que contenga una, y sólo una, cara'
+  ],
+  [
+    'No persistedFaceid found for this face',
+    'Esa foto no corresponde a ningún empleado registrado'
+  ],
+  [
+    'No Employee found in Database for this persistedFaceId',
+    'Esa foto no corresponde a ningún empleado registrado'
+  ],
+]);
+
+function mapApiEmployeeToEmployee(employee: APIEmployee): Employee {
   return {
     idDoc: employee.documentId,
     firstName: employee.firstName,
@@ -91,13 +153,46 @@ function mapEmployeeApiToEmployee(employee: APIEmployee): Employee {
   };
 }
 
-export async function getEmployeeByPhoto(photo: string) {
+export async function getEmployeeByPhoto(photo: string): Promise<Employee> {
   const endpoint = getEndpoint('GetEmployeeByImage');
   const body: AssociateImageParams = {
     faceListId: 'prueba',
     encodeImage: photo,
-  } 
-  console.log('POST', endpoint, body);
-  const apiEmployee = await (await post(endpoint, body)).json();
-  return mapEmployeeApiToEmployee(apiEmployee);
+  };
+  const apiEmployee = await (
+    await t(post(endpoint, body), getEmployeeByPhotoErrorTranslations)
+  ).json();
+  return mapApiEmployeeToEmployee(apiEmployee);
+}
+
+interface RecordAttendanceParams {
+  employeeDocId: string;
+  type: 'clock-in' | 'clock-out';
+  timestamp?: Date;
+}
+
+interface AddAttendanceParams {
+  documentEmployee: string;
+  type: 'I' | 'O';
+  dateTime: string;
+}
+
+async function recordAttendance(
+  { employeeDocId, type, timestamp = new Date() }: RecordAttendanceParams
+) {
+  const endpoint = createEndpointGetter('api/attendance')();
+  const body: AddAttendanceParams = {
+    documentEmployee: employeeDocId,
+    type: type === 'clock-in' ? 'I' : 'O',
+    dateTime: timestamp.toISOString(),
+  };
+  return await (await post(endpoint, body)).text();
+}
+
+export function clockIn(employeeDocId: string, timestamp?: Date) {
+  return recordAttendance({ employeeDocId, type: 'clock-in', timestamp });
+}
+
+export function clockOut(employeeDocId: string, timestamp?: Date) {
+  return recordAttendance({ employeeDocId, type: 'clock-out', timestamp });
 }

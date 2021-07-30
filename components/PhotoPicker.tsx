@@ -15,6 +15,7 @@ import {
 } from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { HelperText } from './styled';
 import useVisible from '../hooks/useVisible';
 
 abstract class ImagePickerBase {
@@ -166,6 +167,8 @@ export function PhotoPicker({
     </View>
   );
 }
+
+// TODO: medium: make a PhotoPickerWithHelperText?
 
 const avatarSize = 96;
 

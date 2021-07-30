@@ -16,7 +16,7 @@ export default function HomeScreen(
       <FAB icon="plus" onPress={() => navigation.navigate('NewEmployee')} />
       <FAB
         icon="camera-account"
-        onPress={() => navigation.navigate('RegisterAttendance')}
+        onPress={() => navigation.navigate('RecordAttendance')}
         // To offset from the first FAB (screen padding + FAB size + margin):
         style={{ bottom: Layout.padding + 56 + 16 }}
       />

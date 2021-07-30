@@ -17,7 +17,7 @@ export default linking = {
         screens: {
           Home: '',
           NewEmployee: 'new-employee',
-          RegisterAttendance: 'register-attendance',
+          RecordAttendance: 'record-attendance',
           Settings: 'settings',
         },
       },

@@ -1,17 +1,37 @@
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 
 import './utils/ignoreReactQueryLongTimerWarning';
-import { createEmployee, getEmployeeByPhoto } from '../api/employees';
+import {
+  clockIn,
+  clockOut,
+  createEmployee,
+  getEmployeeByPhoto
+} from '../api/employees';
 import { Employee } from '../models/Employee';
 
 const employeesQueryKey = 'employees';
 
-export function useAttendanceRegister(photo?: string) {
-  return useQuery(
-    [employeesQueryKey, { photo }],
-    () => getEmployeeByPhoto(photo!),
-    { enabled: Boolean(photo), retry: false, refetchOnWindowFocus: false }
+function useAttendanceRecorder(
+  type: 'clock-in' | 'clock-out', employeeDocId: string
+) {
+  const queryClient = useQueryClient();
+  const mutation = useMutation(
+    type === 'clock-in' ? clockIn : clockOut,
+    {
+      onSuccess: () => queryClient.invalidateQueries([
+        employeesQueryKey, employeeDocId, 'attendance'
+      ]),
+    }
   );
+  return () => mutation.mutateAsync(employeeDocId);
+}
+
+export function useClockIn(employeeDocId: string) {
+  return useAttendanceRecorder('clock-in', employeeDocId);
+}
+
+export function useClockOut(employeeDocId: string) {
+  return useAttendanceRecorder('clock-out', employeeDocId);
 }
 
 export function useEmployeeCreator() {
@@ -20,4 +40,12 @@ export function useEmployeeCreator() {
     onSuccess: () => queryClient.invalidateQueries(employeesQueryKey),
   });
   return (employee: Employee) => mutation.mutateAsync(employee);
+}
+
+export function useEmployeeGetterByPhoto(photo?: string) {
+  return useQuery(
+    [employeesQueryKey, { photo }],
+    () => getEmployeeByPhoto(photo!),
+    { enabled: Boolean(photo), retry: false, refetchOnWindowFocus: false }
+  );
 }
