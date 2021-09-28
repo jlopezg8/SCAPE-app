@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "SCAPE-app",
-    "slug": "SCAPE-app",
+    "name": "OnTime App",
+    "slug": "ontime-app",
     "version": "1.0.0",
     "icon": "./assets/images/icon.png",
-    "scheme": "scape-app",
+    "scheme": "ontime-app",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/images/splash.png",
@@ -29,7 +29,7 @@
     "web": {
       "favicon": "./assets/images/favicon.png"
     },
-    "description": "App para el control de asistencia del personal mediante biometría (reconocimiento facial) y georreferenciación.\n\nPresentado como proyecto de la asignatura de Ingeniería de Software III 2021-1 del programa de Ingeniería en Sistemas y Computación de la Universidad de Caldas.",
-    "githubUrl": "https://github.com/jlopezg8/SCAPE-app"
+    "description": "App para el control de asistencia del personal mediante biometría (reconocimiento facial) y georreferenciación.\n\nPresentado como proyecto de las asignaturas Ingeniería de Software III 2021-1 y Proyecto Integrador 2021-2 del  programa de Ingeniería en Sistemas y Computación de la Universidad de Caldas.",
+    "githubUrl": "https://github.com/jlopezg8/ontime-app"
   }
 }
