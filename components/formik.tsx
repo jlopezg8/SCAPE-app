@@ -116,7 +116,9 @@ export type TextFieldProps<Model> = StyledTextFieldProps & {
  * @requires formik.Formik for Formik state and helpers
  * @requires react-native-paper.Provider for the Material Design components
  */
-export function TextField<Model>({ label, name }: TextFieldProps<Model>) {
+export function TextField<Model>(
+  { label, name, ...otherProps }: TextFieldProps<Model>
+) {
   const [field, meta] = useField(name);
   const hasError = Boolean(meta.touched && meta.error);
   return (
@@ -127,6 +129,7 @@ export function TextField<Model>({ label, name }: TextFieldProps<Model>) {
       onBlur={field.onBlur(name)}
       error={hasError}
       errorText={meta.error}
+      {...otherProps}
     />
   );
 }

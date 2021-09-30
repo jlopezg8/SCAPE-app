@@ -5,14 +5,32 @@
 
 import { StackScreenProps } from '@react-navigation/stack';
 
-export type MainStackParamList = {
+export type RootStackParamList = {
+  Login: undefined;
+  Admin: undefined;
+  Employer: undefined;
+  Employee: undefined;
+  NotFound: undefined;
+};
+
+export type AdminStackParamList = {
+  Home: undefined;
+  Settings: undefined;
+};
+
+export type EmployerStackParamList = {
   Home: undefined;
   NewEmployee: undefined;
   RecordAttendance: undefined;
   Settings: undefined;
 };
 
-export type MainStackScreensProps = {
-  [Screen in keyof MainStackParamList]:
-    StackScreenProps<MainStackParamList, Screen>;
+export type EmployerStackScreensProps = {
+  [Screen in keyof EmployerStackParamList]:
+    StackScreenProps<EmployerStackParamList, Screen>;
+};
+
+export type EmployeeStackParamList = {
+  Home: undefined;
+  Settings: undefined;
 };

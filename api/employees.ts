@@ -2,10 +2,10 @@
 
 import { BiDirectionalMap } from 'bi-directional-map/dist';
 
+import { Employee } from "../models/Employee";
 import { createEndpointGetter } from './serverURL';
 // TODO: low: shouldn't need to specify `/index`, maybe need to change a setting?
 import { post, translateBadRequestErrorMessage as t } from './utils/index';
-import { Employee } from "../models/Employee";
 
 const baseEndpoint = 'api/employee';
 const getEndpoint = createEndpointGetter(baseEndpoint);

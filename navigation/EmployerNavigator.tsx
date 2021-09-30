@@ -1,17 +1,23 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import Constants from 'expo-constants';
 import React from 'react';
+import { Menu } from 'react-native-paper';
 
 import OverflowMenu from '../components/OverflowMenu';
-import HomeScreen from '../screens/HomeScreen';
+import { useAuthContext } from '../hooks/useAuth';
+import EmployerHomeScreen from '../screens/EmployerHomeScreen';
 import NewEmployeeScreen from '../screens/NewEmployeeScreen';
 import RecordAttendanceScreen from '../screens/RecordAttendanceScreen';
 import SettingsScreen from '../screens/SettingsScreen';
-import { MainStackParamList } from '../types';
+import { EmployerStackParamList } from '../types';
 
-const Stack = createStackNavigator<MainStackParamList>();
+const Stack = createStackNavigator<EmployerStackParamList>();
 
-export default function MainNavigator() {
+/**
+ * @requires ../hooks/useAuth.AuthContext.Provider
+ */
+export default function EmployerNavigator() {
+  const { logout } = useAuthContext();
   return (
     <Stack.Navigator
       initialRouteName="Home"
@@ -19,12 +25,13 @@ export default function MainNavigator() {
     >
       <Stack.Screen
         name="Home"
-        component={HomeScreen}
+        component={EmployerHomeScreen}
         options={({ navigation }) => ({
           headerTitle: Constants.manifest.name,
           headerRight: () => (
             <OverflowMenu navigation={navigation}>
               <OverflowMenu.Item label="Configuración" linkTo="Settings" />
+              <Menu.Item onPress={logout} title="Cerrar sesión" />
             </OverflowMenu>
           ),
         })}
