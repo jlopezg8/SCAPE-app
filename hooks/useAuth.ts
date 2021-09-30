@@ -1,10 +1,10 @@
-import * as SecureStore from 'expo-secure-store'; // has no default export
 import React from 'react';
 
 import { login, logout } from '../api/auth';
 // TODO: low: shouldn't need to specify `/index`, maybe need to change a setting?
 import { setAccessToken } from '../api/utils/index';
 import Role, { roleSchema } from '../models/Role';
+import * as Storage from './utils/storage';
 
 export function useAuthInit() {
   const [state, dispatch] = React.useReducer(authReducer, authInitialState);
@@ -68,9 +68,9 @@ const ROLE_KEY = 'role';
 const ACCESS_TOKEN_KEY = 'access_token';
 
 async function fetchStoredAuthState(dispatch: React.Dispatch<AuthAction>) {
-  const role = await SecureStore.getItemAsync(ROLE_KEY) || undefined;
+  const role = await Storage.getItemAsync(ROLE_KEY) || undefined;
   const accessToken =
-    await SecureStore.getItemAsync(ACCESS_TOKEN_KEY) || undefined;
+    await Storage.getItemAsync(ACCESS_TOKEN_KEY) || undefined;
   setAccessToken(accessToken); // TODO: mid: this shouldn't be here
   dispatch({ type: 'RESTORE_STATE', role: roleSchema.cast(role), accessToken });
 };
@@ -88,16 +88,16 @@ function createAuthValue(
     login: async (username: string, password: string) => {
       const { role, accessToken } = await login(username, password);
       await Promise.all([
-        SecureStore.setItemAsync(ROLE_KEY, role),
-        SecureStore.setItemAsync(ACCESS_TOKEN_KEY, accessToken),
+        Storage.setItemAsync(ROLE_KEY, role),
+        Storage.setItemAsync(ACCESS_TOKEN_KEY, accessToken),
       ]);
       dispatch({ type: 'LOGIN', role, accessToken });
     },
     logout: async () => {
       await Promise.all([
         logout(),
-        SecureStore.deleteItemAsync(ROLE_KEY),
-        SecureStore.deleteItemAsync(ACCESS_TOKEN_KEY),
+        Storage.deleteItemAsync(ROLE_KEY),
+        Storage.deleteItemAsync(ACCESS_TOKEN_KEY),
       ]);
       dispatch({ type: 'LOGOUT' });
     },

@@ -15,13 +15,15 @@ export default linking = {
       Login: 'login',
       Admin: {
         initialRouteName: 'Home',
+        path: 'admin',
         screens: {
           Home: '',
           Settings: 'settings',
         },
       },
       Employer: {
-        initialRouteName: 'Home',
+        initialRouteName: 'Home',        
+        path: 'employer',
         screens: {
           Home: '',
           NewEmployee: 'new-employee',
@@ -31,6 +33,7 @@ export default linking = {
       },
       Employee: {
         initialRouteName: 'Home',
+        path: 'employee',
         screens: {
           Home: '',
           Settings: 'settings',
