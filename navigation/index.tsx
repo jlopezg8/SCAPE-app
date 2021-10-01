@@ -8,7 +8,7 @@ import React from 'react';
 
 import { useAuthContext } from '../hooks/useAuth';
 import useTheme from '../hooks/useTheme';
-import Role, { InvalidRoleError } from '../models/Role';
+import Role, { UnsupportedRoleError } from '../models/Role';
 import LoginScreen from '../screens/LoginScreen';
 import NotFoundScreen from '../screens/NotFoundScreen';
 import { RootStackParamList } from '../types';
@@ -74,6 +74,6 @@ function getNavigatorForRole(role: Role | undefined, isLogout: boolean) {
     case 'employee':
       return <Stack.Screen name="Employee" component={EmployeeNavigator} />;
     default:
-      throw new InvalidRoleError(role);
+      throw new UnsupportedRoleError(role);
   }
 }

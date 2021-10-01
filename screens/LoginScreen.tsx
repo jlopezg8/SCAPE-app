@@ -1,18 +1,22 @@
 import { Formik, FormikHelpers } from 'formik';
 import React from 'react';
+import { StyleSheet, View } from 'react-native';
 
 import {
   StatusSnackbar,
   SubmitButton,
-  TextField,
+  TextField as RawTextField,
+  TextFieldType,
 } from '../components/formik';
 import Logo from '../components/Logo';
 import { Surface } from '../components/styled';
-import { useAuthContext } from '../hooks/useAuth';
+import { InvalidCredentialsError, useAuthContext } from '../hooks/useAuth';
 import LoginRequest, {
   loginRequestInitialValues,
   loginRequestSchema,
 } from '../models/LoginRequest';
+
+const TextField: TextFieldType<LoginRequest> = RawTextField;
 
 /**
  * @requires react-native-paper.Provider for the Material Design components
@@ -29,10 +33,12 @@ export default function LoginScreen() {
       await login(username, password);
     } catch (err) {
       const error = err as Error;
-      setStatus(error.name === 'BadRequestError'
-                  ? error.message
-                  : 'No se pudo iniciar sesión. Ponte en contacto con Soporte.');
-      console.error(error);
+      if (error instanceof InvalidCredentialsError) {
+        setStatus('Usuario o contraseña incorrectos');
+      } else {
+        setStatus('No se pudo iniciar sesión. Ponte en contacto con Soporte.');
+        console.error(error);
+      }
     }
   }
   return (
@@ -41,22 +47,38 @@ export default function LoginScreen() {
       onSubmit={submit}
       validationSchema={loginRequestSchema}
     >
-      <Surface style={{ justifyContent: 'center' }}>
-        <Logo style={{ marginBottom: 32 }} />
-        <TextField
-          label="Correo electrónico"
-          name="username"
-          keyboardType="email-address"
-          autoCapitalize="none"
-        />
-        <TextField
-          label="Contraseña"
-          name="password"
-          secureTextEntry
-        />
-        <SubmitButton label="Iniciar sesión" />
+      <Surface style={styles.surface}>
+        <View style={styles.container}>
+          <Logo style={styles.logo} />
+          <TextField
+            label="Correo electrónico"
+            name="username"
+            keyboardType="email-address"
+            autoCapitalize="none"
+          />
+          <TextField
+            label="Contraseña"
+            name="password"
+            secureTextEntry
+          />
+          <SubmitButton label="Iniciar sesión" />
+        </View>
         <StatusSnackbar />
       </Surface>
     </Formik>
   );
 }
+
+const styles = StyleSheet.create({
+  surface: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  container: {
+    width: '100%',
+    maxWidth: 425,
+  },
+  logo: {
+    marginBottom: 32,
+  },
+});

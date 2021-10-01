@@ -11,6 +11,6 @@ export const loginRequestInitialValues: LoginRequest = {
 };
 
 export const loginRequestSchema: yup.SchemaOf<LoginRequest> = yup.object({
-  username: yup.string().required().default(''),
-  password: yup.string().required().default(''),
+  username: yup.string().email().required(),
+  password: yup.string().required(),
 });

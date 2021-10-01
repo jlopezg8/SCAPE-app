@@ -7,7 +7,7 @@ import { createEndpointGetter } from './serverURL';
 // TODO: low: shouldn't need to specify `/index`, maybe need to change a setting?
 import { post, translateBadRequestErrorMessage as t } from './utils/index';
 
-const baseEndpoint = 'api/employee';
+const baseEndpoint = 'api/employee/';
 const getEndpoint = createEndpointGetter(baseEndpoint);
 
 interface APIEmployee {

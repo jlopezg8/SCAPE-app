@@ -10,10 +10,10 @@ export default Role;
 // https://github.com/jquense/yup/issues/1298:
 export const roleSchema = yup.mixed<Role>().oneOf([...roleValues]);
 
-export class InvalidRoleError extends Error {
+export class UnsupportedRoleError extends Error {
   constructor(givenRole: string | undefined) {
     super(`role: expected one of ${roleValues}`
             + givenRole ? `but "${givenRole}" was given` : '');
-    this.name = 'InvalidRoleError';
+    this.name = 'UnsupportedRoleError';
   }
 }
