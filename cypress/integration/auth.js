@@ -4,17 +4,15 @@
 // If you're unfamiliar with how Cypress works,
 // check out the link below and learn how to write your first test:
 // https://on.cypress.io/writing-first-test
-
 describe("Login", () => {
   beforeEach(() => {
-    cy.visit("http://localhost:19006/");
+    cy.visit("/");
   });
 
   it("Logins admin correctly", () => {
     cy.get("input[type=email]").click().type("admin@ontime.com");
     cy.get("input[type=password]").click().type("ontime");
     cy.get("[role=button]").click();
-    cy.wait(5000);
     cy.contains("administrador", { matchCase: false }).should("exist");
   });
 
@@ -22,14 +20,12 @@ describe("Login", () => {
     cy.get("input[type=email]").click().type("employee@ontime.com");
     cy.get("input[type=password]").click().type("ontime");
     cy.get("[role=button]").click();
-    cy.wait(5000);
     cy.contains("empleado", { matchCase: false }).should("exist");
   });
 
   it("Logins employer correctly", () => {
     cy.get("input[type=email]").click().type("employeer@ontime.com");
     cy.get("input[type=password]").click().type("ontime");
-    cy.wait(5000);
     cy.get("[role=button]").click();
     //Find camera button
     cy.get(

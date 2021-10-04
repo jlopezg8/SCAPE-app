@@ -1,6 +1,6 @@
 describe.skip("Register attendance", () => {
   beforeEach(() => {
-    cy.visit("http://localhost:19006/");
+    cy.visit("/");
     cy.get("input[type=email]").click().type("employeer@ontime.com");
     cy.get("input[type=password]").click().type("ontime");
     cy.get("[role=button]").click();
