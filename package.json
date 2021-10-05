@@ -23,7 +23,7 @@
     "transformIgnorePatterns": [
       "node_modules/(?!@ngrx|(?!deck.gl)|ng-dynamic)"
     ],
-    "testTimeout": 10000
+    "testTimeout": 500000
   },
   "dependencies": {
     "@expo/vector-icons": "^12.0.0",
@@ -73,11 +73,14 @@
   "devDependencies": {
     "@babel/core": "^7.9.0",
     "@testing-library/cypress": "^8.0.1",
+    "@testing-library/react-hooks": "^7.0.2",
     "@testing-library/react-native": "^7.2.0",
     "@types/react": "~16.9.35",
     "@types/react-native": "~0.63.2",
     "cypress": "^8.5.0",
+    "isomorphic-fetch": "^3.0.0",
     "jest-expo": "~41.0.0",
+    "node-fetch": "^3.0.0",
     "typescript": "~4.0.0"
   },
   "private": true
