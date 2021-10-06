@@ -1,0 +1,9 @@
+{
+    "baseUrl": "http://localhost:19006",    
+    "env": {
+        "employerUsername": "employeer@ontime.com",
+        "employerPassword": "ontime",
+        "loginUrl": "https://scapeapi.azurewebsites.net/api/user/login"
+      },
+    "defaultCommandTimeout": 50000
+}

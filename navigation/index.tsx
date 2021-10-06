@@ -6,10 +6,16 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import React from 'react';
 
-import LinkingConfiguration from './LinkingConfiguration';
-import MainNavigator from './MainNavigator';
-import NotFoundScreen from '../screens/NotFoundScreen';
+import { useAuthContext } from '../hooks/useAuth';
 import useTheme from '../hooks/useTheme';
+import Role, { UnsupportedRoleError } from '../models/Role';
+import LoginScreen from '../screens/LoginScreen';
+import NotFoundScreen from '../screens/NotFoundScreen';
+import { RootStackParamList } from '../types';
+import LinkingConfiguration from './LinkingConfiguration';
+import AdminNavigator from './AdminNavigator';
+import EmployeeNavigator from './EmployeeNavigator';
+import EmployerNavigator from './EmployerNavigator';
 
 /**
  * @requires react-native-paper.Provider for theming
@@ -23,20 +29,51 @@ export default function Navigation() {
   );
 }
 
-// A root stack navigator is often used for displaying modals on top of all other content
-// Read more here: https://reactnavigation.org/docs/modal
-const Stack = createStackNavigator();
+/*
+ * A root stack navigator is often used for displaying modals on top of all
+ * other content. Read more here: https://reactnavigation.org/docs/modal
+ * However, with react-native-paper we don't need one for that.
+ */
+const Stack = createStackNavigator<RootStackParamList>();
 
+/**
+ * @requires ../hooks/useAuth.AuthContext.Provider
+ */
 function RootNavigator() {
+  const { role, isLogout } = useAuthContext();
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="Root" component={MainNavigator} />
-      <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
+      {getNavigatorForRole(role, isLogout)}
+      <Stack.Screen
+        name="NotFound"
+        component={NotFoundScreen}
+        options={{ title: 'Oops!' }}
+      />
     </Stack.Navigator>
   );
 }
-/*
- * With react-native-paper there's no need of a root stack navigator for
- * displaying modals. However, we may turn this into a BottomTabNavigator, so
- * we'll keep it for now.
- */
+
+function getNavigatorForRole(role: Role | undefined, isLogout: boolean) {
+  switch (role) {
+    case undefined:
+      return (
+        <Stack.Screen
+          name="Login"
+          component={LoginScreen}
+          options={{
+            // When logging out, a pop animation feels intuitive
+            // You can remove this if you want the default 'push' animation
+            animationTypeForReplace: isLogout ? 'pop' : 'push',
+          }}
+        />
+      );
+    case 'admin':
+      return <Stack.Screen name="Admin" component={AdminNavigator} />;
+    case 'employer':
+      return <Stack.Screen name="Employer" component={EmployerNavigator} />;
+    case 'employee':
+      return <Stack.Screen name="Employee" component={EmployeeNavigator} />;
+    default:
+      throw new UnsupportedRoleError(role);
+  }
+}

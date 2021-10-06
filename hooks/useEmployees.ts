@@ -1,6 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 
-import './utils/ignoreReactQueryLongTimerWarning';
 import {
   clockIn,
   clockOut,

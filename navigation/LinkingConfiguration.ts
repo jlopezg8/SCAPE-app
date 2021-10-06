@@ -12,12 +12,30 @@ export default linking = {
   prefixes: [makeLinkingURL('/')],
   config: {
     screens: {
-      Root: {
+      Login: 'login',
+      Admin: {
         initialRouteName: 'Home',
+        path: 'admin',
+        screens: {
+          Home: '',
+          Settings: 'settings',
+        },
+      },
+      Employer: {
+        initialRouteName: 'Home',        
+        path: 'employer',
         screens: {
           Home: '',
           NewEmployee: 'new-employee',
           RecordAttendance: 'record-attendance',
+          Settings: 'settings',
+        },
+      },
+      Employee: {
+        initialRouteName: 'Home',
+        path: 'employee',
+        screens: {
+          Home: '',
           Settings: 'settings',
         },
       },

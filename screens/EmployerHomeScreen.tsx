@@ -2,14 +2,14 @@ import React from 'react';
 
 import { FAB, Surface } from '../components/styled';
 import Layout from '../constants/Layout';
-import { MainStackScreensProps } from '../types';
+import { EmployerStackScreensProps } from '../types';
 
 /**
  * @param navigation can be mocked
  * @requires react-native-paper.Provider for the Material Design components
  */
-export default function HomeScreen(
-  { navigation }: MainStackScreensProps['Home']
+export default function EmployerHomeScreen(
+  { navigation }: EmployerStackScreensProps['Home']
 ) {
   return (
     <Surface>
