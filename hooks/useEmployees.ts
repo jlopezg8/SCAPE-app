@@ -4,7 +4,8 @@ import {
   clockIn,
   clockOut,
   createEmployee,
-  getEmployeeByPhoto
+  getEmployeeByPhoto,
+  getEmployeesByWorkplace,
 } from '../api/employees';
 import { Employee } from '../models/Employee';
 
@@ -46,5 +47,13 @@ export function useEmployeeGetterByPhoto(photo?: string) {
     [employeesQueryKey, { photo }],
     () => getEmployeeByPhoto(photo!),
     { enabled: Boolean(photo), retry: false, refetchOnWindowFocus: false }
+  );
+}
+
+export function useEmployeesGetterByWorkplace(workplaceId: number) {
+  return useQuery(
+    [employeesQueryKey, { workplaceId }],
+    () => getEmployeesByWorkplace(workplaceId),
+    { retry: false, refetchOnWindowFocus: false }
   );
 }

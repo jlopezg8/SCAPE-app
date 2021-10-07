@@ -37,7 +37,7 @@ export default function Navigation() {
 const Stack = createStackNavigator<RootStackParamList>();
 
 /**
- * @requires ../hooks/useAuth.AuthContext.Provider
+ * @requires ../hooks/useAuth.AuthContext.Provider for role, isLogout
  */
 function RootNavigator() {
   const { role, isLogout } = useAuthContext();

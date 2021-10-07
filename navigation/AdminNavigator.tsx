@@ -12,7 +12,7 @@ import { AdminStackParamList } from '../types';
 const Stack = createStackNavigator<AdminStackParamList>();
 
 /**
- * @requires ../hooks/useAuth.AuthContext.Provider
+ * @requires ../hooks/useAuth.AuthContext.Provider for logout
  */
 export default function AdminNavigator() {
   const { logout } = useAuthContext();

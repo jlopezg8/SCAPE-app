@@ -12,7 +12,7 @@ import { EmployeeStackParamList } from '../types';
 const Stack = createStackNavigator<EmployeeStackParamList>();
 
 /**
- * @requires ../hooks/useAuth.AuthContext.Provider
+ * @requires ../hooks/useAuth.AuthContext.Provider for logout
  */
 export default function EmployeeNavigator() {
   const { logout } = useAuthContext();

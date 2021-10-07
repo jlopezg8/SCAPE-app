@@ -23,6 +23,7 @@ export type EmployerStackParamList = {
   NewEmployee: undefined;
   RecordAttendance: undefined;
   Settings: undefined;
+  Workplace: { id: number };
 };
 
 export type EmployerStackScreensProps = {

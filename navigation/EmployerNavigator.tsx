@@ -5,16 +5,19 @@ import { Menu } from 'react-native-paper';
 
 import OverflowMenu from '../components/OverflowMenu';
 import { useAuthContext } from '../hooks/useAuth';
-import EmployerHomeScreen from '../screens/EmployerHomeScreen';
-import NewEmployeeScreen from '../screens/NewEmployeeScreen';
-import RecordAttendanceScreen from '../screens/RecordAttendanceScreen';
-import SettingsScreen from '../screens/SettingsScreen';
+import {
+  EmployerHomeScreen,
+  NewEmployeeScreen,
+  RecordAttendanceScreen,
+  SettingsScreen,
+  WorkplaceScreen,
+} from '../screens';
 import { EmployerStackParamList } from '../types';
 
 const Stack = createStackNavigator<EmployerStackParamList>();
 
 /**
- * @requires ../hooks/useAuth.AuthContext.Provider
+ * @requires ../hooks/useAuth.AuthContext.Provider for logout
  */
 export default function EmployerNavigator() {
   const { logout } = useAuthContext();
@@ -27,7 +30,7 @@ export default function EmployerNavigator() {
         name="Home"
         component={EmployerHomeScreen}
         options={({ navigation }) => ({
-          headerTitle: Constants.manifest.name,
+          title: Constants.manifest.name,
           headerRight: () => (
             <OverflowMenu navigation={navigation}>
               <OverflowMenu.Item label="Configuración" linkTo="Settings" />
@@ -39,17 +42,26 @@ export default function EmployerNavigator() {
       <Stack.Screen
         name="Settings"
         component={SettingsScreen}
-        options={{ headerTitle: 'Configuración' }}
-      />
-      <Stack.Screen
-        name="NewEmployee"
-        component={NewEmployeeScreen}
-        options={{ headerTitle: 'Crear empleado' }}
+        options={{ title: 'Configuración' }}
       />
       <Stack.Screen
         name="RecordAttendance"
         component={RecordAttendanceScreen}
-        options={{ headerTitle: 'Registrar asistencia' }}
+        options={{ title: 'Registrar asistencia' }}
+      />
+      <Stack.Screen
+        name="Workplace"
+        component={WorkplaceScreen}
+        options={{
+          title: '',
+          headerTransparent: true,
+          headerTintColor: 'white',
+        }}
+      />
+      <Stack.Screen
+        name="NewEmployee"
+        component={NewEmployeeScreen}
+        options={{ title: 'Crear empleado' }}
       />
     </Stack.Navigator>
   );

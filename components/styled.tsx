@@ -1,5 +1,11 @@
 import * as React from 'react';
-import { Platform, ScrollView, StyleSheet } from 'react-native';
+import {
+  Platform,
+  ScrollView,
+  StyleProp,
+  StyleSheet,
+  ViewStyle,
+} from 'react-native';
 import {
   Button as DefaultButton,
   FAB as DefaultFAB,
@@ -142,6 +148,8 @@ export function FAB(props: React.ComponentProps<typeof DefaultFAB>) {
   return <DefaultFAB style={[styles.fab, style]} {...otherProps} />;
 }
 
+export const FABSize = 56;
+
 type HelperTextProps = {
   label?: string;
   error?: boolean;
@@ -213,12 +221,15 @@ export type SnackbarProps = {
   visible: boolean;
   onDismiss: () => void;
   message: string;
+  wrapperStyle?: StyleProp<ViewStyle>;
 };
 
 /**
  * @requires react-native-paper.Provider for the Material Design components
  */
-export function Snackbar({ visible, onDismiss, message }: SnackbarProps) {
+export function Snackbar(
+  { visible, onDismiss, message, wrapperStyle }: SnackbarProps
+) {
   return (
     <DefaultSnackbar
       visible={visible}
@@ -238,11 +249,14 @@ export function Snackbar({ visible, onDismiss, message }: SnackbarProps) {
        * Also, we can't use `padding: 'inherit'` since that crashes on mobile,
        * so we have to recalculate it.
        */
-      wrapperStyle={{
-        alignSelf: 'center',
-        paddingHorizontal: Platform.OS === 'web' ? Layout.padding : 0,
-        paddingVertical: Layout.padding,
-      }}
+      wrapperStyle={[
+        {
+          alignSelf: 'center',
+          paddingHorizontal: Platform.OS === 'web' ? Layout.padding : 0,
+          paddingVertical: Layout.padding,
+        },
+        wrapperStyle,
+      ]}
       style={{ margin: 0 }} // override its `margin: 8`
     >
       {message}
