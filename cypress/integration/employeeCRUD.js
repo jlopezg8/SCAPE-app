@@ -89,7 +89,7 @@ describe("Employee CRUD", () => {
 
     it("Doesn't show any employees on empty workplace", () => {
       cy.visit("/employer/workplace/0");
-      cy.findByText(/Radamel Falcao/).should("not.be.visible");
+      cy.findByText(/Radamel Falcao/, { timeout: 10000 }).should("not.exist");
     });
   });
 
