@@ -76,12 +76,21 @@ describe("Employee CRUD", () => {
     });
   });
 
-  describe.skip("List employees", () => {
-    beforeEach(() => {});
+  describe("List employees", () => {
+    beforeEach(() => {
+      cy.visit("/employer/workplace/1");
+    });
 
-    it("Shows employee after adding", () => {});
+    it.skip("Shows employee after adding", () => {});
 
-    it("Shows current employees", () => {});
+    it("Shows at least one employee", () => {
+      cy.findByText(/Radamel Falcao/).should("be.visible");
+    });
+
+    it("Doesn't show any employees on empty workplace", () => {
+      cy.visit("/employer/workplace/0");
+      cy.findByText(/Radamel Falcao/).should("not.be.visible");
+    });
   });
 
   describe.skip("Delete employees", () => {
