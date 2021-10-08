@@ -1,12 +1,7 @@
 import React from "react";
-import fetch from "isomorphic-fetch";
-import { rest } from "msw";
-import { setupServer } from "msw/node";
 import WorkplaceScreen from "../../screens/WorkplaceScreen";
 import { render } from "../../test-utils";
 import getEmployeesByWorkplace from "../../api/employees/getEmployeesByWorkplace";
-
-global.fetch = fetch;
 
 jest.mock("@react-navigation/native");
 jest.mock("../../api/employees/getEmployeesByWorkplace");
@@ -18,9 +13,8 @@ describe("Employee list", () => {
     getEmployeesByWorkplace.mockReturnValue(
       Promise.resolve([
         {
-          id: 3,
-          documentId: "9999",
-          firstName: "Radamel Carlos",
+          idDoc: "9999",
+          firstName: "Falcao",
           lastName: "Garcia",
           email: "falcaito@gmail.com",
           image: [
@@ -31,26 +25,11 @@ describe("Employee list", () => {
         },
       ])
     );
-    const { findByText, debug } = render(
+    const { findByText } = render(
       <WorkplaceScreen route={{ params: { id: 1 } }} />
     );
     const employee = await findByText(/Falcao/);
-    expect(getEmployeesByWorkplace).toHaveBeenCalled();
     expect(employee).toBeTruthy();
-  });
-  it("Shows message when empty list", async () => {
-    rest.get(
-      "https://scapeapi.azurewebsites.net/api/employee/GetEmployeesByWorkPlace/1",
-      (req, res, ctx) => {
-        return res(ctx.status(200), ctx.json([]));
-      }
-    );
-    const { queryByText } = render(
-      <WorkplaceScreen route={{ params: { id: 1 } }} />
-    );
-    const employee = await queryByText(/Falcao/);
-    expect(employee).toBeNull();
-    //Mensaje de vacio
   });
 });
 /*

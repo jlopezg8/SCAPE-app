@@ -40,7 +40,7 @@ const handlers = [
             employee: {
               id: 3,
               documentId: "9999",
-              firstName: "Radamel Carlos",
+              firstName: "Radamel Falcao",
               lastName: "Garcia",
               email: "falcaito@gmail.com",
               image: [
@@ -81,8 +81,7 @@ describe("Employee list", () => {
       <WorkplaceScreen route={{ params: { id: 1 } }} />
     );
     const employee = await queryByText(/Falcao/);
-    expect(employee).toBeNull();
-    //Mensaje de vacio
+    expect(employee).toBeFalsy();
   });
 });
 /*
