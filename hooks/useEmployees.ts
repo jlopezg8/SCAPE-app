@@ -57,3 +57,7 @@ export function useEmployeesGetterByWorkplace(workplaceId: number) {
     { retry: false, refetchOnWindowFocus: false }
   );
 }
+
+export {
+  WorkplaceNotFoundError
+} from '../api/employees/getEmployeesByWorkplace';

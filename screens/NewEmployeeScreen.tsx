@@ -7,7 +7,7 @@ import {
   PhotoPicker,
   StatusSnackbar,
   SubmitButton,
-  TextField,
+  TextField as RawTextField,
   TextFieldType,
 } from '../components/formik';
 import { ScrollingSurface } from '../components/styled';
@@ -19,27 +19,7 @@ import {
 } from '../models/Employee';
 import { replaceEmptyValuesWithNull } from '../utils';
 
-async function _submit(
-  createEmployee: ReturnType<typeof useEmployeeCreator>,
-  employee: Employee,
-  { resetForm, setStatus }: FormikHelpers<Employee>
-) {
-  try {
-    const response = await createEmployee(
-      replaceEmptyValuesWithNull(employee));
-    console.log(response);
-    resetForm();
-    setStatus('Empleado creado');
-  } catch (err) {
-    const error = err as Error;
-    setStatus(error.name === 'BadRequestError'
-                ? error.message
-                : 'No se pudo crear el empleado. Ponte en contacto con Soporte.');
-    console.error(error);
-  }
-}
-
-const EmployeeTextField: TextFieldType<Employee> = TextField;
+const TextField: TextFieldType<Employee> = RawTextField;
 
 /**
  * @requires react-native-paper.Provider for the Material Design components
@@ -64,10 +44,10 @@ export default function NewEmployeeScreen() {
       <ScrollingSurface>
         <PhotoPicker name="photo" />
         {/* It seems react-native-paper.TextInput ignores the keyboardType prop */}
-        <EmployeeTextField label="Documento de identidad*" name="idDoc" keyboardType="number-pad" />
-        <EmployeeTextField label="Nombre*" name="firstName" />
-        <EmployeeTextField label="Apellido*" name="lastName" />
-        <EmployeeTextField label="Correo electrónico" name="email" keyboardType="email-address" />
+        <TextField label="Documento de identidad*" name="idDoc" keyboardType="number-pad" />
+        <TextField label="Nombre*" name="firstName" />
+        <TextField label="Apellido*" name="lastName" />
+        <TextField label="Correo electrónico" name="email" keyboardType="email-address" />
         <DropDown label="Sexo" name="sex" options={[
           { label: 'Hombre', value: 'hombre' },
           { label: 'Mujer', value: 'mujer' },
@@ -79,4 +59,24 @@ export default function NewEmployeeScreen() {
       </ScrollingSurface>
     </Formik>
   );
+}
+
+async function _submit(
+  createEmployee: ReturnType<typeof useEmployeeCreator>,
+  employee: Employee,
+  { resetForm, setStatus }: FormikHelpers<Employee>
+) {
+  try {
+    const response = await createEmployee(
+      replaceEmptyValuesWithNull(employee));
+    console.log(response);
+    resetForm();
+    setStatus('Empleado creado');
+  } catch (err) {
+    const error = err as Error;
+    setStatus(error.name === 'BadRequestError'
+                ? error.message
+                : 'No se pudo crear el empleado. Ponte en contacto con Soporte.');
+    console.error(error);
+  }
 }

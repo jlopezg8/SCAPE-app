@@ -1,8 +1,7 @@
 import React from 'react';
 
 import { login, logout } from '../api/auth';
-// TODO: low: shouldn't need to specify `/index`, maybe need to change a setting?
-import { setAccessToken } from '../api/utils/index';
+import { setAccessToken } from '../api/utils';
 import Role, { roleSchema } from '../models/Role';
 import * as Storage from './utils/storage';
 

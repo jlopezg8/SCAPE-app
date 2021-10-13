@@ -1,8 +1,7 @@
 import Role, { UnsupportedRoleError } from '../models/Role';
 import { RequiredArgumentError } from './errors';
 import { createEndpointGetter } from './serverURL';
-// TODO: low: shouldn't need to specify `/index`, maybe need to change a setting?
-import { postURLEncodedFormData, setAccessToken } from './utils/index';
+import { postURLEncodedFormData, setAccessToken } from './utils';
 
 const baseEndpoint = 'api/user/';
 const getEndpoint = createEndpointGetter(baseEndpoint);

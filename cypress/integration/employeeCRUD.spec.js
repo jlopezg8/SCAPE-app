@@ -47,7 +47,7 @@ describe("Employee CRUD", () => {
       cy.contains("Guardar").click();
       cy.contains("Requerido").should("exist");
     });
-    it("Rejects employee without picture", () => {
+    it.skip("Rejects employee without picture", () => {
       cy.get('input[aria-label="Nombre*"]').click().type("Carlos");
       cy.get('input[aria-label="Apellido*"]').click().type("Gallego");
       cy.get('input[aria-label="Documento de identidad*"]')
@@ -88,12 +88,14 @@ describe("Employee CRUD", () => {
     });
 
     it("Doesn't show any employees on empty workplace", () => {
-      cy.visit("/employer/workplace/0");
+      cy.visit("/employer/workplace/2");
       cy.findByText(/No hay empleados/).should("be.visible");
       cy.findByText(/Radamel Falcao/, { timeout: 10000 }).should("not.exist");
     });
-    it.skip("Redirects on invalid workplace", () => {
-      expect.hasAssertions();
+    it("Message on invalid workplace", () => {
+      cy.visit("/employer/workplace/0");
+      cy.findByText(/No fue encontrado/i).should("be.visible");
+      cy.findByText(/Radamel Falcao/, { timeout: 10000 }).should("not.exist");
     });
   });
 

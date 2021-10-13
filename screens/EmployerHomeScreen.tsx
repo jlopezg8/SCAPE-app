@@ -19,6 +19,12 @@ export default function EmployerHomeScreen(
         left={props => <List.Icon {...props} icon="factory" />}
         onPress={() => navigation.navigate('Workplace', { id: 1 })}
       />
+      <List.Item
+        title="Sitio de trabajo 2"
+        description="Descripción del sitio de trabajo"
+        left={props => <List.Icon {...props} icon="factory" />}
+        onPress={() => navigation.navigate('Workplace', { id: 2 })}
+      />
       <FAB
         icon="face-recognition"
         onPress={() => navigation.navigate('RecordAttendance')}

@@ -1,16 +1,25 @@
 import { Employee } from "../../models/Employee";
-
-// TODO: mid: find another way to do localization
-// TODO: low: shouldn't need to specify `/index`, maybe need to change a setting?
-import { get } from '../utils/index';
+import { RequiredArgumentError } from "../errors";
+import { get } from '../utils';
 import { APIEmployee, getEndpoint, mapApiEmployeeToEmployee } from './common';
 
 export default async function getEmployeesByWorkplace(workplaceId: number)
   : Promise<Employee[]>
 {
-  const endpoint = getEndpoint(`GetEmployeesByWorkPlace/${workplaceId}`);
-  const response: APIResponse = await (await get(endpoint)).json();
-  return response.map(({ employee }) => mapApiEmployeeToEmployee(employee));
+  if (workplaceId == null) throw new RequiredArgumentError('workplaceId');
+  try {
+    const endpoint = getEndpoint(`GetEmployeesByWorkPlace/${workplaceId}`);
+    const response = await (await get(endpoint)).json() as APIResponse;
+    return response.map(({ employee }) => mapApiEmployeeToEmployee(employee));
+  } catch (err) {
+    const error = err as Error;
+    switch (error.message) {
+      case 'There is no Workplace with that ID':
+        throw new WorkplaceNotFoundError(workplaceId);
+      default:
+        throw error;
+    }
+  }
 }
 
 type APIResponse = {
@@ -20,3 +29,11 @@ type APIResponse = {
   schedule: string;
   employee: APIEmployee;
 }[];
+
+export class WorkplaceNotFoundError extends Error {
+  constructor(workplaceId?: number) {
+    const withId = workplaceId ? ` with ID "${workplaceId}" ` : ' ';
+    super(`workplace${withId}not found`);
+    this.name = 'WorkplaceNotFoundError';
+  }
+}

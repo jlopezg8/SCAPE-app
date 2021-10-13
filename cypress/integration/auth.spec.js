@@ -16,17 +16,26 @@ describe("Login", () => {
   });
 
   it("Logins admin correctly", () => {
-    typeCredentials({ email: "admin@ontime.com", password: "ontime" });
+    typeCredentials({
+      email: Cypress.env("adminUsername"),
+      password: Cypress.env("adminPassword"),
+    });
     cy.contains("administrador", { matchCase: false }).should("be.visible");
   });
 
   it("Logins employee correctly", () => {
-    typeCredentials({ email: "employee@ontime.com", password: "ontime" });
+    typeCredentials({
+      email: Cypress.env("employeeUsername"),
+      password: Cypress.env("employeePassword"),
+    });
     cy.contains("empleado", { matchCase: false }).should("be.visible");
   });
 
   it("Logins employer correctly", () => {
-    typeCredentials({ email: "employeer@ontime.com", password: "ontime" });
+    typeCredentials({
+      email: Cypress.env("employerUsername"),
+      password: Cypress.env("employerPassword"),
+    });
     //Find attendance button
     cy.get(".r-pointerEvents-105ug2t > .css-cursor-18t94o4").should(
       "be.visible"
@@ -35,7 +44,7 @@ describe("Login", () => {
   });
 
   it("Does not login with ID", () => {
-    typeCredentials({ email: "1098736511", password: "ontime" });
+    typeCredentials({ email: "1098736511", password: "timer" });
     cy.findByText(/correo inválido/i).should("be.visible");
   });
 
@@ -50,12 +59,18 @@ describe("Login", () => {
   });
 
   it("Does not login with invalid credentials", () => {
-    typeCredentials({ email: "employeer@ontime.com", password: "abcd123" });
+    typeCredentials({
+      email: Cypress.env("employerUsername"),
+      password: "abcd123",
+    });
     cy.findByText(/incorrectos/i).should("be.visible");
   });
 
   it("Preserves past login", () => {
-    typeCredentials({ email: "employee@ontime.com", password: "ontime" });
+    typeCredentials({
+      email: Cypress.env("employeeUsername"),
+      password: Cypress.env("employeePassword"),
+    });
     cy.contains("empleado", { matchCase: false }).should("be.visible");
     cy.reload();
     cy.contains("empleado", { matchCase: false }).should("be.visible");

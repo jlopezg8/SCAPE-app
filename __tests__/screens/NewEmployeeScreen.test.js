@@ -39,7 +39,7 @@ describe('tests for adding a new employee', () => {
     expect(createEmployee).toHaveBeenCalledWith(employee);
   });
 
-  it('doesnt add a new employee without idDoc', async () => {
+  it("doesn't add a new employee with no ID doc", async () => {
     const employee = {
       idDoc: '',
       firstName: 'Ricardo',
@@ -59,7 +59,7 @@ describe('tests for adding a new employee', () => {
     expect(createEmployee).toHaveBeenCalledTimes(0);
   });
 
-  it('doesnt add a new employee with non-digit chararacters in idDoc', async () => {
+  it("doesn't add a new employee with an ID doc with non-digit chars", async () => {
     const employee = {
       idDoc: '145abc',
       firstName: 'Marie',
@@ -79,7 +79,7 @@ describe('tests for adding a new employee', () => {
     expect(createEmployee).toHaveBeenCalledTimes(0);
   });
 
-  it('doesnt add a new employee with invalid email', async () => {
+  it("doesn't add a new employee with an invalid email", async () => {
     const employee = {
       idDoc: '654321',
       firstName: 'Margaret',
