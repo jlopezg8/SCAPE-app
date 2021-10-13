@@ -92,12 +92,20 @@ describe("Employee CRUD", () => {
       cy.findByText(/No hay empleados/).should("be.visible");
       cy.findByText(/Radamel Falcao/, { timeout: 10000 }).should("not.exist");
     });
+    it.skip("Redirects on invalid workplace", () => {
+      expect.hasAssertions();
+    });
   });
 
   describe.skip("Delete employees", () => {
     beforeEach(() => {});
     it("Shows warning before deleting", () => {});
     it("Deletes the selected employee", () => {});
+  });
+
+  describe.skip("Modify employees", () => {
+    beforeEach(() => {});
+    it("Shows warning before modify", () => {});
   });
 });
 
