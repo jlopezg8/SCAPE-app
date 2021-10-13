@@ -1,6 +1,5 @@
 import { createEndpointGetter } from '../serverURL';
-// TODO: low: shouldn't need to specify `/index`, maybe need to change a setting?
-import { post, translateBadRequestErrorMessage as t } from '../utils/index';
+import { post, translateBadRequestErrorMessage as t } from '../utils';
 
 export function clockIn(employeeDocId: string, timestamp?: Date) {
   return recordAttendance({ employeeDocId, type: 'clock-in', timestamp });

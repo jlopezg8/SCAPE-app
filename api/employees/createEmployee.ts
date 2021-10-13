@@ -1,8 +1,7 @@
 import { Employee } from "../../models/Employee";
 
 // TODO: mid: find another way to do localization
-// TODO: low: shouldn't need to specify `/index`, maybe need to change a setting?
-import { post, translateBadRequestErrorMessage as t } from '../utils/index';
+import { post, translateBadRequestErrorMessage as t } from '../utils';
 import { APIEmployee, getEndpoint, sexApiSexBiMap } from './common';
 
 export default async function createEmployee(employee: Employee) {

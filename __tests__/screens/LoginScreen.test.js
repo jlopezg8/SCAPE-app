@@ -15,7 +15,7 @@ describe('login screen tests', () => {
       </AuthContext.Provider>
     );
     const email = 'invalid@credentials.com',
-      password = 'incorrect horse battery staple';
+          password = 'incorrect horse battery staple';
     fireEvent.changeText(getByLabelText('Correo electrónico'), email);
     fireEvent.changeText(getByLabelText('Contraseña'), password);
     fireEvent.press(getByText('Iniciar sesión'));

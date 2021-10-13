@@ -6,9 +6,11 @@ import {
   Card,
   Divider,
   Headline,
+  IconButton,
   List,
   Paragraph,
   Subheading,
+  Title,
 } from 'react-native-paper';
 
 import {
@@ -23,11 +25,14 @@ import {
   useLightStatusBar,
   useSnackbar,
 } from '../hooks';
+import { WorkplaceNotFoundError } from '../hooks/useEmployees';
+import { Employee } from '../models/Employee';
 import { EmployerStackScreensProps } from '../types';
 
 /**
  * @param navigation.navigate can be mocked
- * @param route.id workplace ID
+ * @param route.params.id workplace ID
+ * @requires navigator for useLightStatusBar (better to mock that hook)
  * @requires react-native-paper.Provider for the Material Design components
  * @requires react-query.QueryClientProvider for queries
  * ../api/employees.getEmployeesByWorkplace can be mocked
@@ -94,26 +99,7 @@ function EmployeesSection(props: EmployeesSectionProps) {
       <Subheading style={styles.employeesHeading}>Empleados</Subheading>
       {isLoading &&
         <ActivityIndicator style={styles.employeesLoadingIndicator} />}
-      {employees?.map(({ idDoc, firstName, lastName, photo }) =>
-        <List.Item
-          key={idDoc}
-          title={`${firstName} ${lastName}`}
-          description="Cargo"
-          left={props => photo
-            ? <Avatar.Image
-                source={{ uri: `data:image/jpg;base64,${photo}` }}
-                size={48}
-                {...props} 
-              />
-            : <Avatar.Text
-                label={firstName[0] + lastName[0]}
-                size={48}
-                {...props}
-                color="white"
-              />
-          }
-        />
-      )}
+      <EmployeesList employees={employees} />
     </>
   );
 }
@@ -125,11 +111,64 @@ function useEmployeesGetterByWorkplaceSettingErrors(
   const { isError, error } = query;
   React.useEffect(() => {
     if (isError) {
-      setErrorMessage('No se pudieron consultar los empleados. Ponte en contacto con Soporte.');
-      console.error(error);
+      if (error instanceof WorkplaceNotFoundError) {
+        setErrorMessage('Este sitio de trabajo no fue encontrado');
+      } else {
+        setErrorMessage('No se pudieron consultar los empleados. Ponte en contacto con Soporte.');
+        console.error(error);
+      }
     }
   }, [isError, error]);
   return query;
+}
+
+function EmployeesList({ employees }: { employees: Employee[] | undefined }) {
+  if (employees === undefined) {
+    return null;
+  } else if (employees.length === 0) {
+    return <EmployeesEmptyState />;
+  } else {
+    return (
+      <>
+        {employees?.map(employee =>
+          <EmployeeListItem key={employee.idDoc} employee={employee} />)}
+      </>
+    );
+  }
+}
+
+function EmployeesEmptyState() {
+  return (
+    <View style={styles.employeesEmptyState}>
+      <IconButton icon="account-multiple" color="#03dac444" size={125} />
+      <Title style={{ opacity: .66 }} >No hay empleados</Title>
+      <Paragraph>Añade a un empleado y aparecerá aquí</Paragraph>
+    </View>
+  );
+}
+
+function EmployeeListItem({ employee }: { employee: Employee }) {
+  const { idDoc, firstName, lastName, photo } = employee;
+  return (
+    <List.Item
+      key={idDoc}
+      title={`${firstName} ${lastName}`}
+      description="Cargo"
+      left={props => photo
+        ? <Avatar.Image
+            source={{ uri: `data:image/jpg;base64,${photo}` }}
+            size={48}
+            {...props} 
+          />
+        : <Avatar.Text
+            label={firstName[0] + lastName[0]}
+            size={48}
+            {...props}
+            color="white"
+          />
+      }
+    />
+  );
 }
 
 const styles = StyleSheet.create({
@@ -147,6 +186,11 @@ const styles = StyleSheet.create({
     marginVertical: Layout.padding / 2,
   },
   employeesLoadingIndicator: {
+    marginTop: Layout.padding / 2,
+  },
+  employeesEmptyState: {
+    flex: 1,
+    alignItems: 'center',
     marginTop: Layout.padding / 2,
   },
 });

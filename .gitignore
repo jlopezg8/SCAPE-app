@@ -11,6 +11,7 @@ web-build/
 .scannerwork/
 sonar-project.properties
 yarn-error.log
+.env
 
 # macOS
 .DS_Store
