@@ -9,7 +9,7 @@ import React from 'react';
 import { DatePickerModal } from 'react-native-paper-dates';
 
 import { createEmployee } from '../../api/employees';
-import NewEmployeeScreen from '../../screens/NewEmployeeScreen';
+import { CreateEmployeeScreen } from '../../screens';
 import { fireEvent, render } from '../../test-utils';
 
 jest.mock('../../api/employees');
@@ -21,35 +21,43 @@ describe('tests for adding a new employee', () => {
 
   it('adds a new employee correctly', async () => {
     const employee = {
+      photo: testPhoto,
       idDoc: '123465',
       firstName: 'Pepito',
       lastName: 'Perez',
       email: 'pepitoperez@ontime.com',
       sex: 'hombre',
       birthDate: '1989-02-14T05:00:00.000Z',
-      photo: testPhoto,
+      password: 'asdf1234',
     }
-    const renderResult = render(<NewEmployeeScreen />);
+    const workplaceId = 1;
+    const renderResult = render(
+      <CreateEmployeeScreen route={{ params: { workplaceId } }} />
+    );
     await fillInEmployee(employee, renderResult);
 
     createEmployee.mockReturnValue(Promise.resolve('OK'));
     fireEvent.press(renderResult.getByText('Guardar'));
 
     await renderResult.findByText('Empleado creado');
-    expect(createEmployee).toHaveBeenCalledWith(employee);
+    expect(createEmployee).toHaveBeenCalledWith(employee, workplaceId);
   });
 
   it("doesn't add a new employee with no ID doc", async () => {
     const employee = {
+      photo: testPhoto,
       idDoc: '',
       firstName: 'Ricardo',
       lastName: 'Martínez',
       email: 'ricardomartinez@ontime.com',
       sex: 'hombre',
       birthDate: '1985-05-25T05:00:00.000Z',
-      photo: testPhoto,
+      password: 'asdf1234',
     }
-    const renderResult = render(<NewEmployeeScreen />);
+    const workplaceId = 1;
+    const renderResult = render(
+      <CreateEmployeeScreen route={{ params: { workplaceId } }} />
+    );
     await fillInEmployee(employee, renderResult);
 
     createEmployee.mockReturnValue(Promise.reject('Error'));
@@ -61,15 +69,19 @@ describe('tests for adding a new employee', () => {
 
   it("doesn't add a new employee with an ID doc with non-digit chars", async () => {
     const employee = {
+      photo: testPhoto,
       idDoc: '145abc',
       firstName: 'Marie',
       lastName: 'Curie',
       email: 'mariecurie@ontime.com',
       sex: 'mujer',
       birthDate: '1867-11-07T05:00:00.000Z',
-      photo: testPhoto,
+      password: 'asdf1234',
     }
-    const renderResult = render(<NewEmployeeScreen />);
+    const workplaceId = 1;
+    const renderResult = render(
+      <CreateEmployeeScreen route={{ params: { workplaceId } }} />
+    );
     await fillInEmployee(employee, renderResult);
 
     createEmployee.mockReturnValue(Promise.reject('Error'));
@@ -81,15 +93,19 @@ describe('tests for adding a new employee', () => {
 
   it("doesn't add a new employee with an invalid email", async () => {
     const employee = {
+      photo: testPhoto,
       idDoc: '654321',
       firstName: 'Margaret',
       lastName: 'Hamilton',
       email: 'margaret.hamilton',
       sex: 'mujer',
       birthDate: '1936-08-17T05:00:00.000Z',
-      photo: testPhoto,
+      password: 'asdf1234',
     }
-    const renderResult = render(<NewEmployeeScreen />);
+    const workplaceId = 1;
+    const renderResult = render(
+      <CreateEmployeeScreen route={{ params: { workplaceId } }} />
+    );
     await fillInEmployee(employee, renderResult);
 
     createEmployee.mockReturnValue(Promise.reject('Error'));
@@ -98,8 +114,6 @@ describe('tests for adding a new employee', () => {
     await renderResult.findByText('Correo inválido');
     expect(createEmployee).toHaveBeenCalledTimes(0);
   });
-
-
 });
 
 async function fillInEmployee(employee, renderResult) {
@@ -117,33 +131,6 @@ jest.mock('expo-image-picker');
 jest.mock('expo-image-manipulator');
 
 const fillInFunctions = {
-  idDoc(idDoc, { getByLabelText }) {
-    fireEvent.changeText(getByLabelText('Documento de identidad*'), idDoc);
-  },
-  firstName(firstName, { getByLabelText }) {
-    fireEvent.changeText(getByLabelText('Nombre*'), firstName);
-  },
-  lastName(lastName, { getByLabelText }) {
-    fireEvent.changeText(getByLabelText('Apellido*'), lastName);
-  },
-  email(email, { getByLabelText }) {
-    fireEvent.changeText(getByLabelText('Correo electrónico'), email);
-  },
-  async sex(sex, { getByLabelText, findByText }) {
-    fireEvent.press(getByLabelText('Sexo'));
-    const optionLabel = sex[0].toUpperCase() + sex.slice(1);
-    fireEvent.press(await findByText(optionLabel));
-  },
-  birthDate(birthDate, { UNSAFE_getByType }) {
-    // We tried every "safe" query, but DatePickerModal doesn't accept neither
-    // testID nor any accessibility props.
-
-    // `getByType` not working on memoized component:
-    // https://github.com/callstack/react-native-testing-library/issues/252
-
-    fireEvent(UNSAFE_getByType(DatePickerModal.type), 'confirm',
-              { date: new Date(birthDate) });
-  },
   async photo(photoBase64, { getByLabelText, findByText }) {
     // TODO: medium: extract this mocks using https://jestjs.io/docs/manual-mocks 
     requestCameraPermissionsAsync.mockReturnValue(Promise.resolve({
@@ -163,4 +150,34 @@ const fillInFunctions = {
     fireEvent.press(getByLabelText('Tomar o elegir foto'));
     fireEvent.press(await findByText('Tomar foto'));
   },
+  idDoc(idDoc, { getByLabelText }) {
+    fireEvent.changeText(getByLabelText('Documento de identidad*'), idDoc);
+  },
+  firstName(firstName, { getByLabelText }) {
+    fireEvent.changeText(getByLabelText('Nombre*'), firstName);
+  },
+  lastName(lastName, { getByLabelText }) {
+    fireEvent.changeText(getByLabelText('Apellido*'), lastName);
+  },
+  email(email, { getByLabelText }) {
+    fireEvent.changeText(getByLabelText('Correo electrónico*'), email);
+  },
+  async sex(sex, { getByLabelText, findByText }) {
+    fireEvent.press(getByLabelText('Sexo'));
+    const optionLabel = sex[0].toUpperCase() + sex.slice(1);
+    fireEvent.press(await findByText(optionLabel));
+  },
+  birthDate(birthDate, { UNSAFE_getByType }) {
+    // We tried every "safe" query, but DatePickerModal doesn't accept neither
+    // testID nor any accessibility props.
+
+    // `getByType` not working on memoized component:
+    // https://github.com/callstack/react-native-testing-library/issues/252
+
+    fireEvent(UNSAFE_getByType(DatePickerModal.type), 'confirm',
+              { date: new Date(birthDate) });
+  },
+  password(password, { getByLabelText }) {
+    fireEvent.changeText(getByLabelText('Contraseña*'), password);
+  }
 }

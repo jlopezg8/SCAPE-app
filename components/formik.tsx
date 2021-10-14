@@ -4,12 +4,13 @@ import React from 'react';
 import { PhotoPicker as DefaultPhotoPicker } from './PhotoPicker';
 import {
   Button,
-  Snackbar,
   DatePicker as StyledDatePicker,
   DropDown as StyledDropDown,
   DropDownProps as StyledDropDownProps,
+  PasswordField as StyledPasswordField,
+  Snackbar,
   TextField as StyledTextField,
-  TextFieldProps as StyledTextFieldProps
+  TextFieldProps as StyledTextFieldProps,
 } from './styled';
 
 /**
@@ -117,12 +118,13 @@ export type TextFieldProps<Model> = StyledTextFieldProps & {
  * @requires react-native-paper.Provider for the Material Design components
  */
 export function TextField<Model>(
-  { label, name, ...otherProps }: TextFieldProps<Model>
+  { secureTextEntry, label, name, ...otherProps }: TextFieldProps<Model>
 ) {
+  const TheTextField = secureTextEntry ? StyledPasswordField : StyledTextField;
   const [field, meta] = useField(name);
   const hasError = Boolean(meta.touched && meta.error);
   return (
-    <StyledTextField
+    <TheTextField
       label={label}
       value={field.value}
       onChangeText={field.onChange(name)}

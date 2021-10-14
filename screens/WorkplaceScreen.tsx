@@ -64,7 +64,7 @@ export default function WorkplaceScreen(
       />
       <FAB
         icon="account-plus"
-        onPress={() => navigation.navigate('NewEmployee')}
+        onPress={() => navigation.navigate('CreateEmployee', { workplaceId })}
       />
     </View>
   );

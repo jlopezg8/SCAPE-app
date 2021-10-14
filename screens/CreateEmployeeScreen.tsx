@@ -13,47 +13,67 @@ import {
 import { ScrollingSurface } from '../components/styled';
 import { useEmployeeCreator } from '../hooks/useEmployees';
 import {
-  Employee,
-  employeeInitialValues,
-  employeeSchema,
+  EmployeeToCreate,
+  employeeToCreateInitialValues,
+  employeeToCreateSchema,
 } from '../models/Employee';
+import { EmployerStackScreensProps } from '../types';
 import { replaceEmptyValuesWithNull } from '../utils';
 
-const TextField: TextFieldType<Employee> = RawTextField;
+const TextField: TextFieldType<EmployeeToCreate> = RawTextField;
 
 /**
+ * @param route.params.workplaceId
  * @requires react-native-paper.Provider for the Material Design components
  * @requires react-native-safe-area-context.SafeAreaProvider for safe area insets
  * @requires react-query.QueryClientProvider for mutating data
  * expo-image-picker can be mocked
- * ../api/employees/createEmployee can be mocked
+ * ../api/employees.createEmployee can be mocked
  */
-export default function NewEmployeeScreen() {
-  const createEmployee = useEmployeeCreator();
+export default function CreateEmployeeScreen(
+  { route }: EmployerStackScreensProps['CreateEmployee']
+) {
+  const { workplaceId } = route.params;
+  const createEmployee = useEmployeeCreator(workplaceId);
   const submit = React.useCallback(
-    (employee: Employee, formikHelpers: FormikHelpers<Employee>) =>
-      _submit(createEmployee, employee, formikHelpers),
+    (
+      employee: EmployeeToCreate,
+      formikHelpers: FormikHelpers<EmployeeToCreate>
+    ) => _submit(createEmployee, employee, formikHelpers),
     [createEmployee]
   );
   return (
     <Formik
-      initialValues={employeeInitialValues}
+      initialValues={employeeToCreateInitialValues}
       onSubmit={submit}
-      validationSchema={employeeSchema}
+      validationSchema={employeeToCreateSchema}
     >
       <ScrollingSurface>
         <PhotoPicker name="photo" />
-        {/* It seems react-native-paper.TextInput ignores the keyboardType prop */}
-        <TextField label="Documento de identidad*" name="idDoc" keyboardType="number-pad" />
+        {/* 'react-native-paper'.TextInput ignores the keyboardType prop? */}
+        <TextField
+          label="Documento de identidad*"
+          name="idDoc"
+          keyboardType="number-pad"
+        />
         <TextField label="Nombre*" name="firstName" />
         <TextField label="Apellido*" name="lastName" />
-        <TextField label="Correo electrónico" name="email" keyboardType="email-address" />
+        <TextField
+          label="Correo electrónico*"
+          name="email"
+          keyboardType="email-address"
+        />
         <DropDown label="Sexo" name="sex" options={[
           { label: 'Hombre', value: 'hombre' },
           { label: 'Mujer', value: 'mujer' },
           { label: 'Intersexo', value: 'intersexo' },
         ]} />
         <DatePicker label="Fecha de nacimiento" name="birthDate" />
+        <TextField
+          label="Contraseña*"
+          name="password"
+          secureTextEntry
+        />
         <SubmitButton label="Guardar" />
         <StatusSnackbar />
       </ScrollingSurface>
@@ -63,13 +83,12 @@ export default function NewEmployeeScreen() {
 
 async function _submit(
   createEmployee: ReturnType<typeof useEmployeeCreator>,
-  employee: Employee,
-  { resetForm, setStatus }: FormikHelpers<Employee>
+  employee: EmployeeToCreate,
+  { resetForm, setStatus }: FormikHelpers<EmployeeToCreate>
 ) {
   try {
     const response = await createEmployee(
       replaceEmptyValuesWithNull(employee));
-    console.log(response);
     resetForm();
     setStatus('Empleado creado');
   } catch (err) {

@@ -7,6 +7,7 @@ setLocale({
   },
   string: {
     email: 'Correo inválido',
+    min: 'Debe tener al menos ${min} caracteres',
     url: 'URL inválida',
   },
   // Neither of these work:

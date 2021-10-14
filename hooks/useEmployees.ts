@@ -7,7 +7,7 @@ import {
   getEmployeeByPhoto,
   getEmployeesByWorkplace,
 } from '../api/employees';
-import { Employee } from '../models/Employee';
+import { EmployeeToCreate } from '../models/Employee';
 
 const employeesQueryKey = 'employees';
 
@@ -34,12 +34,13 @@ export function useClockOut(employeeDocId: string) {
   return useAttendanceRecorder('clock-out', employeeDocId);
 }
 
-export function useEmployeeCreator() {
+export function useEmployeeCreator(workplaceId: number) {
   const queryClient = useQueryClient();
-  const mutation = useMutation(createEmployee, {
-    onSuccess: () => queryClient.invalidateQueries(employeesQueryKey),
-  });
-  return (employee: Employee) => mutation.mutateAsync(employee);
+  const mutation = useMutation(
+    (employee: EmployeeToCreate) => createEmployee(employee, workplaceId),
+    { onSuccess: () => queryClient.invalidateQueries(employeesQueryKey) }
+  );
+  return (employee: EmployeeToCreate) => mutation.mutateAsync(employee);
 }
 
 export function useEmployeeGetterByPhoto(photo?: string) {

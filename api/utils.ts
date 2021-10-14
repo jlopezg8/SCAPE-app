@@ -4,7 +4,7 @@ export function setAccessToken(token: string | undefined) {
 }
 
 export async function post(url: string, body?: any) {
-  console.log('POST', url, body);
+  //console.log('POST', url, body);
   const response = await fetch(url, {
     method: 'POST',
     // @ts-ignore: `headers` either has an `Authorization` string property or
@@ -36,7 +36,7 @@ async function handleNonSuccessfulResponse(response: Response) {
 
 export async function postURLEncodedFormData(url: string, body?: any) {
   const encodedBody = createURLSearchParamsFrom(body);
-  console.log('POST', url, encodedBody.toString());
+  //console.log('POST', url, encodedBody.toString());
   const response = await fetch(url, {
     method: 'POST',
     // Passing a URLSearchParams object to body isn't working as it should. It
@@ -74,7 +74,7 @@ export function translateBadRequestErrorMessage<T>(
 }
 
 export async function get(url: string) {
-  console.log('GET', url);
+  //console.log('GET', url);
   const response = await fetch(url, {
     // @ts-ignore: `headers` either has an `Authorization` string property or
     // hasn't, but TypeScript incorrectly infers `headers` always has an

@@ -1,11 +1,13 @@
-import { Employee } from "../../models/Employee";
+import { EmployeeToCreate } from "../../models/Employee";
 
 // TODO: mid: find another way to do localization
 import { post, translateBadRequestErrorMessage as t } from '../utils';
 import { APIEmployee, getEndpoint, sexApiSexBiMap } from './common';
 
-export default async function createEmployee(employee: Employee) {
-  const addEmployeeResponse = await addEmployee(employee);
+export default async function createEmployee(
+  employee: EmployeeToCreate, workplaceId: number
+) {
+  const addEmployeeResponse = await addEmployee(employee, workplaceId);
   if (!employee.photo) {
     return addEmployeeResponse;
   } else {
@@ -15,15 +17,23 @@ export default async function createEmployee(employee: Employee) {
   }
 }
 
-async function addEmployee(employee: Employee) {
-  const apiEmployee = mapEmployeeToApiEmployee(employee);
+async function addEmployee(employee: EmployeeToCreate, workplaceId: number) {
+  const apiEmployee = mapEmployeeToApiEmployee(employee, workplaceId);
   return await (
     await t(post(getEndpoint(), apiEmployee), addEmployeeErrorTranslations)
   ).text();
 }
 
-function mapEmployeeToApiEmployee(employee: Employee): APIEmployee {
+interface APIEmployeeToCreate extends APIEmployee {
+  workPlaceId: number;
+  password: string;
+}
+
+function mapEmployeeToApiEmployee(
+  employee: EmployeeToCreate, workplaceId: number
+) : APIEmployeeToCreate {
   return {
+    workPlaceId: workplaceId,
     documentId: employee.idDoc,
     firstName: employee.firstName,
     lastName: employee.lastName,
@@ -34,6 +44,7 @@ function mapEmployeeToApiEmployee(employee: Employee): APIEmployee {
     dateBirth: employee.birthDate && new Date(employee.birthDate),
     //photo: employee.photo, is not expected by the `insertEmployee` action,
     //                       we have to send it to the `associateFace` action
+    password: employee.password,
   };
 }
 
@@ -88,7 +99,7 @@ const addEmployeePhotoErrorTranslations = new Map<string, string>([
   ],
 ]);
 
-function mapEmployeeToAddEmployeePhotoParams(employee: Employee)
+function mapEmployeeToAddEmployeePhotoParams(employee: EmployeeToCreate)
   : AddEmployeePhotoParams
 {
   return {

@@ -10,7 +10,7 @@ export interface APIEmployee {
   documentId: string;
   firstName: string;
   lastName: string;
-  email?: string;
+  email: string;
   sex?: 'M' | 'F' | 'I';
   dateBirth?: Date;
   image?: { image: string }[];

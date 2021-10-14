@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import {
   Platform,
   ScrollView,
@@ -182,6 +182,26 @@ export function HelperText(
 export function ListItem(props: React.ComponentProps<typeof List.Item>) {
   const { style, ...otherProps } = props;
   return <List.Item style={[styles.listItem, style]} {...otherProps} />;
+}
+
+/**
+ * @requires react-native-paper.Provider for the Material Design components
+ */
+ export function PasswordField(props: TextFieldProps) {
+  const [hidden, setHidden] = React.useState(true);
+  return (
+    <TextField
+      secureTextEntry={hidden}
+      right={
+        <TextInput.Icon
+          name={hidden ? 'eye' : 'eye-off'}
+          onPress={() => setHidden(!hidden)}
+          forceTextInputFocus={false}
+        />
+      }
+      {...props}
+    />
+  );
 }
 
 /**

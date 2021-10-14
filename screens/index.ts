@@ -1,8 +1,8 @@
 export { default as AdminHomeScreen } from './AdminHomeScreen';
+export { default as CreateEmployeeScreen } from './CreateEmployeeScreen';
 export { default as EmployeeHomeScreen } from './EmployeeHomeScreen';
 export { default as EmployerHomeScreen } from './EmployerHomeScreen';
 export { default as LoginScreen } from './LoginScreen';
-export { default as NewEmployeeScreen } from './NewEmployeeScreen';
 export { default as NotFoundScreen } from './NotFoundScreen';
 export { default as RecordAttendanceScreen } from './RecordAttendanceScreen';
 export { default as SettingsScreen } from './SettingsScreen';

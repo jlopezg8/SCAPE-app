@@ -20,10 +20,13 @@
     "setupFiles": [
       "./jest.setup.js"
     ],
+    "testMatch": [
+      "**/__tests__/**/*.[jt]s?(x)"
+    ],
+    "testTimeout": 50000,
     "transformIgnorePatterns": [
       "node_modules/(?!@ngrx|(?!deck.gl)|ng-dynamic)"
-    ],
-    "testTimeout": 50000
+    ]
   },
   "dependencies": {
     "@expo/vector-icons": "^12.0.0",

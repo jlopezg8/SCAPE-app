@@ -10,11 +10,15 @@ export interface Employee {
   idDoc: string;
   firstName: string;
   lastName: string;
-  email?: string;
+  email: string;
   sex?: Sex;
   birthDate?: Date;
   /** Base64 image */
   photo?: string;
+}
+
+export interface EmployeeToCreate extends Employee {
+  password: string;
 }
 
 /**
@@ -22,7 +26,9 @@ export interface Employee {
  * .default('') to each of its fields, but this made sex and birthDate
  * required, since '' would fail those fields validations.
  */
-const _employeeInitialValues: { [field in keyof Employee]-?: string } = {
+const _employeeToCreateInitialValues: {
+  [field in keyof EmployeeToCreate]-?: string
+} = {
   idDoc: '',
   firstName: '',
   lastName: '',
@@ -30,15 +36,16 @@ const _employeeInitialValues: { [field in keyof Employee]-?: string } = {
   sex: '',
   birthDate: '',
   photo: '',
+  password: '',
 };
-export const employeeInitialValues =
-  _employeeInitialValues as unknown as Employee;
+export const employeeToCreateInitialValues =
+  _employeeToCreateInitialValues as unknown as EmployeeToCreate;
 
 export const employeeSchema: yup.SchemaOf<Employee> = yup.object({
   idDoc: yup.string().required().matches(/^\d+$/, 'Debe ser un número'),
   firstName: yup.string().required(),
   lastName: yup.string().required(),
-  email: yup.string().email(),
+  email: yup.string().email().required(),
   // oneOf([...[v1, v2, ...] as const]) is a workaround for
   // https://github.com/jquense/yup/issues/1298:
   sex: yup.mixed<Sex>().oneOf([...sexValues]),
@@ -47,3 +54,8 @@ export const employeeSchema: yup.SchemaOf<Employee> = yup.object({
   birthDate: yup.date().typeError('Fecha inválida'),
   photo: yup.string(),
 });
+
+export const employeeToCreateSchema: yup.SchemaOf<EmployeeToCreate> =
+  employeeSchema.shape({
+    password: yup.string().min(8).required(),
+  });

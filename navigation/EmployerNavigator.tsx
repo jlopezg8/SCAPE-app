@@ -7,7 +7,7 @@ import OverflowMenu from '../components/OverflowMenu';
 import { useAuthContext } from '../hooks/useAuth';
 import {
   EmployerHomeScreen,
-  NewEmployeeScreen,
+  CreateEmployeeScreen,
   RecordAttendanceScreen,
   SettingsScreen,
   WorkplaceScreen,
@@ -59,8 +59,8 @@ export default function EmployerNavigator() {
         }}
       />
       <Stack.Screen
-        name="NewEmployee"
-        component={NewEmployeeScreen}
+        name="CreateEmployee"
+        component={CreateEmployeeScreen}
         options={{ title: 'Crear empleado' }}
       />
     </Stack.Navigator>
