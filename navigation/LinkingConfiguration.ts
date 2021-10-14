@@ -29,6 +29,7 @@ export default linking = {
           NewEmployee: 'new-employee',
           RecordAttendance: 'record-attendance',
           Settings: 'settings',
+          Workplace: 'workplace/:id',
         },
       },
       Employee: {

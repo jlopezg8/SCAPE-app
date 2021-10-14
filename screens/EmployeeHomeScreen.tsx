@@ -3,6 +3,9 @@ import { Headline } from 'react-native-paper';
 
 import { Surface } from '../components/styled';
 
+/**
+ * @requires react-native-paper.Provider for the Material Design components
+ */
 export default function EmployeeHomeScreen() {
   return (
     <Surface style={{ justifyContent: 'center' }}>

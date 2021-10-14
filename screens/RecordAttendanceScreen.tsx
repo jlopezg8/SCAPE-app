@@ -41,7 +41,7 @@ function useEmployeeGetterByPhotoSettingErrors(
  * @requires react-native-paper.Provider for the Material Design components
  * @requires react-query.QueryClientProvider for queries
  * expo-image-picker can be mocked
- * ../api/employees/getEmployeeByPhoto can be mocked
+ * ../api/employees.getEmployeeByPhoto can be mocked
  * FIXME: high: pressing "Remover foto" crashes the app on mobile
  */
 export default function RecordAttendanceScreen() {

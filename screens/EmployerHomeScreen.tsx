@@ -1,11 +1,11 @@
 import React from 'react';
+import { List } from 'react-native-paper';
 
 import { FAB, Surface } from '../components/styled';
-import Layout from '../constants/Layout';
 import { EmployerStackScreensProps } from '../types';
 
 /**
- * @param navigation can be mocked
+ * @param navigation.navigate can be mocked
  * @requires react-native-paper.Provider for the Material Design components
  */
 export default function EmployerHomeScreen(
@@ -13,12 +13,21 @@ export default function EmployerHomeScreen(
 ) {
   return (
     <Surface>
-      <FAB icon="plus" onPress={() => navigation.navigate('NewEmployee')} />
+      <List.Item
+        title="Sitio de trabajo 1"
+        description="Descripción del sitio de trabajo"
+        left={props => <List.Icon {...props} icon="factory" />}
+        onPress={() => navigation.navigate('Workplace', { id: 1 })}
+      />
+      <List.Item
+        title="Sitio de trabajo 2"
+        description="Descripción del sitio de trabajo"
+        left={props => <List.Icon {...props} icon="factory" />}
+        onPress={() => navigation.navigate('Workplace', { id: 2 })}
+      />
       <FAB
-        icon="camera-account"
+        icon="face-recognition"
         onPress={() => navigation.navigate('RecordAttendance')}
-        // To offset from the first FAB (screen padding + FAB size + margin):
-        style={{ bottom: Layout.padding + 56 + 16 }}
       />
     </Surface>
   );

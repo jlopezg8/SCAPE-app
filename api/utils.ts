@@ -72,3 +72,15 @@ export function translateBadRequestErrorMessage<T>(
     throw error;
   });
 }
+
+export async function get(url: string) {
+  console.log('GET', url);
+  const response = await fetch(url, {
+    // @ts-ignore: `headers` either has an `Authorization` string property or
+    // hasn't, but TypeScript incorrectly infers `headers` always has an
+    // `Authorization` property that can either be a string or undefined:
+    headers: _accessToken && { Authorization: `Bearer ${_accessToken}` },
+  });
+  await handleNonSuccessfulResponse(response);
+  return response;
+}
