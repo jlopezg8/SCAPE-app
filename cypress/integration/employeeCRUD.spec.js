@@ -1,37 +1,16 @@
+import { fetchEmployer, setEmployer } from "../support";
 describe("Employee CRUD", () => {
   // login just once using API
   let user;
-  let baseURL = Cypress.env("loginUrl");
-  before(function fetchUser() {
-    cy.request({
-      method: "POST",
-      url: baseURL,
-      form: true,
-      body: {
-        username: Cypress.env("employerUsername"),
-        password: Cypress.env("employerPassword"),
-      },
-    })
-      .its("body")
-      .then((res) => {
-        user = res;
-      });
+  before(() => {
+    cy.fetchEmployer().then((res) => {
+      user = res;
+    });
   });
 
   // but set the user before visiting the page
   // so the app thinks it is already authenticated
-  beforeEach(function setUser() {
-    localStorage.setItem("access_token", user["access_token"]);
-    cy.visit("/", {
-      onBeforeLoad(win) {
-        // and before the page finishes loading
-        // set the user object in local storage
-        win.localStorage.setItem("access_token", user["access_token"]);
-        win.localStorage.setItem("role", "employer");
-      },
-    });
-    // the page should be opened and the user should be logged in
-  });
+  beforeEach(() => cy.setUser(user));
 
   describe("Adding employees", () => {
     beforeEach(() => {
@@ -48,26 +27,15 @@ describe("Employee CRUD", () => {
       cy.contains("Requerido").should("exist");
     });
     it.skip("Rejects employee without picture", () => {
-      cy.get('input[aria-label="Nombre*"]').click().type("Carlos");
-      cy.get('input[aria-label="Apellido*"]').click().type("Gallego");
-      cy.get('input[aria-label="Documento de identidad*"]')
-        .click()
-        .type("1093123123");
-      cy.contains("Guardar").click();
+      typeData(null);
+      cy.findByRole("button", { name: /Guardar/ }).click();
       cy.wait(1000);
       cy.contains("No se pudo crear").should("exist");
     });
     it.skip("Adds employee properly", () => {
-      cy.get('input[aria-label="Nombre*"]').click().type("Carlos");
-      cy.get('input[aria-label="Apellido*"]').click().type("Gallego");
-      cy.get('input[aria-label="Documento de identidad*"]')
-        .click()
-        .type("1093123123");
       //cy.get('.r-marginBottom-zd98yo > :nth-child(1) > .r-cursor-1loqt21 > .css-view-1dbjc4n').click()
       //cy.contains("Elegir una foto").click()
-      cy.get('input[aria-label="Correo electrónico"]')
-        .click()
-        .type("carlos.gallego@gmail.com");
+
       cy.get('[aria-label="Sexo"]').click();
       //cy.get('[role="menuitem"]').find(':contains("Hombre")').click({multiple:true});
       //Add Date
@@ -111,6 +79,17 @@ describe("Employee CRUD", () => {
   });
 });
 
+function typeData(data) {
+  fillField("Nombre*", "Carlos");
+  fillField("Apellido*", "Gallego");
+  fillField("Documento de identidad*", "1093123122");
+  fillField("Correo electrónico", "carlos.gallego@gmail.com");
+}
+function fillField(field, data) {
+  cy.get('input[aria-label="' + field + '"]')
+    .click()
+    .type(data);
+}
 /*describe('JWT', () => {
   it.skip('makes authenticated request', () => {
   // we can make authenticated request ourselves
