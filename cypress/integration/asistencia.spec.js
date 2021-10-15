@@ -14,34 +14,53 @@ describe("Register attendance", () => {
     cy.visit("/");
     cy.get(".r-pointerEvents-105ug2t > .css-cursor-18t94o4").click();
   });
-  describe("Detects employee properly and registers attendances", () => {
+  describe("detects employee properly and registers attendances", () => {
     beforeEach(() => {
-      pickPhoto();
+      const valid_employee = "falcao.png";
+      pickPhoto(valid_employee);
     });
-    it.skip("Registers Entrance attendance", () => {
-      cy.findByText().should("be.visible");
+    it("registers exit attendance", () => {
+      cy.findByText(/Falcao/).should("be.visible");
+      cy.findByRole("button", { name: /Registrar Entrada/i }).should(
+        "be.visible"
+      );
+      cy.findByRole("button", { name: /Registrar Salida/i })
+        .should("be.visible")
+        .click();
+      cy.findByText(/registrado la salida/).should("be.visible");
     });
-    it.skip("Registers Exit attendance", () => {
-      cy.pause();
-    });
-    it("Shows error because base64 is screwed :v", () => {
-      cy.findByText(/Base-64/i).should("be.visible");
+    it("registers entrance attendance", () => {
+      cy.findByText(/Falcao/).should("be.visible");
+      cy.findByRole("button", { name: /Registrar Salida/i }).should(
+        "be.visible"
+      );
+      cy.findByRole("button", { name: /Registrar Entrada/i })
+        .should("be.visible")
+        .click();
+      cy.findByText(/registrado la entrada/).should("be.visible");
     });
   });
 
-  it.skip("Shows error on bad photo", () => {
-    expect.hasAssertions();
+  describe("shows error on bad photo", () => {
+    it("rejects photos of two or more people", () => {
+      const two_employees = "couple.jpg";
+      pickPhoto(two_employees);
+      cy.findByText(/sólo una, cara/i).should("be.visible");
+    });
+    it("rejects invalid employee", () => {
+      const invalid_employee = "obama.jpg";
+      pickPhoto(invalid_employee);
+      cy.findByText(/No corresponde a ningún empleado/i).should("be.visible");
+    });
   });
 });
-function pickPhoto() {
-  const falcao = "falcao.png";
-
+function pickPhoto(image) {
   cy.get(
     ".r-alignSelf-1kihuf0 > :nth-child(1) > .r-cursor-1loqt21 > .css-view-1dbjc4n"
   ).click();
   cy.findByRole("menuitem", { name: /elegir una foto/i })
     .click()
     .then(() => {
-      cy.get('input[type="file"]').last().attachFile(falcao);
+      cy.get('input[type="file"]').last().attachFile(image, { force: true });
     });
 }
