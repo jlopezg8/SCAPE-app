@@ -18,7 +18,6 @@ import {
   employeeToCreateSchema,
 } from '../models/Employee';
 import { EmployerStackScreensProps } from '../types';
-import { replaceEmptyValuesWithNull } from '../utils';
 
 const TextField: TextFieldType<EmployeeToCreate> = RawTextField;
 
@@ -50,7 +49,6 @@ export default function CreateEmployeeScreen(
     >
       <ScrollingSurface>
         <PhotoPicker name="photo" />
-        {/* 'react-native-paper'.TextInput ignores the keyboardType prop? */}
         <TextField
           label="Documento de identidad*"
           name="idDoc"
@@ -87,8 +85,7 @@ async function _submit(
   { resetForm, setStatus }: FormikHelpers<EmployeeToCreate>
 ) {
   try {
-    const response = await createEmployee(
-      replaceEmptyValuesWithNull(employee));
+    await createEmployee(employee);
     resetForm();
     setStatus('Empleado creado');
   } catch (err) {

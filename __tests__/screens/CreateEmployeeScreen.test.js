@@ -27,7 +27,7 @@ describe('tests for adding a new employee', () => {
       lastName: 'Perez',
       email: 'pepitoperez@ontime.com',
       sex: 'hombre',
-      birthDate: '1989-02-14T05:00:00.000Z',
+      birthDate: new Date(1989, 2, 14),
       password: 'asdf1234',
     }
     const workplaceId = 1;
@@ -51,7 +51,7 @@ describe('tests for adding a new employee', () => {
       lastName: 'Martínez',
       email: 'ricardomartinez@ontime.com',
       sex: 'hombre',
-      birthDate: '1985-05-25T05:00:00.000Z',
+      birthDate: new Date(1985, 5, 25),
       password: 'asdf1234',
     }
     const workplaceId = 1;
@@ -75,7 +75,7 @@ describe('tests for adding a new employee', () => {
       lastName: 'Curie',
       email: 'mariecurie@ontime.com',
       sex: 'mujer',
-      birthDate: '1867-11-07T05:00:00.000Z',
+      birthDate: new Date(1967, 11, 7),
       password: 'asdf1234',
     }
     const workplaceId = 1;
@@ -99,7 +99,7 @@ describe('tests for adding a new employee', () => {
       lastName: 'Hamilton',
       email: 'margaret.hamilton',
       sex: 'mujer',
-      birthDate: '1936-08-17T05:00:00.000Z',
+      birthDate: new Date(1936, 8, 17),
       password: 'asdf1234',
     }
     const workplaceId = 1;

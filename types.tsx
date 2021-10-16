@@ -20,10 +20,11 @@ export type AdminStackParamList = {
 
 export type EmployerStackParamList = {
   Home: undefined;
+  Workplace: { id: number };
   CreateEmployee: { workplaceId: number };
   RecordAttendance: undefined;
+  EditEmployee: { idDoc: string };
   Settings: undefined;
-  Workplace: { id: number };
 };
 
 export type EmployerStackScreensProps = {

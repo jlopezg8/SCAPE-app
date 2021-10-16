@@ -1,8 +1,7 @@
-import { EmployeeToCreate } from "../../models/Employee";
-
+import { EmployeeToCreate } from '../../models/Employee';
 // TODO: mid: find another way to do localization
 import { post, translateBadRequestErrorMessage as t } from '../utils';
-import { APIEmployee, getEndpoint, sexApiSexBiMap } from './common';
+import { APIEmployee, getEndpoint, mapEmployeeToApiEmployee } from './common';
 
 export default async function createEmployee(
   employee: EmployeeToCreate, workplaceId: number
@@ -18,7 +17,7 @@ export default async function createEmployee(
 }
 
 async function addEmployee(employee: EmployeeToCreate, workplaceId: number) {
-  const apiEmployee = mapEmployeeToApiEmployee(employee, workplaceId);
+  const apiEmployee = createAPIEmployeeToCreate(employee, workplaceId);
   return await (
     await t(post(getEndpoint(), apiEmployee), addEmployeeErrorTranslations)
   ).text();
@@ -29,23 +28,13 @@ interface APIEmployeeToCreate extends APIEmployee {
   password: string;
 }
 
-function mapEmployeeToApiEmployee(
+function createAPIEmployeeToCreate(
   employee: EmployeeToCreate, workplaceId: number
 ) : APIEmployeeToCreate {
-  return {
+  return Object.assign(mapEmployeeToApiEmployee(employee), {
     workPlaceId: workplaceId,
-    documentId: employee.idDoc,
-    firstName: employee.firstName,
-    lastName: employee.lastName,
-    email: employee.email,
-    sex: employee.sex && sexApiSexBiMap.getValue(employee.sex),
-    // It seems yup doesn't cast employee.birthDate to a Date if the initial
-    // value is '' (a string), so we'll have to do it ourselves:
-    dateBirth: employee.birthDate && new Date(employee.birthDate),
-    //photo: employee.photo, is not expected by the `insertEmployee` action,
-    //                       we have to send it to the `associateFace` action
     password: employee.password,
-  };
+  });
 }
 
 const addEmployeeErrorTranslations = new Map<string, string>([

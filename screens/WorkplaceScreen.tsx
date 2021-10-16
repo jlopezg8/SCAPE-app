@@ -1,19 +1,19 @@
+import { useNavigation } from '@react-navigation/native';
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 import {
   ActivityIndicator,
   Avatar,
   Card,
   Divider,
   Headline,
-  IconButton,
   List,
   Paragraph,
   Subheading,
-  Title,
 } from 'react-native-paper';
 
 import {
+  AlternativeState,
   FAB,
   FABSize,
   ScrollingSurface,
@@ -32,10 +32,10 @@ import { EmployerStackScreensProps } from '../types';
 /**
  * @param navigation.navigate can be mocked
  * @param route.params.id workplace ID
- * @requires navigator for useLightStatusBar (better to mock that hook)
- * @requires react-native-paper.Provider for the Material Design components
- * @requires react-query.QueryClientProvider for queries
- * ../api/employees.getEmployeesByWorkplace can be mocked
+ * @requires `navigator` better mock `'@react-navigation/native'`
+ * @requires `'react-native-paper'.Provider` for the Material Design components
+ * @requires `'react-query'.QueryClientProvider` for queries
+ * `'../api/employees'.getEmployeesByWorkplace` can be mocked
  */
 export default function WorkplaceScreen(
   { navigation, route }: EmployerStackScreensProps['Workplace']
@@ -57,6 +57,7 @@ export default function WorkplaceScreen(
         onDismiss={snackbar.close}
         message={snackbar.message}
         // Defined inline so it overrides the default style:
+        // TODO: mid: shouldn't need to do this:
         wrapperStyle={{
           bottom: FABSize + Layout.padding / 2,
           paddingHorizontal: Layout.padding,
@@ -139,16 +140,19 @@ function EmployeesList({ employees }: { employees: Employee[] | undefined }) {
 
 function EmployeesEmptyState() {
   return (
-    <View style={styles.employeesEmptyState}>
-      <IconButton icon="account-multiple" color="#03dac444" size={125} />
-      <Title style={{ opacity: .66 }} >No hay empleados</Title>
-      <Paragraph>Añade a un empleado y aparecerá aquí</Paragraph>
-    </View>
+    <AlternativeState
+      wrapperStyle={{ marginTop: Layout.padding / 2 }}
+      icon="account-multiple"
+      title="No hay empleados"
+      tagline="Añade a un empleado y aparecerá aquí"
+    />
   );
 }
 
 function EmployeeListItem({ employee }: { employee: Employee }) {
   const { idDoc, firstName, lastName, photo } = employee;
+  const navigation =
+    useNavigation<EmployerStackScreensProps['Workplace']['navigation']>();
   return (
     <List.Item
       key={idDoc}
@@ -167,6 +171,7 @@ function EmployeeListItem({ employee }: { employee: Employee }) {
             color="white"
           />
       }
+      onPress={() => navigation.navigate('EditEmployee', { idDoc })}
     />
   );
 }
@@ -174,6 +179,7 @@ function EmployeeListItem({ employee }: { employee: Employee }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    maxHeight: Platform.OS === 'web' ? Layout.window.height : undefined,
   },
   card: {
     marginHorizontal: -Layout.padding,
@@ -186,11 +192,6 @@ const styles = StyleSheet.create({
     marginVertical: Layout.padding / 2,
   },
   employeesLoadingIndicator: {
-    marginTop: Layout.padding / 2,
-  },
-  employeesEmptyState: {
-    flex: 1,
-    alignItems: 'center',
     marginTop: Layout.padding / 2,
   },
 });

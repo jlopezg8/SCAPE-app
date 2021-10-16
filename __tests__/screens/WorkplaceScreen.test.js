@@ -7,8 +7,8 @@ import {
 import { WorkplaceScreen } from '../../screens';
 import { render } from '../../test-utils';
 
+jest.mock('@react-navigation/native');
 jest.mock('../../api/employees');
-jest.mock('../../hooks/useLightStatusBar');
 
 describe('workplace screen tests', () => {
   beforeEach(() => jest.resetAllMocks());

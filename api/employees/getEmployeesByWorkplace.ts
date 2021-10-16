@@ -1,5 +1,5 @@
-import { Employee } from "../../models/Employee";
-import { RequiredArgumentError } from "../errors";
+import { Employee } from '../../models/Employee';
+import { RequiredArgumentError } from '../errors';
 import { get } from '../utils';
 import { APIEmployee, getEndpoint, mapApiEmployeeToEmployee } from './common';
 

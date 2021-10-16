@@ -1,5 +1,4 @@
-import { Employee } from "../../models/Employee";
-
+import { Employee } from '../../models/Employee';
 // TODO: mid: find another way to do localization
 import { post, translateBadRequestErrorMessage as t } from '../utils';
 import { APIEmployee, getEndpoint, mapApiEmployeeToEmployee } from './common';

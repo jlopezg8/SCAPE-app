@@ -21,22 +21,21 @@ export interface EmployeeToCreate extends Employee {
   password: string;
 }
 
-/**
- * We tried getting the initial values from the yup scheme by adding a
- * .default('') to each of its fields, but this made sex and birthDate
- * required, since '' would fail those fields validations.
- */
+export interface EmployeeToEdit extends Employee {
+  password?: string;
+}
+
 const _employeeToCreateInitialValues: {
-  [field in keyof EmployeeToCreate]-?: string
+  [field in keyof Required<EmployeeToCreate>]: undefined
 } = {
-  idDoc: '',
-  firstName: '',
-  lastName: '',
-  email: '',
-  sex: '',
-  birthDate: '',
-  photo: '',
-  password: '',
+  idDoc: undefined,
+  firstName: undefined,
+  lastName: undefined,
+  email: undefined,
+  sex: undefined,
+  birthDate: undefined,
+  photo: undefined,
+  password: undefined,
 };
 export const employeeToCreateInitialValues =
   _employeeToCreateInitialValues as unknown as EmployeeToCreate;
@@ -58,4 +57,9 @@ export const employeeSchema: yup.SchemaOf<Employee> = yup.object({
 export const employeeToCreateSchema: yup.SchemaOf<EmployeeToCreate> =
   employeeSchema.shape({
     password: yup.string().min(8).required(),
+  });
+
+export const employeeToEditSchema: yup.SchemaOf<EmployeeToEdit> =
+  employeeSchema.shape({
+    password: yup.string().min(8),
   });

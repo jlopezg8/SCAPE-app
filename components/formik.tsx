@@ -9,6 +9,7 @@ import {
   DropDownProps as StyledDropDownProps,
   PasswordField as StyledPasswordField,
   Snackbar,
+  SnackbarProps,
   TextField as StyledTextField,
   TextFieldProps as StyledTextFieldProps,
 } from './styled';
@@ -20,14 +21,15 @@ import {
 export function DatePicker(
   { label, name }: { label: string; name: string; }
 ) {
-  const [field, meta] = useField(name);
-  const hasError = Boolean(meta.touched && meta.error);
+  const [{ value }, { touched, error }, { setValue }] = useField<Date>(name);
+  const hasError = Boolean(touched && error);
   return (
     <StyledDatePicker
       label={label}
-      setISODate={field.onChange(name)}
+      value={value}
+      setValue={setValue}
       error={hasError}
-      errorText={meta.error}
+      errorText={error}
     />
   );
 }
@@ -80,12 +82,19 @@ export function DropDown({ label, name, options }: DropDownProps) {
  * @requires formik.Formik for Formik state and helpers
  * @requires react-native-paper.Provider for the Material Design components
  */
-export function StatusSnackbar() {
+export function StatusSnackbar(
+  { wrapperStyle }: { wrapperStyle?: SnackbarProps['wrapperStyle'] }
+) {
   const { status, setStatus } = useFormikContext();
   const hasError = Boolean(status);
   const onDismiss = () => setStatus(undefined);
   return (
-    <Snackbar visible={hasError} onDismiss={onDismiss} message={status} />
+    <Snackbar
+      visible={hasError}
+      onDismiss={onDismiss}
+      message={status}
+      wrapperStyle={wrapperStyle}
+    />
   );
 }
 
