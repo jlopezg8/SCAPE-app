@@ -1,24 +1,66 @@
-describe.skip("Register attendance", () => {
+describe("Register attendance", () => {
+  // login just once using API
+  let user;
+  before(() => {
+    cy.fetchEmployer().then((res) => {
+      user = res;
+    });
+  });
+
+  // but set the user before visiting the page
+  // so the app thinks it is already authenticated
   beforeEach(() => {
+    cy.setUser(user);
     cy.visit("/");
-    cy.get("input[type=email]").click().type("");
-    cy.get("input[type=password]").click().type("");
-    cy.get("[role=button]").click();
-    cy.wait(5000);
-    cy.get(
-      '[style="background-color: rgb(3, 218, 196); border-radius: 28px; bottom: 24px; box-shadow: rgba(0, 0, 0, 0.24) 0px 5px 6px; opacity: 1; right: 24px; transform: scale(1);"] > .css-cursor-18t94o4'
-    ).click();
+    cy.get(".r-pointerEvents-105ug2t > .css-cursor-18t94o4").click();
   });
-  it("Detects employee properly", () => {
-    //Select photo
+  describe("detects employee properly and registers attendances", () => {
+    beforeEach(() => {
+      const valid_employee = "falcao.png";
+      pickPhoto(valid_employee);
+    });
+    it("registers exit attendance", () => {
+      cy.findByText(/Falcao/).should("be.visible");
+      cy.findByRole("button", { name: /Registrar Entrada/i }).should(
+        "be.visible"
+      );
+      cy.findByRole("button", { name: /Registrar Salida/i })
+        .should("be.visible")
+        .click();
+      cy.findByText(/registrado la salida/).should("be.visible");
+    });
+    it("registers entrance attendance", () => {
+      cy.findByText(/Falcao/).should("be.visible");
+      cy.findByRole("button", { name: /Registrar Salida/i }).should(
+        "be.visible"
+      );
+      cy.findByRole("button", { name: /Registrar Entrada/i })
+        .should("be.visible")
+        .click();
+      cy.findByText(/registrado la entrada/).should("be.visible");
+    });
   });
-  it("Registers Entrance attendance", () => {
-    //Select photo
-  });
-  it("Registers Exit attendance", () => {
-    //Select photo
-  });
-  it("Shows error on bad photo", () => {
-    //Select photo
+
+  describe("shows error on bad photo", () => {
+    it("rejects photos of two or more people", () => {
+      const two_employees = "couple.jpg";
+      pickPhoto(two_employees);
+      cy.findByText(/sólo una, cara/i).should("be.visible");
+    });
+    it("rejects invalid employee", () => {
+      const invalid_employee = "obama.jpg";
+      pickPhoto(invalid_employee);
+      cy.findByText(/No corresponde a ningún empleado/i).should("be.visible");
+    });
   });
 });
+function pickPhoto(image) {
+  cy.get(
+    ".r-alignSelf-1kihuf0 > :nth-child(1) > .r-cursor-1loqt21 > .css-view-1dbjc4n"
+  ).click();
+  cy.findByRole("menuitem", { name: /elegir una foto/i })
+    .click()
+    .then(() => {
+      cy.get('input[type="file"]').last().attachFile(image, { force: true });
+    });
+}
