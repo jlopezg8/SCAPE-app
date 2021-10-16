@@ -3,9 +3,8 @@ import {
   launchCameraAsync,
   requestCameraPermissionsAsync,
 } from "expo-image-picker";
-import { fireEvent } from "../../test-utils";
+import { fireEvent, act } from "../../test-utils";
 import { DatePickerModal } from "react-native-paper-dates";
-import { act } from "@testing-library/react-native";
 
 export async function fillInEmployee(employee, renderResult) {
   // We sequentially await for each field filling in (vs using Promise.all,
@@ -77,6 +76,6 @@ const fillInFunctions = {
     });
   },
   password(password, { getByLabelText }) {
-    fireEvent.changeText(getByLabelText("Contraseña*"), password);
+    fireEvent.changeText(getByLabelText(/Contraseña/), password);
   },
 };
