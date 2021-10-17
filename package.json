@@ -21,11 +21,10 @@
       "./jest.setup.js"
     ],
     "testMatch": [
-      "**/__tests__/**/*.[jt]s?(x)"
+      "**/__tests__/**/*.test.[jt]s?(x)"
     ],
     "testPathIgnorePatterns": [
-      "/node_modules/",
-      "/helpers/"
+      "/node_modules/"
     ],
     "testTimeout": 50000,
     "transformIgnorePatterns": [

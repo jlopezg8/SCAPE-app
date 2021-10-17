@@ -1,10 +1,13 @@
-import { manipulateAsync as manipulateImageAsync } from "expo-image-manipulator";
+import {
+  manipulateAsync as manipulateImageAsync,
+} from "expo-image-manipulator";
 import {
   launchCameraAsync,
   requestCameraPermissionsAsync,
 } from "expo-image-picker";
-import { fireEvent, act } from "../../test-utils";
 import { DatePickerModal } from "react-native-paper-dates";
+
+import { act, fireEvent } from "../../test-utils";
 
 export async function fillInEmployee(employee, renderResult) {
   // We sequentially await for each field filling in (vs using Promise.all,
@@ -45,18 +48,23 @@ const fillInFunctions = {
       fireEvent.press(await findByText("Tomar foto"));
     });
   },
+
   idDoc(idDoc, { getByLabelText }) {
     fireEvent.changeText(getByLabelText("Documento de identidad*"), idDoc);
   },
+
   firstName(firstName, { getByLabelText }) {
     fireEvent.changeText(getByLabelText("Nombre*"), firstName);
   },
+
   lastName(lastName, { getByLabelText }) {
     fireEvent.changeText(getByLabelText("Apellido*"), lastName);
   },
+
   email(email, { getByLabelText }) {
     fireEvent.changeText(getByLabelText("Correo electrónico*"), email);
   },
+
   async sex(sex, { getByLabelText, findByText }) {
     fireEvent.press(getByLabelText("Sexo"));
     const optionLabel = sex[0].toUpperCase() + sex.slice(1);
@@ -64,6 +72,7 @@ const fillInFunctions = {
       fireEvent.press(await findByText(optionLabel));
     });
   },
+
   birthDate(birthDate, { UNSAFE_getByType }) {
     // We tried every "safe" query, but DatePickerModal doesn't accept neither
     // testID nor any accessibility props.
@@ -75,6 +84,7 @@ const fillInFunctions = {
       date: new Date(birthDate),
     });
   },
+
   password(password, { getByLabelText }) {
     fireEvent.changeText(getByLabelText(/Contraseña/), password);
   },
