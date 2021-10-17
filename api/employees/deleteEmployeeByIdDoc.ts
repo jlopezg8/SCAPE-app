@@ -1,12 +1,6 @@
-import { Employee } from '../../models/Employee';
 import { RequiredArgumentError } from '../errors';
-import { get } from '../utils';
-import {
-  APIEmployee,
-  EmployeeNotFoundError,
-  getEndpoint,
-  mapApiEmployeeToEmployee,
-} from './common';
+import { delete_ } from '../utils';
+import { EmployeeNotFoundError, getEndpoint } from './common';
 
 /**
  * @throws `'../errors'.RequiredArgumentError` if `idDoc` is empty
@@ -14,18 +8,15 @@ import {
  *         not found
  * @throws `Error` if there was a network failure or an unknown error
  */
-export default async function getEmployeeByIdDoc(idDoc: string)
-  : Promise<Employee>
-{
+export default async function deleteEmployeeByIdDoc(idDoc: string) {
   if (!idDoc) throw new RequiredArgumentError('idDoc');
   try {
-    const endpoint = getEndpoint(idDoc);
-    const apiEmployee = await (await get(endpoint)).json() as APIEmployee;
-    return mapApiEmployeeToEmployee(apiEmployee);
+    await delete_(getEndpoint(idDoc));
   } catch (err) {
     const error = err as Error;
     switch (error.message) {
-      case 'Employee doesnt exist with that document':
+      // This message (included the space at the end) was taken verbatim:
+      case 'There was an error deleting the employee ':
         throw new EmployeeNotFoundError(idDoc);
       default:
         throw error;

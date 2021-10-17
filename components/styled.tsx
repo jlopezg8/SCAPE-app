@@ -13,6 +13,7 @@ import {
   HelperText as DefaultHelperText,
   IconButton,
   List,
+  Menu as DefaultMenu,
   Paragraph,
   ProgressBar,
   Snackbar as DefaultSnackbar,
@@ -22,9 +23,10 @@ import {
 } from 'react-native-paper';
 import { DatePickerModal } from 'react-native-paper-dates';
 import DefaultDropDown from 'react-native-paper-dropdown';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import Layout from '../constants/Layout';
-import useVisible from '../hooks/useVisible';
+import { useVisible } from '../hooks';
 
 export type AlternativeStateProps = {
   wrapperStyle?: StyleProp<ViewStyle>;
@@ -175,7 +177,7 @@ export function FAB(props: React.ComponentProps<typeof DefaultFAB>) {
 
 export const FABSize = 56;
 
-type HelperTextProps = {
+export type HelperTextProps = {
   label?: string;
   error?: boolean;
   helperText?: string;
@@ -209,10 +211,36 @@ export function ListItem(props: React.ComponentProps<typeof List.Item>) {
   return <List.Item style={[styles.listItem, style]} {...otherProps} />;
 }
 
+export type MenuProps = {
+  anchor: (openMenu: () => void) => React.ReactNode;
+  items: (closeMenuAfter: (fn: () => void) => (() => void)) => React.ReactNode;
+};
+
+/**
+ * @requires react-native-paper.Provider for the Material Design components
+ * @requires react-native-safe-area-context.SafeAreaProvider for insets
+ */
+export function Menu({ anchor, items }: MenuProps) {
+  const menu = useVisible();
+  const insets = useSafeAreaInsets();
+  return (
+    <DefaultMenu
+      visible={menu.visible}
+      onDismiss={menu.close}
+      anchor={anchor(menu.open)}
+      statusBarHeight={insets.top}
+    >
+      {items(menu.closeAfter)}
+    </DefaultMenu>
+  );
+}
+
+Menu.Item = DefaultMenu.Item;
+
 /**
  * @requires react-native-paper.Provider for the Material Design components
  */
- export function PasswordField(props: TextFieldProps) {
+export function PasswordField(props: TextFieldProps) {
   const [hidden, setHidden] = React.useState(true);
   return (
     <TextField

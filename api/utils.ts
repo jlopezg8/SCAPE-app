@@ -1,3 +1,12 @@
+/** `delete` is a reserved word, hence `delete_` */
+export function delete_(url: string, body?: any) {
+  return request(
+    'DELETE', url,
+    body == null ? undefined : { 'Content-Type': 'application/json' },
+    body == null ? undefined : JSON.stringify(body)
+  );
+}
+
 export async function get(url: string) {
   return request('GET', url);
 }
@@ -5,7 +14,7 @@ export async function get(url: string) {
 export function post(url: string, body?: any) {
   return request(
     'POST', url,
-    { 'Content-Type': 'application/json' },
+    body == null ? undefined : { 'Content-Type': 'application/json' },
     body == null ? undefined : JSON.stringify(body)
   );
 }
@@ -15,7 +24,9 @@ export async function postURLEncodedFormData(url: string, body?: any) {
     'POST', url,
     // Passing a URLSearchParams object to body isn't working as it should. It
     // doesn't set the Content-Type nor the request body, so we do it ourselves:
-    { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+    body == null ? undefined : {
+      'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+    },
     body == null ? undefined : createURLSearchParamsFrom(body).toString(),
   );
 }
@@ -31,7 +42,7 @@ function createURLSearchParamsFrom(obj: any) {
 export function put(url: string, body?: any) {
   return request(
     'PUT', url,
-    { 'Content-Type': 'application/json' },
+    body == null ? undefined : { 'Content-Type': 'application/json' },
     body == null ? undefined : JSON.stringify(body)
   );
 }

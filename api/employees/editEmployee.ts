@@ -1,7 +1,11 @@
 import { EmployeeToEdit, employeeToEditSchema } from '../../models/Employee';
-// TODO: mid: find another way to do localization:
-import { put, translateBadRequestErrorMessage as t } from '../utils';
-import { APIEmployee, getEndpoint, mapEmployeeToApiEmployee } from './common';
+import { put } from '../utils';
+import {
+  APIEmployee,
+  EmployeeNotFoundError,
+  getEndpoint,
+  mapEmployeeToApiEmployee,
+} from './common';
 
 /*export default async function editEmployee(employee: EmployeeToEdit) {
   const editEmployeeResponse = await _editEmployee(employee);
@@ -18,16 +22,27 @@ import { APIEmployee, getEndpoint, mapEmployeeToApiEmployee } from './common';
 /**
  * @throws `'yup'.ValidationError` if `employee` does not match
  *         `'../../models/Employee.employeeToEditSchema'`
- * @throws `Error` if there's a network failure or an unknown error
+ * @throws `'./common'.EmployeeNotFoundError` if the employee with `idDoc` was
+ *         not found
+ * @throws `Error` if there was a network failure or an unknown error
  */
 export default async function editEmployee(
   initialIdDoc: string, employee: EmployeeToEdit
 ) {
   employeeToEditSchema.validateSync(employee);
   const apiEmployee = createAPIEmployeeToEdit(employee);
-  // This operation does not return any descriptive error message, so if
-  // something goes wrong there's no way of knowing why:
-  await put(getEndpoint(initialIdDoc), apiEmployee);
+  try {
+    await put(getEndpoint(initialIdDoc), apiEmployee);
+  } catch (err) {
+    const error = err as Error;
+    switch (error.message) {
+      // This message (included the space at the end) was taken verbatim:
+      case 'There was an error editing the employee ':
+        throw new EmployeeNotFoundError(initialIdDoc);
+      default:
+        throw error;
+    }
+  }
 }
 
 interface APIEmployeeToEdit extends APIEmployee {

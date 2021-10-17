@@ -16,13 +16,21 @@ export interface APIEmployee {
   image?: { image: string }[];
 }
 
+export class EmployeeNotFoundError extends Error {
+  constructor(idDoc?: string) {
+    const withId = idDoc ? ` with ID "${idDoc}" ` : ' ';
+    super(`employee${withId}not found`);
+    this.name = 'EmployeeNotFoundError';
+  }
+}
+
 export function mapApiEmployeeToEmployee(employee: APIEmployee): Employee {
   return {
     idDoc: employee.documentId,
     firstName: employee.firstName,
     lastName: employee.lastName,
     email: employee.email,
-    sex: employee.sex && sexApiSexBiMap.getKey(employee.sex),
+    sex: employee.sex ? sexApiSexBiMap.getKey(employee.sex) : undefined,
     birthDate: employee.dateBirth ? new Date(employee.dateBirth) : undefined,
     photo: employee.image?.length ? employee.image[0].image : undefined,
   };

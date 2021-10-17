@@ -4,6 +4,7 @@ import {
   clockIn,
   clockOut,
   createEmployee,
+  deleteEmployeeByIdDoc,
   editEmployee,
   getEmployeeByIdDoc,
   getEmployeeByPhoto,
@@ -45,6 +46,13 @@ export function useEmployeeCreator(workplaceId: number) {
   return (employee: EmployeeToCreate) => mutation.mutateAsync(employee);
 }
 
+export function useEmployeeDeleterByIdDoc() {
+  const queryClient = useQueryClient();
+  return useMutation(deleteEmployeeByIdDoc, {
+    onSuccess: () => queryClient.invalidateQueries(employeesQueryKey)
+  });
+}
+
 export function useEmployeeEditor(initialIdDoc: string) {
   const queryClient = useQueryClient();
   const mutation = useMutation(
@@ -62,7 +70,7 @@ export function useEmployeeGetterByIdDoc(idDoc: string) {
   );
 }
 
-export { EmployeeNotFoundError } from '../api/employees/getEmployeeByIdDoc';
+export { EmployeeNotFoundError } from '../api/employees/common';
 
 export function useEmployeeGetterByPhoto(photo?: string) {
   return useQuery(
