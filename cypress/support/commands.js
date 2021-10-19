@@ -50,6 +50,11 @@ Cypress.Commands.add("setUser", (user) => {
     },
   });
 });
-Cypress.Commands.add("pickPhoto", (path) => {
-  //Picking up magic
+Cypress.Commands.add("pickPhoto", (image) => {
+  cy.findByLabelText(/Tomar o elegir foto/).click();
+  cy.findByRole("menuitem", { name: /elegir una foto/i })
+    .click()
+    .then(() => {
+      cy.get('input[type="file"]').last().attachFile(image, { force: true });
+    });
 });

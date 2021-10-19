@@ -17,7 +17,7 @@ describe("Register attendance", () => {
   describe("detects employee properly and registers attendances", () => {
     beforeEach(() => {
       const valid_employee = "falcao.png";
-      pickPhoto(valid_employee);
+      cy.pickPhoto(valid_employee);
     });
     it("registers exit attendance", () => {
       cy.findByText(/Falcao/).should("be.visible");
@@ -44,21 +44,13 @@ describe("Register attendance", () => {
   describe("shows error on bad photo", () => {
     it("rejects photos of two or more people", () => {
       const two_employees = "couple.jpg";
-      pickPhoto(two_employees);
+      cy.pickPhoto(two_employees);
       cy.findByText(/sólo una, cara/i).should("be.visible");
     });
     it("rejects invalid employee", () => {
       const invalid_employee = "obama.jpg";
-      pickPhoto(invalid_employee);
+      cy.pickPhoto(invalid_employee);
       cy.findByText(/No corresponde a ningún empleado/i).should("be.visible");
     });
   });
 });
-function pickPhoto(image) {
-  cy.findByLabelText(/Tomar o elegir foto/).click();
-  cy.findByRole("menuitem", { name: /elegir una foto/i })
-    .click()
-    .then(() => {
-      cy.get('input[type="file"]').last().attachFile(image, { force: true });
-    });
-}

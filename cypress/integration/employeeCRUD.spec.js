@@ -9,7 +9,10 @@ describe("Employee CRUD", () => {
 
   // but set the user before visiting the page
   // so the app thinks it is already authenticated
-  beforeEach(() => cy.setUser(user));
+  beforeEach(() => {
+    cy.viewport(1280, 800);
+    cy.setUser(user);
+  });
 
   describe("Adding employees", () => {
     beforeEach(() => {
@@ -21,24 +24,44 @@ describe("Employee CRUD", () => {
 
     //TODO: Detect red
     it("Requires obligatory fields", () => {
-      cy.get('input[aria-label="Nombre*"]').focus().blur();
-      cy.contains("Guardar").click();
-      cy.contains("Requerido").should("exist");
+      cy.findByLabelText(/Nombre/)
+        .focus()
+        .blur();
+      cy.findByRole("button", { name: /Guardar/ }).click();
+      cy.findAllByText("*Requerido").should("be.visible");
     });
     it.skip("Accepts employee without picture", () => {
-      typeData(null);
+      const faceless_employee = {
+        Nombre: "Emilia",
+        Apellido: "Rodriguez",
+        Documento: "1193123121",
+        Correo: "emilia.rodriguez@gmail.com",
+        Contraseña: "asdf1234",
+      };
+      typeData(faceless_employee);
+
       cy.findByRole("button", { name: /Guardar/ }).click();
-      cy.findByText(/No se pudo crear/i).should("not.be.visible");
+      cy.findByText(/Empleado creado/).should("be.visible");
+      //Clean up
     });
     it.skip("Adds employee properly", () => {
-      //cy.get('.r-marginBottom-zd98yo > :nth-child(1) > .r-cursor-1loqt21 > .css-view-1dbjc4n').click()
-      //cy.contains("Elegir una foto").click()
-
-      cy.get('[aria-label="Sexo"]').click();
-      //cy.get('[role="menuitem"]').find(':contains("Hombre")').click({multiple:true});
+      const employee = {
+        Nombre: "Carlos",
+        Apellido: "Gallego",
+        Documento: "1093123121",
+        Correo: "carlitos1.gallego@gmail.com",
+        Contraseña: "asdf1234",
+      };
+      cy.findByText(/Sexo/)
+        .click()
+        .then(() => {
+          cy.findByRole("menuitem", { name: /intersexo/i }).click();
+        });
       //Add Date
-      cy.contains("Guardar").click();
-      //Assert
+      cy.pickPhoto("carlos.jpg");
+      typeData(employee);
+      cy.findByRole("button", { name: /Guardar/ }).click();
+      cy.findByText(/Empleado creado/).should("be.visible");
     });
   });
 
@@ -87,27 +110,53 @@ describe("Employee CRUD", () => {
     });
   });
 
-  describe.skip("edit employees", () => {
+  describe("edit employees", () => {
     beforeEach(() => {
       cy.visit("/employer/workplace/1");
     });
     it.skip("Shows warning before modify", () => {});
-    it("modifies employee properly", () => {});
+    it("modifies employee properly", () => {
+      const jimi = {
+        Nombre: "Jimi",
+        Correo: "jimi.hen@gmail.com",
+        Contraseña: "asdf4321",
+      };
+      cy.findByText(/Jimy Hendrix/).click();
+      typeData(jimi);
+      cy.findByRole("button", { name: /Guardar/ }).click();
+      cy.findByText(/Empleado editado/).should("be.visible");
+      cy.visit("/employer/workplace/1");
+      cy.findByText(/Jimi Hendrix/).should("be.visible");
+      restoreHendrix();
+    });
+    it.skip("changes photo", () => {
+      cy.findByText(/Jimy Hendrix/).click();
+    });
   });
 
   it.skip("Adds, lists, modifies and deletes employee properly", () => {});
 });
 
 function typeData(data) {
-  fillField("Nombre*", "Carlos");
-  fillField("Apellido*", "Gallego");
-  fillField("Documento de identidad*", "1093123122");
-  fillField("Correo electrónico", "carlos.gallego@gmail.com");
+  Object.keys(data).forEach((key) => fillField(key, data[key]));
 }
 function fillField(field, data) {
-  cy.get('input[aria-label="' + field + '"]')
-    .click()
-    .type(data);
+  field = new RegExp(field);
+  cy.findByLabelText(field).click().clear().type(data);
+}
+function restoreHendrix() {
+  const hendrix = {
+    Nombre: "Jimy",
+    Documento: "5555555555",
+    Correo: "jimy.hendrix@hendrix.com",
+    Contraseña: "asdf1234",
+  };
+  cy.findByText(/Jimi Hendrix/).click();
+  typeData(hendrix);
+  cy.findByRole("button", { name: /Guardar/ }).click();
+  cy.findByText(/Empleado editado/).should("be.visible");
+  cy.visit("/employer/workplace/1");
+  cy.findByText(/Jimy Hendrix/).should("be.visible");
 }
 /*describe('JWT', () => {
   it.skip('makes authenticated request', () => {
