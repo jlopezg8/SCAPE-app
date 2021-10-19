@@ -10,7 +10,11 @@ import {
   getEmployeeByPhoto,
   getEmployeesByWorkplace,
 } from '../api/employees';
-import { EmployeeToCreate, EmployeeToEdit } from '../models/Employee';
+import {
+  Employee,
+  EmployeeToCreate,
+  EmployeeToEdit,
+} from '../models/Employee';
 
 const employeesQueryKey = 'employees';
 
@@ -46,6 +50,15 @@ export function useEmployeeCreator(workplaceId: number) {
   return (employee: EmployeeToCreate) => mutation.mutateAsync(employee);
 }
 
+export {
+  EmployeeWithEmailAlreadyExistsError,
+  EmployeeWithIdDocAlreadyExistsError,
+} from '../api/employees/createEmployee';
+export {
+  MultipleFacesInPhotoError,
+  PhotoOfAnotherEmployeeError,
+} from '../api/employees/addEmployeePhoto';
+
 export function useEmployeeDeleterByIdDoc() {
   const queryClient = useQueryClient();
   return useMutation(deleteEmployeeByIdDoc, {
@@ -53,10 +66,10 @@ export function useEmployeeDeleterByIdDoc() {
   });
 }
 
-export function useEmployeeEditor(initialIdDoc: string) {
+export function useEmployeeEditor(oldEmployee: Employee) {
   const queryClient = useQueryClient();
   const mutation = useMutation(
-    (employee: EmployeeToEdit) => editEmployee(initialIdDoc, employee),
+    (newEmployee: EmployeeToEdit) => editEmployee(oldEmployee, newEmployee),
     { onSuccess: () => queryClient.invalidateQueries(employeesQueryKey) }
   );
   return (employee: EmployeeToEdit) => mutation.mutateAsync(employee);

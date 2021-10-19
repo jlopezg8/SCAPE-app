@@ -44,10 +44,7 @@ describe("tests for editing an employee", () => {
     fireEvent.press(renderResult.getByText("Guardar"));
     // TODO: mensaje de confirmación de edición?
     await renderResult.findByText("Empleado editado");
-    expect(editEmployee).toHaveBeenCalledWith(
-      originalEmployee["idDoc"],
-      newEmployee
-    );
+    expect(editEmployee).toHaveBeenCalledWith(originalEmployee, newEmployee);
     expect(editEmployee).toHaveBeenCalledTimes(1);
   });
 

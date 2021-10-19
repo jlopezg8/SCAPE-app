@@ -67,11 +67,12 @@ export function DropDown({ label, name, options }: DropDownProps) {
  */
  export function PhotoPicker({ name } : { name: string }) {
   const { setStatus } = useFormikContext();
-  const [{ onChange }] = useField(name);
+  const [{ value, onChange }] = useField(name);
   return (
     <DefaultPhotoPicker
-      setStatus={setStatus}
+      base64Image={value}
       setBase64Image={onChange(name)}
+      setStatus={setStatus}
     />
   );
 }

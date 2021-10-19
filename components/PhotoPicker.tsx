@@ -113,8 +113,9 @@ function useActions(
 }
 
 type PhotoPickerProps = {
-  setStatus: ImagePickerBase['setStatus'];
+  base64Image: string;
   setBase64Image: ImagePickerBase['setBase64Image'];
+  setStatus: ImagePickerBase['setStatus'];
   accessibilityLabel?: string;
 };
 
@@ -124,15 +125,20 @@ type PhotoPickerProps = {
  * expo-image-picker can be mocked
  */
 export function PhotoPicker({
-  setStatus,
+  base64Image,
   setBase64Image,
+  setStatus,
   accessibilityLabel = 'Tomar o elegir foto',
 } : PhotoPickerProps) {
   const menu = useVisible();
   const { imageURI, pickImage: pickPhoto, takePhoto, removePhoto } =
     useActions(setStatus, setBase64Image);
-  const avatar = imageURI
-    ? <Avatar.Image size={avatarSize} source={{ uri: imageURI }} />
+  // Not the most elegant way of handling this picker's value, but it'll do for now:
+  const uri = base64Image
+    ? `data:image\/.*?;base64,${base64Image}`
+    : imageURI;
+  const avatar = uri
+    ? <Avatar.Image size={avatarSize} source={{ uri }} />
     : <Avatar.Icon size={avatarSize} icon="image-plus" />;
   const insets = useSafeAreaInsets();
   return (

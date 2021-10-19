@@ -19,6 +19,10 @@ import {
 import Layout from '../constants/Layout';
 import {
   EmployeeNotFoundError,
+  EmployeeWithEmailAlreadyExistsError,
+  EmployeeWithIdDocAlreadyExistsError,
+  MultipleFacesInPhotoError,
+  PhotoOfAnotherEmployeeError,
   useEmployeeEditor,
   useEmployeeGetterByIdDoc,
 } from '../hooks/useEmployees';
@@ -47,12 +51,7 @@ import { EmployerStackScreensProps } from '../types';
         </Surface>
       );
     case 'success':
-      return (
-        <EditEmployeeForm
-          initialIdDoc={idDoc}
-          initialValues={employee!}
-        />
-      );
+      return <EditEmployeeForm initialValues={employee!} />;
     case 'error':
       return (
         <Surface>
@@ -64,17 +63,12 @@ import { EmployerStackScreensProps } from '../types';
   }
 }
 
-interface EditEmployeeFormProps {
-  initialIdDoc: string;
-  initialValues: EmployeeToEdit;
-}
-
 const TextField: TextFieldType<EmployeeToEdit> = RawTextField;
 
 function EditEmployeeForm(
-  { initialIdDoc, initialValues }: EditEmployeeFormProps
+  { initialValues }: { initialValues: EmployeeToEdit }
 ) {
-  const editEmployee = useEmployeeEditor(initialIdDoc);
+  const editEmployee = useEmployeeEditor(initialValues);
   const submit = React.useCallback(
     (employee: EmployeeToEdit, formikHelpers: FormikHelpers<EmployeeToEdit>) =>
       _submit(editEmployee, employee, formikHelpers),
@@ -88,8 +82,7 @@ function EditEmployeeForm(
     >
       <>
         <ScrollingSurface>
-          {/* TODO: high: support updating the employee's photo: */}
-          {/*<PhotoPicker name="photo" />*/}
+          <PhotoPicker name="photo" />
           <TextField
             label="Documento de identidad*"
             name="idDoc"
@@ -133,9 +126,22 @@ async function _submit(
     await editEmployee(employee);
     setStatus('Empleado editado');
   } catch (err) {
-    const error = err as Error;
-    setStatus('No se pudo editar el empleado. Ponte en contacto con Soporte.');
+    setStatus(getEditEmployeeErrorMessage(err as Error));
+  }
+}
+
+function getEditEmployeeErrorMessage(error: Error): string {
+  if (error instanceof EmployeeWithIdDocAlreadyExistsError) {
+    return 'Ya se ha registrado un empleado con ese documento de identidad';
+  } else if (error instanceof EmployeeWithEmailAlreadyExistsError) {
+    return 'Ese correo ya está en uso. Prueba con otro.';
+  } else if (error instanceof MultipleFacesInPhotoError) {
+    return 'Usa una foto que contenga una, y sólo una, cara';
+  } else if (error instanceof PhotoOfAnotherEmployeeError) {
+    return 'Esa foto corresponde a un empleado ya registrado';
+  } else {
     console.error(error);
+    return 'No se pudo editar el empleado. Ponte en contacto con Soporte.';
   }
 }
 

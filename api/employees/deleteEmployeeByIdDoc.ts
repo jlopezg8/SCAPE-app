@@ -15,7 +15,8 @@ export default async function deleteEmployeeByIdDoc(idDoc: string) {
   } catch (err) {
     const error = err as Error;
     switch (error.message) {
-      // This message (included the space at the end) was taken verbatim:
+      // This message (included the space at the end) was taken verbatim from
+      // the API spec:
       case 'There was an error deleting the employee ':
         throw new EmployeeNotFoundError(idDoc);
       default:

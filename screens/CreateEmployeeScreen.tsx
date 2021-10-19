@@ -11,7 +11,13 @@ import {
   TextFieldType,
 } from '../components/formik';
 import { ScrollingSurface } from '../components/styled';
-import { useEmployeeCreator } from '../hooks/useEmployees';
+import {
+  EmployeeWithEmailAlreadyExistsError,
+  EmployeeWithIdDocAlreadyExistsError,
+  MultipleFacesInPhotoError,
+  PhotoOfAnotherEmployeeError,
+  useEmployeeCreator,
+} from '../hooks/useEmployees';
 import {
   EmployeeToCreate,
   employeeToCreateInitialValues,
@@ -89,10 +95,21 @@ async function _submit(
     resetForm();
     setStatus('Empleado creado');
   } catch (err) {
-    const error = err as Error;
-    setStatus(error.name === 'BadRequestError'
-                ? error.message
-                : 'No se pudo crear el empleado. Ponte en contacto con Soporte.');
+    setStatus(getCreateEmployeeErrorMessage(err as Error));
+  }
+}
+
+function getCreateEmployeeErrorMessage(error: Error): string {
+  if (error instanceof EmployeeWithIdDocAlreadyExistsError) {
+    return 'Ya se ha registrado un empleado con ese documento de identidad';
+  } else if (error instanceof EmployeeWithEmailAlreadyExistsError) {
+    return 'Ese correo ya está en uso. Prueba con otro.';
+  } else if (error instanceof MultipleFacesInPhotoError) {
+    return 'Usa una foto que contenga una, y sólo una, cara';
+  } else if (error instanceof PhotoOfAnotherEmployeeError) {
+    return 'Esa foto corresponde a un empleado ya registrado';
+  } else {
     console.error(error);
+    return 'No se pudo crear el empleado. Ponte en contacto con Soporte.';
   }
 }
