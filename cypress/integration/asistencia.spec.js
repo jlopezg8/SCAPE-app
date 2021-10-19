@@ -55,9 +55,7 @@ describe("Register attendance", () => {
   });
 });
 function pickPhoto(image) {
-  cy.get(
-    ".r-alignSelf-1kihuf0 > :nth-child(1) > .r-cursor-1loqt21 > .css-view-1dbjc4n"
-  ).click();
+  cy.findByLabelText(/Tomar o elegir foto/).click();
   cy.findByRole("menuitem", { name: /elegir una foto/i })
     .click()
     .then(() => {

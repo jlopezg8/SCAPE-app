@@ -1,4 +1,3 @@
-import { fetchEmployer, setEmployer } from "../support";
 describe("Employee CRUD", () => {
   // login just once using API
   let user;
@@ -26,11 +25,10 @@ describe("Employee CRUD", () => {
       cy.contains("Guardar").click();
       cy.contains("Requerido").should("exist");
     });
-    it.skip("Rejects employee without picture", () => {
+    it.skip("Accepts employee without picture", () => {
       typeData(null);
       cy.findByRole("button", { name: /Guardar/ }).click();
-      cy.wait(1000);
-      cy.contains("No se pudo crear").should("exist");
+      cy.findByText(/No se pudo crear/i).should("not.be.visible");
     });
     it.skip("Adds employee properly", () => {
       //cy.get('.r-marginBottom-zd98yo > :nth-child(1) > .r-cursor-1loqt21 > .css-view-1dbjc4n').click()
@@ -67,16 +65,37 @@ describe("Employee CRUD", () => {
     });
   });
 
-  describe.skip("Delete employees", () => {
-    beforeEach(() => {});
-    it("Shows warning before deleting", () => {});
-    it("Deletes the selected employee", () => {});
+  describe("delete employees", () => {
+    beforeEach(() => {
+      cy.visit("/employer/workplace/1");
+    });
+    it("Shows warning before deleting", () => {
+      cy.contains("Jimy Hendrix")
+        .closest("[data-focusable=true]")
+        .within(() => {
+          cy.findByLabelText(/Abrir menú emergente/).click();
+        });
+      cy.findByRole("menuitem", { name: /Borrar/i }).click();
+      cy.findByText(/¿Borrar empleado?/).should("be.visible");
+      cy.findByRole("button", { name: /Borrar/i }).should("be.visible");
+      cy.findByRole("button", { name: /Cancelar/i })
+        .as("cancel")
+        .should("be.visible");
+      cy.get("@cancel").click();
+      cy.reload();
+      cy.findByText(/Jimy Hendrix/).should("be.visible");
+    });
   });
 
-  describe.skip("Modify employees", () => {
-    beforeEach(() => {});
-    it("Shows warning before modify", () => {});
+  describe.skip("edit employees", () => {
+    beforeEach(() => {
+      cy.visit("/employer/workplace/1");
+    });
+    it.skip("Shows warning before modify", () => {});
+    it("modifies employee properly", () => {});
   });
+
+  it.skip("Adds, lists, modifies and deletes employee properly", () => {});
 });
 
 function typeData(data) {
