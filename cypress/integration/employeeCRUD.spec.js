@@ -30,7 +30,7 @@ describe("Employee CRUD", () => {
       cy.findByRole("button", { name: /Guardar/ }).click();
       cy.findAllByText("*Requerido").should("be.visible");
     });
-    it.skip("Accepts employee without picture", () => {
+    it("Accepts employee without picture", () => {
       const faceless_employee = {
         Nombre: "Emilia",
         Apellido: "Rodriguez",
@@ -42,26 +42,27 @@ describe("Employee CRUD", () => {
 
       cy.findByRole("button", { name: /Guardar/ }).click();
       cy.findByText(/Empleado creado/).should("be.visible");
-      //Clean up
+      deleteEmployee(faceless_employee["Documento"], user);
     });
     it.skip("Adds employee properly", () => {
       const employee = {
         Nombre: "Carlos",
-        Apellido: "Gallego",
-        Documento: "1093123121",
-        Correo: "carlitos1.gallego@gmail.com",
+        Apellido: "Gallardo",
+        Documento: "1083123121",
+        Correo: "carlos.gallardo@gmail.com",
         Contraseña: "asdf1234",
       };
-      cy.findByText(/Sexo/)
+      /*cy.findByText(/Sexo/)
         .click()
         .then(() => {
           cy.findByRole("menuitem", { name: /intersexo/i }).click();
-        });
+        });*/
       //Add Date
-      cy.pickPhoto("carlos.jpg");
+      cy.pickPhoto("carlos.png");
       typeData(employee);
       cy.findByRole("button", { name: /Guardar/ }).click();
       cy.findByText(/Empleado creado/).should("be.visible");
+      deleteEmployee(employee["Documento"], user);
     });
   });
 
@@ -119,6 +120,7 @@ describe("Employee CRUD", () => {
       const jimi = {
         Nombre: "Jimi",
         Correo: "jimi.hen@gmail.com",
+        Documento: "1093123121",
         Contraseña: "asdf4321",
       };
       cy.findByText(/Jimy Hendrix/).click();
@@ -144,6 +146,18 @@ function fillField(field, data) {
   field = new RegExp(field);
   cy.findByLabelText(field).click().clear().type(data);
 }
+function deleteEmployee(idDoc, user) {
+  return cy
+    .request({
+      method: "DELETE",
+      url: Cypress.env("employeeUrl") + "/" + idDoc,
+      auth: {
+        bearer: user["access_token"],
+      },
+    })
+    .its("body");
+}
+//Fancy this up
 function restoreHendrix() {
   const hendrix = {
     Nombre: "Jimy",
@@ -158,33 +172,3 @@ function restoreHendrix() {
   cy.visit("/employer/workplace/1");
   cy.findByText(/Jimy Hendrix/).should("be.visible");
 }
-/*describe('JWT', () => {
-  it.skip('makes authenticated request', () => {
-  // we can make authenticated request ourselves
-  // since we know the token
-    cy.request({
-      url: 'http://localhost:4000/users',
-      auth: {
-        bearer: user.token,
-      },
-    })
-    .its('body')
-    .should('deep.equal', [
-      {
-        id: 1,
-        username: 'test',
-        firstName: 'Test',
-        lastName: 'User',
-      },
-    ])
-  })
-
-  it('is logged in', () => {
-    cy.contains('administrador').should('be.visible')
-  })
-
-  it.skip('shows loaded user', () => {
-  // this user information came from authenticated XHR call
-    cy.contains('li', 'Test User').should('be.visible')
-  })
-})*/

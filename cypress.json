@@ -1,7 +1,8 @@
 {
   "baseUrl": "http://localhost:19006",
   "env": {
-    "loginUrl": "https://scapeapi.azurewebsites.net/api/user/login"
+    "loginUrl": "https://scapeapi.azurewebsites.net/api/user/login",
+    "employeeUrl": "https://scapeapi.azurewebsites.net/api/employee"
   },
   "defaultCommandTimeout": 50000
 }
