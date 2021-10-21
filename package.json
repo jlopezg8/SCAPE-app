@@ -5,11 +5,12 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "eject": "expo eject",
-    "test": "jest",
-    "watchTests": "jest --watchAll",
     "analysis": "sonar-scanner",
-    "test:e2e": "cypress open"
+    "test": "jest",
+    "test:watch": "jest --watchAll",
+    "test:e2e": "cypress open",
+    "build:web": "expo build:web",
+    "eject": "expo eject"
   },
   "//": [
     "https://stackoverflow.com/questions/49263429/jest-gives-an-error-syntaxerror-unexpected-token-export",
@@ -83,6 +84,7 @@
     "cypress": "^8.5.0",
     "cypress-file-upload": "^5.0.8",
     "dotenv": "^10.0.0",
+    "expo-cli": "^4.12.7",
     "isomorphic-fetch": "^3.0.0",
     "jest-expo": "~41.0.0",
     "jest-extended": "^1.0.0",
