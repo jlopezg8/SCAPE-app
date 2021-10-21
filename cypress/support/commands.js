@@ -23,4 +23,38 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
-import '@testing-library/cypress/add-commands';
+import "@testing-library/cypress/add-commands";
+import "cypress-file-upload";
+
+Cypress.Commands.add("fetchEmployer", () => {
+  return cy
+    .request({
+      method: "POST",
+      url: Cypress.env("loginUrl"),
+      form: true,
+      body: {
+        username: Cypress.env("employerUsername"),
+        password: Cypress.env("employerPassword"),
+      },
+    })
+    .its("body");
+});
+Cypress.Commands.add("setUser", (user) => {
+  localStorage.setItem("access_token", user["access_token"]);
+  cy.visit("/", {
+    onBeforeLoad(win) {
+      // and before the page finishes loading
+      // set the user object in local storage
+      win.localStorage.setItem("access_token", user["access_token"]);
+      win.localStorage.setItem("role", "employer");
+    },
+  });
+});
+Cypress.Commands.add("pickPhoto", (image) => {
+  cy.findByLabelText(/Tomar o elegir foto/).click();
+  cy.findByRole("menuitem", { name: /elegir una foto/i })
+    .click()
+    .then(() => {
+      cy.get('input[type="file"]').last().attachFile(image, { force: true });
+    });
+});

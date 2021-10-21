@@ -4,12 +4,14 @@ import React from 'react';
 import { PhotoPicker as DefaultPhotoPicker } from './PhotoPicker';
 import {
   Button,
-  Snackbar,
   DatePicker as StyledDatePicker,
   DropDown as StyledDropDown,
   DropDownProps as StyledDropDownProps,
+  PasswordField as StyledPasswordField,
+  Snackbar,
+  SnackbarProps,
   TextField as StyledTextField,
-  TextFieldProps as StyledTextFieldProps
+  TextFieldProps as StyledTextFieldProps,
 } from './styled';
 
 /**
@@ -19,14 +21,15 @@ import {
 export function DatePicker(
   { label, name }: { label: string; name: string; }
 ) {
-  const [field, meta] = useField(name);
-  const hasError = Boolean(meta.touched && meta.error);
+  const [{ value }, { touched, error }, { setValue }] = useField<Date>(name);
+  const hasError = Boolean(touched && error);
   return (
     <StyledDatePicker
       label={label}
-      setISODate={field.onChange(name)}
+      value={value}
+      setValue={setValue}
       error={hasError}
-      errorText={meta.error}
+      errorText={error}
     />
   );
 }
@@ -64,11 +67,12 @@ export function DropDown({ label, name, options }: DropDownProps) {
  */
  export function PhotoPicker({ name } : { name: string }) {
   const { setStatus } = useFormikContext();
-  const [{ onChange }] = useField(name);
+  const [{ value, onChange }] = useField(name);
   return (
     <DefaultPhotoPicker
-      setStatus={setStatus}
+      base64Image={value}
       setBase64Image={onChange(name)}
+      setStatus={setStatus}
     />
   );
 }
@@ -79,12 +83,19 @@ export function DropDown({ label, name, options }: DropDownProps) {
  * @requires formik.Formik for Formik state and helpers
  * @requires react-native-paper.Provider for the Material Design components
  */
-export function StatusSnackbar() {
+export function StatusSnackbar(
+  { wrapperStyle }: { wrapperStyle?: SnackbarProps['wrapperStyle'] }
+) {
   const { status, setStatus } = useFormikContext();
   const hasError = Boolean(status);
   const onDismiss = () => setStatus(undefined);
   return (
-    <Snackbar visible={hasError} onDismiss={onDismiss} message={status} />
+    <Snackbar
+      visible={hasError}
+      onDismiss={onDismiss}
+      message={status}
+      wrapperStyle={wrapperStyle}
+    />
   );
 }
 
@@ -117,12 +128,13 @@ export type TextFieldProps<Model> = StyledTextFieldProps & {
  * @requires react-native-paper.Provider for the Material Design components
  */
 export function TextField<Model>(
-  { label, name, ...otherProps }: TextFieldProps<Model>
+  { secureTextEntry, label, name, ...otherProps }: TextFieldProps<Model>
 ) {
+  const TheTextField = secureTextEntry ? StyledPasswordField : StyledTextField;
   const [field, meta] = useField(name);
   const hasError = Boolean(meta.touched && meta.error);
   return (
-    <StyledTextField
+    <TheTextField
       label={label}
       value={field.value}
       onChangeText={field.onChange(name)}

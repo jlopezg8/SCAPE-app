@@ -63,16 +63,16 @@ abstract class ImagePickerBase {
         { compress: 0.5, base64: true }
       );
       /*
-       * On web, base64 is not included despite using the base64 option.
-       * Instead, uri is set to the base64 image prefixed with
+       * On web, both base64 and uri are set to the base64 image prefixed with
        * 'data:image/jpeg;base64,'.
        * 
        * On Android, base64 is included and uri points to a file.
        */
       this.setImageURI(resizedImage.uri);
       this.setBase64Image(
-        resizedImage.base64
-        ?? resizedImage.uri.replace(/^data:image\/.*?;base64,/, ''));
+        (resizedImage.base64 ?? resizedImage.uri)
+          .replace(/^data:image\/.*?;base64,/, '')
+      );
     }
     // FIXME: maybe: make sure to handle MainActivity destruction on Android
     // See https://docs.expo.io/versions/v41.0.0/sdk/imagepicker/#imagepickergetpendingresultasync
@@ -113,8 +113,9 @@ function useActions(
 }
 
 type PhotoPickerProps = {
-  setStatus: ImagePickerBase['setStatus'];
+  base64Image: string;
   setBase64Image: ImagePickerBase['setBase64Image'];
+  setStatus: ImagePickerBase['setStatus'];
   accessibilityLabel?: string;
 };
 
@@ -124,15 +125,20 @@ type PhotoPickerProps = {
  * expo-image-picker can be mocked
  */
 export function PhotoPicker({
-  setStatus,
+  base64Image,
   setBase64Image,
+  setStatus,
   accessibilityLabel = 'Tomar o elegir foto',
 } : PhotoPickerProps) {
   const menu = useVisible();
   const { imageURI, pickImage: pickPhoto, takePhoto, removePhoto } =
     useActions(setStatus, setBase64Image);
-  const avatar = imageURI
-    ? <Avatar.Image size={avatarSize} source={{ uri: imageURI }} />
+  // Not the most elegant way of handling this picker's value, but it'll do for now:
+  const uri = base64Image
+    ? `data:image\/.*?;base64,${base64Image}`
+    : imageURI;
+  const avatar = uri
+    ? <Avatar.Image size={avatarSize} source={{ uri }} />
     : <Avatar.Icon size={avatarSize} icon="image-plus" />;
   const insets = useSafeAreaInsets();
   return (

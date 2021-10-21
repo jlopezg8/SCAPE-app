@@ -1,6 +1,6 @@
 import { BiDirectionalMap } from 'bi-directional-map/dist';
 
-import { Employee } from "../../models/Employee";
+import { Employee } from '../../models/Employee';
 import { createEndpointGetter } from '../serverURL';
 
 const baseEndpoint = 'api/employee/';
@@ -10,10 +10,18 @@ export interface APIEmployee {
   documentId: string;
   firstName: string;
   lastName: string;
-  email?: string;
+  email: string;
   sex?: 'M' | 'F' | 'I';
   dateBirth?: Date;
   image?: { image: string }[];
+}
+
+export class EmployeeNotFoundError extends Error {
+  constructor(idDoc?: string) {
+    const withId = idDoc ? ` with ID "${idDoc}" ` : ' ';
+    super(`employee${withId}not found`);
+    this.name = 'EmployeeNotFoundError';
+  }
 }
 
 export function mapApiEmployeeToEmployee(employee: APIEmployee): Employee {
@@ -22,9 +30,22 @@ export function mapApiEmployeeToEmployee(employee: APIEmployee): Employee {
     firstName: employee.firstName,
     lastName: employee.lastName,
     email: employee.email,
-    sex: employee.sex && sexApiSexBiMap.getKey(employee.sex),
+    sex: employee.sex ? sexApiSexBiMap.getKey(employee.sex) : undefined,
     birthDate: employee.dateBirth ? new Date(employee.dateBirth) : undefined,
     photo: employee.image?.length ? employee.image[0].image : undefined,
+  };
+}
+
+export function mapEmployeeToApiEmployee(employee: Employee) : APIEmployee {
+  return {
+    documentId: employee.idDoc,
+    firstName: employee.firstName,
+    lastName: employee.lastName,
+    email: employee.email,
+    sex: employee.sex && sexApiSexBiMap.getValue(employee.sex),
+    dateBirth: employee.birthDate,
+    //image: employee.photo, is not expected by the "insert employee" action,
+    //                       we have to send it to the "associate face" action
   };
 }
 

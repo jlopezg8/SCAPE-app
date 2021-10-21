@@ -1,26 +1,55 @@
-import * as React from 'react';
+import React from 'react';
 import {
   Platform,
   ScrollView,
   StyleProp,
   StyleSheet,
+  View,
   ViewStyle,
 } from 'react-native';
 import {
   Button as DefaultButton,
   FAB as DefaultFAB,
   HelperText as DefaultHelperText,
+  IconButton,
   List,
+  Menu as DefaultMenu,
+  Paragraph,
   ProgressBar,
   Snackbar as DefaultSnackbar,
   Surface as DefaultSurface,
   TextInput,
+  Title,
 } from 'react-native-paper';
 import { DatePickerModal } from 'react-native-paper-dates';
 import DefaultDropDown from 'react-native-paper-dropdown';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import Layout from '../constants/Layout';
-import useVisible from '../hooks/useVisible';
+import { useVisible } from '../hooks';
+
+export type AlternativeStateProps = {
+  wrapperStyle?: StyleProp<ViewStyle>;
+  icon: string;
+  title: string;
+  tagline: string;
+};
+
+/**
+ * Can be used for empty and error states.
+ * @requires react-native-paper.Provider for the Material Design components
+ */
+export function AlternativeState(
+  { wrapperStyle, icon, title, tagline }: AlternativeStateProps
+) {
+  return (
+    <View style={[styles.alternativeState, wrapperStyle]}>
+      <IconButton icon={icon} color="#03dac444" size={125} />
+      <Title style={{ opacity: .66 }} >{title}</Title>
+      <Paragraph>{tagline}</Paragraph>
+    </View>
+  );
+}
 
 export type ButtonProps =
   Omit<React.ComponentProps<typeof DefaultButton>, 'children'>
@@ -43,7 +72,8 @@ export function Button({ style, label, ...otherProps }: ButtonProps) {
 
 export type DatePickerProps = {
   label: string;
-  setISODate: (dateAsString: string) => void;
+  value: Date;
+  setValue: (date: Date) => void;
   error?: boolean;
   helperText?: string;
   errorText?: string;
@@ -54,21 +84,17 @@ export type DatePickerProps = {
  * @requires react-native-paper.Provider for the Material Design components
  */
 export function DatePicker(
-  { label, setISODate, error, helperText, errorText }: DatePickerProps
+  { label, value, setValue, error, helperText, errorText }: DatePickerProps
 ) {
   const picker = useVisible();
-  const [localeDate, setLocaleDate] = React.useState('');
   const onConfirmSingle = ({ date }: { date: Date }) => {
-    if (date) {
-      setISODate(date.toISOString());
-      setLocaleDate(date.toLocaleDateString());
-    }
+    if (date) setValue(date);
     picker.close();
   };
   return (
     <>
       <TextInput
-        value={localeDate}
+        value={value ? value.toLocaleDateString() : ''}
         label={label}
         dense
         mode="outlined"
@@ -87,6 +113,7 @@ export function DatePicker(
         mode="single"
         visible={picker.visible}
         onDismiss={picker.close}
+        date={value}
         // @ts-ignore: This prop should only expect a function that handles
         // single dates, but its type is wrong and ends up expecting a function
         // that also handles data ranges:
@@ -122,7 +149,7 @@ export function DropDown(
         visible={dropDown.visible}
         onDismiss={dropDown.close}
         showDropDown={dropDown.open}
-        value={value}
+        value={value ?? ''}
         setValue={_setValue}
         label={label}
         mode="outlined"
@@ -150,7 +177,7 @@ export function FAB(props: React.ComponentProps<typeof DefaultFAB>) {
 
 export const FABSize = 56;
 
-type HelperTextProps = {
+export type HelperTextProps = {
   label?: string;
   error?: boolean;
   helperText?: string;
@@ -184,6 +211,52 @@ export function ListItem(props: React.ComponentProps<typeof List.Item>) {
   return <List.Item style={[styles.listItem, style]} {...otherProps} />;
 }
 
+export type MenuProps = {
+  anchor: (openMenu: () => void) => React.ReactNode;
+  items: (closeMenuAfter: (fn: () => void) => (() => void)) => React.ReactNode;
+};
+
+/**
+ * @requires react-native-paper.Provider for the Material Design components
+ * @requires react-native-safe-area-context.SafeAreaProvider for insets
+ */
+export function Menu({ anchor, items }: MenuProps) {
+  const menu = useVisible();
+  const insets = useSafeAreaInsets();
+  return (
+    <DefaultMenu
+      visible={menu.visible}
+      onDismiss={menu.close}
+      anchor={anchor(menu.open)}
+      statusBarHeight={insets.top}
+    >
+      {items(menu.closeAfter)}
+    </DefaultMenu>
+  );
+}
+
+Menu.Item = DefaultMenu.Item;
+
+/**
+ * @requires react-native-paper.Provider for the Material Design components
+ */
+export function PasswordField(props: TextFieldProps) {
+  const [hidden, setHidden] = React.useState(true);
+  return (
+    <TextField
+      secureTextEntry={hidden}
+      right={
+        <TextInput.Icon
+          name={hidden ? 'eye' : 'eye-off'}
+          onPress={() => setHidden(!hidden)}
+          forceTextInputFocus={false}
+        />
+      }
+      {...props}
+    />
+  );
+}
+
 /**
  * @requires react-native-paper.Provider for the Material Design components
  */
@@ -194,7 +267,7 @@ export function ScreenProgressBar(
   return (
     <ProgressBar
       indeterminate={indeterminate ?? true}
-      visible={visible}
+      visible={visible ?? true}
       style={[styles.screenProgressBar, style]}
       {...otherProps}
     />
@@ -280,11 +353,12 @@ export type TextFieldProps =
  * @requires react-native-paper.Provider for the Material Design components
  */
 export function TextField(props: TextFieldProps) {
-  const { label, error, errorText, helperText, ...otherProps } = props;
+  const { label, value, error, errorText, helperText, ...otherProps } = props;
   return (
     <>
       <TextInput
         label={label}
+        value={value ?? ''}
         mode="outlined"
         error={error}
         dense
@@ -302,6 +376,10 @@ export function TextField(props: TextFieldProps) {
 }
 
 const styles = StyleSheet.create({
+  alternativeState: {
+    flex: 1,
+    alignItems: 'center',
+  },
   button: {
     alignSelf: 'center',
     marginBottom: 16,

@@ -2,7 +2,7 @@ import React from 'react';
 
 import { AuthContext, InvalidCredentialsError } from '../../hooks/useAuth';
 import LoginScreen from '../../screens/LoginScreen';
-import { fireEvent, render } from '../../test-utils';
+import { fireEvent, render } from '../test-utils';
 
 describe('login screen tests', () => {
   it('displays an error message for invalid credentials', async () => {

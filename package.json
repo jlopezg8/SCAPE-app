@@ -18,12 +18,18 @@
   "jest": {
     "preset": "jest-expo",
     "setupFiles": [
-      "./jest.setup.js"
+      "./__tests__/jest.setup.js"
     ],
+    "testMatch": [
+      "**/__tests__/**/*.test.[jt]s?(x)"
+    ],
+    "testPathIgnorePatterns": [
+      "/node_modules/"
+    ],
+    "testTimeout": 50000,
     "transformIgnorePatterns": [
       "node_modules/(?!@ngrx|(?!deck.gl)|ng-dynamic)"
-    ],
-    "testTimeout": 50000
+    ]
   },
   "dependencies": {
     "@expo/vector-icons": "^12.0.0",
@@ -39,11 +45,9 @@
     "@react-navigation/bottom-tabs": "5.11.2",
     "@react-navigation/native": "~5.8.10",
     "@react-navigation/stack": "~5.12.8",
-    "apisauce": "^2.1.1",
     "bi-directional-map": "^1.0.0",
     "expo": "~41.0.0",
     "expo-asset": "~8.3.1",
-    "expo-camera": "~11.0.2",
     "expo-constants": "~10.1.3",
     "expo-font": "~9.1.0",
     "expo-image-manipulator": "~9.1.0",
@@ -77,11 +81,11 @@
     "@types/react": "~16.9.35",
     "@types/react-native": "~0.63.2",
     "cypress": "^8.5.0",
+    "cypress-file-upload": "^5.0.8",
     "dotenv": "^10.0.0",
     "isomorphic-fetch": "^3.0.0",
     "jest-expo": "~41.0.0",
     "jest-extended": "^1.0.0",
-    "msw": "^0.35.0",
     "react-test-renderer": "16.13.1",
     "typescript": "~4.0.0"
   },

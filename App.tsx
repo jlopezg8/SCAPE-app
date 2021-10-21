@@ -4,11 +4,11 @@ import { Provider as PaperProvider } from 'react-native-paper';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { QueryClient, QueryClientProvider } from 'react-query';
 
-import './androidIntlPolyfill';
 import { AuthContext, useAuthInit } from './hooks/useAuth';
 //import useCachedResources from './hooks/useCachedResources';
-import './ignoreReactQueryLongTimerWarning';
 import Navigation from './navigation';
+import './utils/androidIntlPolyfill';
+import './utils/ignoreReactQueryLongTimerWarning';
 
 // For fetching, caching and updating data
 const queryClient = new QueryClient();

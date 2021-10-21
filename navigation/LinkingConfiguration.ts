@@ -26,10 +26,17 @@ export default linking = {
         path: 'employer',
         screens: {
           Home: '',
-          NewEmployee: 'new-employee',
+          Workplace: {
+            path: 'workplace/:id',
+            parse: { id: Number },
+          },
+          CreateEmployee: {
+            path: 'workplace/:workplaceId/create-employee',
+            parse: { workplaceId: Number },
+          },
           RecordAttendance: 'record-attendance',
+          EditEmployee: 'edit-employee/:idDoc',
           Settings: 'settings',
-          Workplace: 'workplace/:id',
         },
       },
       Employee: {

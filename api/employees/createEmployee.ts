@@ -1,99 +1,78 @@
-import { Employee } from "../../models/Employee";
+import {
+  EmployeeToCreate,
+  employeeToCreateSchema,
+} from '../../models/Employee';
+import { RequiredArgumentError } from '../errors';
+import { post } from '../utils';
+import addEmployeePhoto from './addEmployeePhoto';
+import { APIEmployee, getEndpoint, mapEmployeeToApiEmployee } from './common';
 
-// TODO: mid: find another way to do localization
-import { post, translateBadRequestErrorMessage as t } from '../utils';
-import { APIEmployee, getEndpoint, sexApiSexBiMap } from './common';
-
-export default async function createEmployee(employee: Employee) {
-  const addEmployeeResponse = await addEmployee(employee);
-  if (!employee.photo) {
-    return addEmployeeResponse;
-  } else {
-    const addEmployeePhotoResponse = await addEmployeePhoto(
-      mapEmployeeToAddEmployeePhotoParams(employee));
-    return JSON.stringify({ addEmployeeResponse, addEmployeePhotoResponse });
+/**
+ * @throws `'yup'.ValidationError` if `employee` does not match
+ *         `'../../models/Employee.employeeToCreateSchema'`
+ * @throws `'../errors'.RequiredArgumentError` if `workplaceId` is not given
+ * @throws `EmployeeWithIdDocAlreadyExistsError` if an employee with the given
+ *         ID document already exists
+ * @throws `EmployeeWithEmailAlreadyExistsError` if an employee with the given
+ *         email already exists
+ * @throws `MultipleFacesInPhotoError` if in the employee's photo, if given,
+ *         multiple faces are identified
+ * @throws `PhotoOfAnotherEmployeeError` if the employee's photo, if given, is
+ *         of another employee
+ * @throws `Error` if there was a network failure or an unknown error
+ */
+export default async function createEmployee(
+  employee: EmployeeToCreate, workplaceId: number
+) {
+  await addEmployee(employee, workplaceId);
+  if (employee.photo) {
+    await addEmployeePhoto(employee.idDoc, employee.photo);
   }
 }
 
-async function addEmployee(employee: Employee) {
-  const apiEmployee = mapEmployeeToApiEmployee(employee);
-  return await (
-    await t(post(getEndpoint(), apiEmployee), addEmployeeErrorTranslations)
-  ).text();
+async function addEmployee(employee: EmployeeToCreate, workplaceId: number) {
+  if (!workplaceId) throw new RequiredArgumentError('workplaceId');
+  employeeToCreateSchema.validateSync(employee);
+  const apiEmployee = createAPIEmployeeToCreate(employee, workplaceId);
+  try {
+    await post(getEndpoint(), apiEmployee);
+  } catch (err) {
+    const error = err as Error;
+    switch (error.message) {
+      case 'An employee with the same document id has already been registered':
+        throw new EmployeeWithIdDocAlreadyExistsError(employee.idDoc);
+      case 'An employee with the same email has already been registered':
+        throw new EmployeeWithEmailAlreadyExistsError(employee.email);
+      default:
+        throw error;
+    }
+  }
 }
 
-function mapEmployeeToApiEmployee(employee: Employee): APIEmployee {
-  return {
-    documentId: employee.idDoc,
-    firstName: employee.firstName,
-    lastName: employee.lastName,
-    email: employee.email,
-    sex: employee.sex && sexApiSexBiMap.getValue(employee.sex),
-    // It seems yup doesn't cast employee.birthDate to a Date if the initial
-    // value is '' (a string), so we'll have to do it ourselves:
-    dateBirth: employee.birthDate && new Date(employee.birthDate),
-    //photo: employee.photo, is not expected by the `insertEmployee` action,
-    //                       we have to send it to the `associateFace` action
-  };
+interface APIEmployeeToCreate extends APIEmployee {
+  workPlaceId: number;
+  password: string;
 }
 
-const addEmployeeErrorTranslations = new Map<string, string>([
-  [
-    'The document, name and lastname fields are required',
-    'Introduce el documento de identidad, el nombre y el apellido'
-  ],
-  [
-    'Email address entered is not valid',
-    'Correo inválido'
-  ],
-  [
-    'Document entered is not valid',
-    'Usa 10 dígitos, y sólo dígitos, para el documento de identidad'
-  ],
-  [
-    'Sex entered is not valid',
-    'Sexo no reconocido. Ponte en contacto con Soporte.'
-  ],
-  [
-    'An employee with the same document id has already been registered',
-    'Ya se ha registrado un empleado con ese documento de identidad'
-  ],
-  [
-    'An employee with the same email has already been registered',
-    'Ese correo ya está en uso. Prueba con otro.'
-  ],
-]);
-
-interface AddEmployeePhotoParams {
-  documentId: string;
-  encodeImage: string;
-  faceListId: string;
+function createAPIEmployeeToCreate(
+  employee: EmployeeToCreate, workplaceId: number
+) : APIEmployeeToCreate {
+  return Object.assign(mapEmployeeToApiEmployee(employee), {
+    workPlaceId: workplaceId,
+    password: employee.password,
+  });
 }
 
-async function addEmployeePhoto(params: AddEmployeePhotoParams) {
-  const endpoint = getEndpoint('AssociateImage');
-  return await (
-    await t(post(endpoint, params), addEmployeePhotoErrorTranslations)
-  ).text();
+export class EmployeeWithIdDocAlreadyExistsError extends Error {
+  constructor(idDoc: string) {
+    super(`an employee with the ID document "${idDoc}" already exists`);
+    this.name = 'EmployeeWithIdDocAlreadyExistsError';
+  }
 }
 
-const addEmployeePhotoErrorTranslations = new Map<string, string>([
-  [
-    'The image must contain only one face',
-    'Usa una foto que contenga una, y sólo una, cara'
-  ],
-  [
-    'The image has already been associated with an employee',
-    'Esa foto corresponde a un empleado ya registrado'
-  ],
-]);
-
-function mapEmployeeToAddEmployeePhotoParams(employee: Employee)
-  : AddEmployeePhotoParams
-{
-  return {
-    documentId: employee.idDoc,
-    encodeImage: employee.photo!,
-    faceListId: 'prueba',
-  };
+export class EmployeeWithEmailAlreadyExistsError extends Error {
+  constructor(email: string) {
+    super(`an employee with the email "${email}" already exists`);
+    this.name = 'EmployeeWithEmailAlreadyExistsError';
+  }
 }
