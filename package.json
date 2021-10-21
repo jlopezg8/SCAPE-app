@@ -9,7 +9,7 @@
     "test": "jest",
     "test:watch": "jest --watchAll",
     "test:e2e": "cypress open",
-    "build:web": "expo build:web",
+    "build:web": "expo build:web && echo \"/* /index.html 200\" > web-build/_redirects",
     "eject": "expo eject"
   },
   "//": [

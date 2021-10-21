@@ -1,5 +1,7 @@
 # OnTime App
 
+[![Netlify Status](https://api.netlify.com/api/v1/badges/94864092-d033-4588-aeb5-2590f0d9fe41/deploy-status)](https://app.netlify.com/sites/ontime-app/deploys)
+
 App para el control de asistencia del personal mediante biometría
 (reconocimiento facial) y georreferenciación.
 
