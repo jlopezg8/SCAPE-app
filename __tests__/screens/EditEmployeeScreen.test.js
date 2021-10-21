@@ -2,8 +2,8 @@ import React from "react";
 
 import { editEmployee, getEmployeeByIdDoc } from "../../api/employees";
 import { EditEmployeeScreen } from "../../screens";
-import { fireEvent, render } from "../../test-utils";
 import { fillInEmployee } from "../helpers/employee";
+import { fireEvent, render } from "../test-utils";
 
 jest.mock("../../api/employees");
 

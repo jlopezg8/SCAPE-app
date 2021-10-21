@@ -7,7 +7,7 @@ import {
 } from "expo-image-picker";
 import { DatePickerModal } from "react-native-paper-dates";
 
-import { act, fireEvent } from "../../test-utils";
+import { act, fireEvent } from "../test-utils";
 
 export async function fillInEmployee(employee, renderResult) {
   // We sequentially await for each field filling in (vs using Promise.all,

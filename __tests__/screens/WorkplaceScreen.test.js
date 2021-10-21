@@ -5,7 +5,7 @@ import {
   WorkplaceNotFoundError,
 } from '../../api/employees/getEmployeesByWorkplace';
 import { WorkplaceScreen } from '../../screens';
-import { render } from '../../test-utils';
+import { render } from '../test-utils';
 
 jest.mock('@react-navigation/native');
 jest.mock('../../api/employees');

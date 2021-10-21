@@ -2,8 +2,8 @@ import React from "react";
 
 import { createEmployee } from "../../api/employees";
 import { CreateEmployeeScreen } from "../../screens";
-import { fireEvent, render } from "../../test-utils";
 import { fillInEmployee } from "../helpers/employee";
+import { fireEvent, render } from "../test-utils";
 
 jest.mock("expo-image-manipulator");
 jest.mock("expo-image-picker");
