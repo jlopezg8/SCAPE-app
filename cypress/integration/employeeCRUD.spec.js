@@ -44,12 +44,12 @@ describe("Employee CRUD", () => {
       cy.findByText(/Empleado creado/).should("be.visible");
       deleteEmployee(faceless_employee["Documento"], user);
     });
-    it.skip("Adds employee properly", () => {
+    it("Adds employee properly", () => {
       const employee = {
-        Nombre: "Carlos",
+        Nombre: "Juan",
         Apellido: "Gallardo",
-        Documento: "1083123121",
-        Correo: "carlos.gallardo@gmail.com",
+        Documento: "1083123123",
+        Correo: "juan.gallardo@gmail.com",
         Contraseña: "asdf1234",
       };
       /*cy.findByText(/Sexo/)
@@ -58,7 +58,7 @@ describe("Employee CRUD", () => {
           cy.findByRole("menuitem", { name: /intersexo/i }).click();
         });*/
       //Add Date
-      cy.pickPhoto("carlos.png");
+      cy.pickPhoto("juan.jpg");
       typeData(employee);
       cy.findByRole("button", { name: /Guardar/ }).click();
       cy.findByText(/Empleado creado/).should("be.visible");
@@ -115,12 +115,11 @@ describe("Employee CRUD", () => {
     beforeEach(() => {
       cy.visit("/employer/workplace/1");
     });
-    it.skip("Shows warning before modify", () => {});
+    //it.skip("Shows warning before modify", () => {});
     it("modifies employee properly", () => {
       const jimi = {
         Nombre: "Jimi",
         Correo: "jimi.hen@gmail.com",
-        Documento: "1093123121",
         Contraseña: "asdf4321",
       };
       cy.findByText(/Jimy Hendrix/).click();
@@ -131,12 +130,12 @@ describe("Employee CRUD", () => {
       cy.findByText(/Jimi Hendrix/).should("be.visible");
       restoreHendrix();
     });
-    it.skip("changes photo", () => {
+    /*it.skip("changes photo", () => {
       cy.findByText(/Jimy Hendrix/).click();
-    });
+    });]*/
   });
 
-  it.skip("Adds, lists, modifies and deletes employee properly", () => {});
+  //it.skip("Adds, lists, modifies and deletes employee properly", () => {});
 });
 
 function typeData(data) {
@@ -161,7 +160,6 @@ function deleteEmployee(idDoc, user) {
 function restoreHendrix() {
   const hendrix = {
     Nombre: "Jimy",
-    Documento: "5555555555",
     Correo: "jimy.hendrix@hendrix.com",
     Contraseña: "asdf1234",
   };
