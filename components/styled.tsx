@@ -171,8 +171,17 @@ export function DropDown(
  * @requires react-native-paper.Provider for the Material Design components
  */
 export function FAB(props: React.ComponentProps<typeof DefaultFAB>) {
-  const { style, ...otherProps } = props;
-  return <DefaultFAB style={[styles.fab, style]} {...otherProps} />;
+  const { icon, label, accessibilityLabel, style, ...otherProps } = props;
+  const theAccessibilityLabel =
+    accessibilityLabel || label || (typeof icon === 'string' ? icon : undefined);
+  return (
+    <DefaultFAB
+      icon={icon}
+      label={Platform.OS === 'web' ? label : undefined}
+      accessibilityLabel={theAccessibilityLabel}
+      style={[styles.fab, style]} {...otherProps}
+    />
+  );
 }
 
 export const FABSize = 56;

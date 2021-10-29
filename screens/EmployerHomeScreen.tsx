@@ -27,6 +27,7 @@ export default function EmployerHomeScreen(
       />
       <FAB
         icon="face-recognition"
+        label="Registar asistencia"
         onPress={() => navigation.navigate('RecordAttendance')}
       />
     </Surface>

@@ -38,7 +38,7 @@ import { EmployerStackScreensProps } from '../types';
  * ../api/employees.getEmployeeByIdDoc can be mocked
  * ../api/employees.editEmployee can be mocked
  */
- export default function EditEmployeeScreen(
+export default function EditEmployeeScreen(
   { route }: EmployerStackScreensProps['EditEmployee']
 ) {
   const { idDoc } = route.params;

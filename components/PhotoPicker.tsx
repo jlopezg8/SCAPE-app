@@ -113,7 +113,7 @@ function useActions(
 }
 
 type PhotoPickerProps = {
-  base64Image: string;
+  base64Image?: string;
   setBase64Image: ImagePickerBase['setBase64Image'];
   setStatus: ImagePickerBase['setStatus'];
   accessibilityLabel?: string;

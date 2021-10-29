@@ -1,28 +1,26 @@
 import React from 'react';
 
-import { getEmployeesByWorkplace } from '../../api/employees';
-import {
-  WorkplaceNotFoundError,
-} from '../../api/employees/getEmployeesByWorkplace';
+import { getWorkplace } from '../../api/workplaces';
+import { WorkplaceNotFoundError } from '../../api/workplaces/common';
 import { WorkplaceScreen } from '../../screens';
 import { render } from '../test-utils';
 
 jest.mock('@react-navigation/native');
-jest.mock('../../api/employees');
+jest.mock('../../api/workplaces');
 
+// TODO: mid: make more assertions about the workplace screen, not just
+// about the employees section:
 describe('workplace screen tests', () => {
   beforeEach(() => jest.resetAllMocks());
 
   it('displays the employees correctly', async () => {
-    getEmployeesByWorkplace.mockReturnValue(
-      Promise.resolve([
-        {
-          idDoc: '9999',
-          firstName: 'Falcao',
-          lastName: 'García',
-        },
-      ])
-    );
+    getWorkplace.mockReturnValue(Promise.resolve({
+      employees: [{
+        idDoc: '9999',
+        firstName: 'Falcao',
+        lastName: 'García',
+      }],
+    }));
     const workplaceId = 1;
     const { findByText } = render(
       <WorkplaceScreen
@@ -31,11 +29,13 @@ describe('workplace screen tests', () => {
       />
     );
     await findByText(/Falcao/);
-    expect(getEmployeesByWorkplace).toHaveBeenCalledWith(workplaceId);
+    expect(getWorkplace).toHaveBeenCalledWith(workplaceId);
   });
 
   it('displays an empty state when there are no employees', async () => {
-    getEmployeesByWorkplace.mockReturnValue(Promise.resolve([]));
+    getWorkplace.mockReturnValue(Promise.resolve({
+      employees: [],
+    }));
     const workplaceId = 1;
     const { findByText } = render(
       <WorkplaceScreen
@@ -44,13 +44,11 @@ describe('workplace screen tests', () => {
       />
     );
     await findByText('No hay empleados');
-    expect(getEmployeesByWorkplace).toHaveBeenCalledWith(workplaceId);
+    expect(getWorkplace).toHaveBeenCalledWith(workplaceId);
   });
 
   it('displays an error message for a nonexistent workplace', async () => {
-    getEmployeesByWorkplace.mockReturnValue(
-      Promise.reject(new WorkplaceNotFoundError())
-    );
+    getWorkplace.mockReturnValue(Promise.reject(new WorkplaceNotFoundError()));
     const workplaceId = 1;
     const { findByText } = render(
       <WorkplaceScreen
@@ -58,7 +56,7 @@ describe('workplace screen tests', () => {
         route={{ params: { id: workplaceId } }}
       />
     );
-    await findByText('Este sitio de trabajo no fue encontrado');
-    expect(getEmployeesByWorkplace).toHaveBeenCalledWith(workplaceId);
+    await findByText('Sitio de trabajo no encontrado');
+    expect(getWorkplace).toHaveBeenCalledWith(workplaceId);
   });
 });

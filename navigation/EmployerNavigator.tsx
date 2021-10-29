@@ -46,7 +46,6 @@ export default function EmployerNavigator() {
         options={{
           title: '',
           headerTransparent: true,
-          headerTintColor: 'white',
         }}
       />
       <Stack.Screen
