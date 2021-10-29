@@ -220,6 +220,8 @@ export function ListItem(props: React.ComponentProps<typeof List.Item>) {
   return <List.Item style={[styles.listItem, style]} {...otherProps} />;
 }
 
+ListItem.Icon = List.Icon;
+
 export type MenuProps = {
   anchor: (openMenu: () => void) => React.ReactNode;
   items: (closeMenuAfter: (fn: () => void) => (() => void)) => React.ReactNode;

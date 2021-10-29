@@ -43,7 +43,6 @@ import Workplace from '../models/Workplace';
 import { EmployerStackScreensProps } from '../types';
 
 /**
- * @param navigation.navigate can be mocked
  * @param route.params.id workplace ID
  * @requires `navigator` better mock `'@react-navigation/native'`
  * @requires `'react-native-paper'.Provider` for the Material Design components
@@ -190,7 +189,8 @@ function EmployeesSection(
       (employees.length === 0
         ? <EmployeesEmptyState />
         : employees?.map(employee =>
-            <EmployeeListItem key={employee.idDoc} employee={employee} />)
+            <EmployeeListItem key={employee.idDoc} employee={employee} />
+          )
       )
     }
   </>;
@@ -335,7 +335,6 @@ function GetWorkspaceErrorState(
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     maxHeight: Platform.OS === 'web' ? Layout.window.height : undefined,
   },
   scrollView: {
