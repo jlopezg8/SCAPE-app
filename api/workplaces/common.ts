@@ -15,14 +15,6 @@ export interface APIWorkplace {
   employeeWorkPlace?: { employee: APIEmployee }[];
 }
 
-interface EmployeeWorkPlace {
-  idWorkPlace: 1;
-  startJobDate: "2021-01-01T00:00:00";
-  endJobDate: "2022-01-01T00:00:00";
-  schedule: "8-12";
-  employee: null;
-}
-
 export class WorkplaceNotFoundError extends Error {
   constructor(id?: number) {
     const withId = id ? ` with ID "${id}" ` : ' ';

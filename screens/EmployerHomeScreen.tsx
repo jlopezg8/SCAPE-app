@@ -69,6 +69,13 @@ function WorkplacesViewer(
       }
     </WorkplacesScrollView>
     <FAB
+      icon="map-marker-plus"
+      label="Añadir sitio de trabajo"
+      onPress={() => navigation.navigate('CreateWorkplace')}
+      // To offset from the first FAB (screen padding + FAB size + margin):
+      style={{ bottom: Layout.padding + 56 + 16 }}
+    />
+    <FAB
       icon="face-recognition"
       label="Registar asistencia"
       onPress={() => navigation.navigate('RecordAttendance')}
@@ -148,7 +155,7 @@ const styles = StyleSheet.create({
   },
   scrollViewContentContainer: {
     padding: Layout.padding,
-    paddingBottom: 1.5 * Layout.padding + FABSize,
+    paddingBottom: 1.5 * Layout.padding + 2 * FABSize + 16,
   },
   centeredAlternativeState: {
     justifyContent: 'center'

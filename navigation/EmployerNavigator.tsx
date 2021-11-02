@@ -8,6 +8,7 @@ import { useAuthContext } from '../hooks/useAuth';
 import {
   EmployerHomeScreen,
   CreateEmployeeScreen,
+  CreateWorkplaceScreen,
   EditEmployeeScreen,
   RecordAttendanceScreen,
   SettingsScreen,
@@ -39,6 +40,11 @@ export default function EmployerNavigator() {
             </OverflowMenu>
           ),
         })}
+      />
+      <Stack.Screen
+        name="CreateWorkplace"
+        component={CreateWorkplaceScreen}
+        options={{ title: 'Crear sitio de trabajo' }}
       />
       <Stack.Screen
         name="Workplace"

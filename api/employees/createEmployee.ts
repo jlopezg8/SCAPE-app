@@ -9,7 +9,7 @@ import { APIEmployee, getEndpoint, mapEmployeeToApiEmployee } from './common';
 
 /**
  * @throws `'yup'.ValidationError` if `employee` does not match
- *         `'../../models/Employee.employeeToCreateSchema'`
+ *         `'../../models/Employee'.employeeToCreateSchema`
  * @throws `'../errors'.RequiredArgumentError` if `workplaceId` is not given
  * @throws `EmployeeWithIdDocAlreadyExistsError` if an employee with the given
  *         ID document already exists
