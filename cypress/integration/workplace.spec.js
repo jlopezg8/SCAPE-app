@@ -7,9 +7,9 @@ describe("Workplace list", () => {
   });
   beforeEach(() => {
     cy.setUser(user);
-    cy.visit("/employer");
   });
   it("shows at least one workplace", () => {
+    cy.visit("/employer");
     cy.findByText(/TestWorkPlace/).should("be.visible");
   });
   it("message on invalid workplace", () => {
@@ -19,14 +19,22 @@ describe("Workplace list", () => {
   });
   it("shows workplace info", () => {
     cy.visit("/employer/workplace/3");
-    cy.findByText(/Empresa de Metales/).should("be.visible");
-    cy.findByText(/Malteria/).should("be.visible");
-    cy.findByText(/Zona industrial de Manizales/).should("be.visible");
+    cy.findByText(/Empresa de Metales/).should("exist");
+    cy.findByText(/Malteria/).should("exist");
+    cy.findByText(/Zona industrial de Manizales/).should("exist");
+  });
+
+  it("shows error on no connection", () => {
+    cy.intercept("GET", "**/api/WorkPlace/", { forceNetworkError: true }).as(
+      "getNetworkFailure"
+    );
+    cy.visit("/employer");
+    cy.findByText(/No se pudieron obtener los sitios de trabajo/).should(
+      "be.visible"
+    );
   });
   it.skip("shows message on no workplaces", () => {
+    cy.visit("/employer");
     expect.hasAssertions();
   });
-  /*it.skip("shows error on no connection", () => {
-    expect.hasAssertions();
-  });*/
 });
