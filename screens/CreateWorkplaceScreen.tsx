@@ -7,7 +7,7 @@ import {
   TextField as RawTextField,
   TextFieldType,
 } from '../components/formik';
-import { Surface } from '../components/styled';
+import { ScrollViewInSurface, SurfaceInStackNav } from '../components/styled';
 import { useWorkplaceCreator } from '../hooks';
 import {
   WorkplaceToCreate,
@@ -23,44 +23,45 @@ const TextField: TextFieldType<WorkplaceToCreate> = RawTextField;
  * `'../api/workplaces'.createWorkplace` can be mocked
  */
 export default function CreateWorkplaceScreen() {
-  const { mutateAsync: createWorkplace } = useWorkplaceCreator();
-  const submit = React.useCallback(
-    (
-      workplace: WorkplaceToCreate,
-      formikHelpers: FormikHelpers<WorkplaceToCreate>
-    ) => _submit(createWorkplace, workplace, formikHelpers),
-    [createWorkplace]
-  );
+  const submit = useSubmit();
   return (
     <Formik
       initialValues={workplaceToCreateInitialValues}
       onSubmit={submit}
       validationSchema={workplaceToCreateSchema}
+      initialStatus="test"
     >
-      <Surface>
-        <TextField label="Nombre*" name="name" />
-        <TextField label="Descripción" name="description" />
-        <TextField label="Dirección*" name="address" />
-        <TextField label="Latitud*" name="latitude" />
-        <TextField label="Longitud*" name="longitude" />
-        <SubmitButton label="Guardar" />
+      <SurfaceInStackNav>
+        <ScrollViewInSurface>
+          <TextField label="Nombre*" name="name" />
+          <TextField label="Descripción" name="description" />
+          <TextField label="Dirección*" name="address" />
+          <TextField label="Latitud*" name="latitude" />
+          <TextField label="Longitud*" name="longitude" />
+          <SubmitButton label="Guardar" />
+        </ScrollViewInSurface>
         <StatusSnackbar />
-      </Surface>
+      </SurfaceInStackNav>
     </Formik>
   );
 }
 
-async function _submit(
-  createWorkplace: (workplace: WorkplaceToCreate) => Promise<void>,
-  employee: WorkplaceToCreate,
-  { resetForm, setStatus }: FormikHelpers<WorkplaceToCreate>
-) {
-  try {
-    await createWorkplace(employee);
-    resetForm();
-    setStatus('Sitio de trabajo creado');
-  } catch (err) {
-    console.error(err);
-    setStatus('No se pudo crear el empleado. Ponte en contacto con Soporte.');
-  }
+function useSubmit() {
+  const { mutateAsync: createWorkplace } = useWorkplaceCreator();
+  return React.useCallback(
+    async (
+      workplace: WorkplaceToCreate,
+      { resetForm, setStatus }: FormikHelpers<WorkplaceToCreate>
+    ) => {
+      try {
+        await createWorkplace(workplace);
+        resetForm();
+        setStatus('Sitio de trabajo creado');
+      } catch (err) {
+        console.error(err);
+        setStatus('No se pudo crear el sitio de trabajo. Ponte en contacto con Soporte.');
+      }
+    },
+    [createWorkplace]
+  );
 }

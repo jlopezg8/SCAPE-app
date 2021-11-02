@@ -1,6 +1,8 @@
+import { useHeaderHeight } from '@react-navigation/stack';
 import React from 'react';
 import {
   Platform,
+  RefreshControl,
   ScrollView,
   StyleProp,
   StyleSheet,
@@ -26,7 +28,7 @@ import DefaultDropDown from 'react-native-paper-dropdown';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import Layout from '../constants/Layout';
-import { useVisible } from '../hooks';
+import { useRefreshControl, useVisible } from '../hooks';
 
 export type AlternativeStateProps = {
   wrapperStyle?: StyleProp<ViewStyle>;
@@ -37,7 +39,7 @@ export type AlternativeStateProps = {
 
 /**
  * Can be used for empty and error states.
- * @requires react-native-paper.Provider for the Material Design components
+ * @requires `'react-native-paper'.Provider` for the Material Design components
  */
 export function AlternativeState(
   { wrapperStyle, icon, title, tagline }: AlternativeStateProps
@@ -56,7 +58,7 @@ export type ButtonProps =
   & { label: string; };
 
 /**
- * @requires react-native-paper.Provider for the Material Design components
+ * @requires `'react-native-paper'.Provider` for the Material Design components
  */
 export function Button({ style, label, ...otherProps }: ButtonProps) {
   return (
@@ -81,7 +83,7 @@ export type DatePickerProps = {
 };
 
 /**
- * @requires react-native-paper.Provider for the Material Design components
+ * @requires `'react-native-paper'.Provider` for the Material Design components
  */
 export function DatePicker(
   { label, value, setValue, error, helperText, errorText }: DatePickerProps
@@ -136,7 +138,7 @@ export type DropDownProps = {
 };
 
 /**
- * @requires react-native-paper.Provider for the Material Design components
+ * @requires `'react-native-paper'.Provider` for the Material Design components
  */
 export function DropDown(
   { value, setValue, label, options, error, helperText, errorText }: DropDownProps
@@ -168,7 +170,7 @@ export function DropDown(
 }
 
 /**
- * @requires react-native-paper.Provider for the Material Design components
+ * @requires `'react-native-paper'.Provider` for the Material Design components
  */
 export function FAB(props: React.ComponentProps<typeof DefaultFAB>) {
   const { icon, label, accessibilityLabel, style, ...otherProps } = props;
@@ -194,7 +196,7 @@ export type HelperTextProps = {
 };
 
 /**
- * @requires react-native-paper.Provider for the Material Design components
+ * @requires `'react-native-paper'.Provider` for the Material Design components
  */
 export function HelperText(
   { label, error, helperText, errorText }: HelperTextProps
@@ -213,7 +215,7 @@ export function HelperText(
 }
 
 /**
- * @requires react-native-paper.Provider for the Material Design components
+ * @requires `'react-native-paper'.Provider` for the Material Design components
  */
 export function ListItem(props: React.ComponentProps<typeof List.Item>) {
   const { style, ...otherProps } = props;
@@ -228,8 +230,8 @@ export type MenuProps = {
 };
 
 /**
- * @requires react-native-paper.Provider for the Material Design components
- * @requires react-native-safe-area-context.SafeAreaProvider for insets
+ * @requires `'react-native-paper'.Provider` for the Material Design components
+ * @requires `'react-native-safe-area-context'.SafeAreaProvider` for insets
  */
 export function Menu({ anchor, items }: MenuProps) {
   const menu = useVisible();
@@ -249,7 +251,7 @@ export function Menu({ anchor, items }: MenuProps) {
 Menu.Item = DefaultMenu.Item;
 
 /**
- * @requires react-native-paper.Provider for the Material Design components
+ * @requires `'react-native-paper'.Provider` for the Material Design components
  */
 export function PasswordField(props: TextFieldProps) {
   const [hidden, setHidden] = React.useState(true);
@@ -269,7 +271,7 @@ export function PasswordField(props: TextFieldProps) {
 }
 
 /**
- * @requires react-native-paper.Provider for the Material Design components
+ * @requires `'react-native-paper'.Provider` for the Material Design components
  */
 export function ScreenProgressBar(
   props: React.ComponentProps<typeof ProgressBar>
@@ -286,18 +288,62 @@ export function ScreenProgressBar(
 }
 
 /**
- * @requires react-native-paper.Provider for the Material Design components
+ * @requires `'react-native-paper'.Provider` for the Material Design components
  */
-export function ScrollingSurface(
-  props: React.ComponentProps<typeof DefaultSurface>
+export function ScrollViewInSurface(
+  {
+    style,
+    contentContainerStyle,
+    children,
+    ...otherProps
+  }: React.ComponentProps<typeof ScrollView> & { children?: React.ReactNode }
 ) {
-  const { style, children, ...otherProps } = props;
   return (
-    <DefaultSurface style={{ flex: 1 }} {...otherProps}>
-      <ScrollView contentContainerStyle={[{ padding: Layout.padding }, style]}>
-        {children}
-      </ScrollView>
-    </DefaultSurface>
+    <ScrollView
+      style={[styles.scrollViewInSurface, style]}
+      contentContainerStyle={
+        [styles.scrollViewInSurfaceContentContainer, contentContainerStyle]
+      }
+      {...otherProps}
+    >
+      {children}
+    </ScrollView>
+  );
+}
+
+/**
+ * Why not make `ScrollViewInSurface` accept an optional `refetch` prop and
+ * conditionally render a `RefreshControl`? Because `RefreshControl` requires
+ * some hooks, and we can't conditionally call those hooks. In theory we could
+ * create a component that calls those hooks and returns the `RefreshControl`,
+ * and then we could conditionally render that component. However, there's a
+ * bug in React Native (https://github.com/facebook/react-native/issues/32144)
+ * where if we pass a component to the `refreshControl` prop whose type (name)
+ * differs from `RefreshControl`, the children won't render (even on web).
+ * @requires `'react-native-paper'.Provider` for the Material Design components
+ */
+export function ScrollViewInSurfaceWithRefetch(
+  {
+    refetch,
+    progressViewOffset,
+    ...otherProps
+  }: React.ComponentProps<typeof ScrollViewInSurface> & {
+    refetch: () => Promise<unknown>;
+    progressViewOffset?: number;
+  }
+) {
+  const [refreshing, onRefresh] = useRefreshControl(refetch);
+  return (
+    <ScrollViewInSurface
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+          progressViewOffset={progressViewOffset}
+        />
+      }
+      {...otherProps}
+    />
   );
 }
 
@@ -309,7 +355,7 @@ export type SnackbarProps = {
 };
 
 /**
- * @requires react-native-paper.Provider for the Material Design components
+ * @requires `'react-native-paper'.Provider` for the Material Design components
  */
 export function Snackbar(
   { visible, onDismiss, message, wrapperStyle }: SnackbarProps
@@ -349,11 +395,31 @@ export function Snackbar(
 }
 
 /**
- * @requires react-native-paper.Provider for the Material Design components
+ * @requires `'react-native-paper'.Provider` for the Material Design components
  */
 export function Surface(props: React.ComponentProps<typeof DefaultSurface>) {
   const { style, ...otherProps } = props;
-  return <DefaultSurface style={[styles.container, style]} {...otherProps} />;
+  return <DefaultSurface style={[styles.surface, style]} {...otherProps} />;
+}
+
+/**
+ * @requires `StackNavigator`
+ * @requires `'react-native-paper'.Provider` for the Material Design components
+ */
+ export function SurfaceInStackNav(
+  { style, ...otherProps }: React.ComponentProps<typeof DefaultSurface>
+  ) {
+  const headerHeight = useHeaderHeight();
+  const containerStyle = {
+    maxHeight: Platform.OS === 'web'
+      ? Layout.window.height - headerHeight
+      : undefined,
+  };
+  return (
+    <DefaultSurface
+      style={[styles.surface, containerStyle, style]} {...otherProps}
+    />
+  );
 }
 
 export type TextFieldProps =
@@ -361,7 +427,7 @@ export type TextFieldProps =
   & { helperText?: string; errorText?: string; };
 
 /**
- * @requires react-native-paper.Provider for the Material Design components
+ * @requires `'react-native-paper'.Provider` for the Material Design components
  */
 export function TextField(props: TextFieldProps) {
   const { label, value, error, errorText, helperText, ...otherProps } = props;
@@ -395,10 +461,6 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginBottom: 16,
   },
-  container: {
-    flex: 1,
-    padding: Layout.padding,
-  },
   fab: {
     position: 'absolute',
     end: Layout.padding,
@@ -415,5 +477,15 @@ const styles = StyleSheet.create({
     top: -Layout.padding,
     left: -Layout.padding,
     right: -Layout.padding,
+  },
+  scrollViewInSurface: {
+    margin: -Layout.padding,
+  },
+  scrollViewInSurfaceContentContainer: {
+    padding: Layout.padding,
+  },
+  surface: {
+    flex: 1,
+    padding: Layout.padding,
   },
 });

@@ -2,6 +2,7 @@ export * from './useAuth';
 export { default as useCachedResources } from './useCachedResources';
 export { default as useColorScheme } from './useColorScheme';
 export * from './useEmployees';
+export { default as useFABGroup } from './useFABGroup';
 export { default as useLightHeader } from './useLightHeader';
 export { default as usePhotoPicker } from './usePhotoPicker';
 export { default as useRefreshControl } from './useRefreshControl';

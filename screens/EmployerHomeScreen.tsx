@@ -1,25 +1,22 @@
 import React from 'react';
-import {
-  Platform,
-  RefreshControl,
-  ScrollView,
-  StyleSheet,
-} from 'react-native';
+import { StyleSheet } from 'react-native';
+import { FAB, Portal } from 'react-native-paper';
 
 import {
   AlternativeState,
-  FAB,
   FABSize,
   ListItem,
   ScreenProgressBar,
-  Surface,
+  ScrollViewInSurfaceWithRefetch,
+  SurfaceInStackNav,
 } from '../components/styled';
 import Layout from '../constants/Layout';
-import { useRefreshControl, useWorkplacesGetter } from '../hooks';
+import { useFABGroup, useWorkplacesGetter } from '../hooks';
 import Workplace from '../models/Workplace';
 import { EmployerStackScreensProps } from '../types';
 
 /**
+ * @requires `navigator` better mock `'@react-navigation/stack'`
  * @requires `'react-native-paper'.Provider` for the Material Design components
  * @requires `'react-query'.QueryClientProvider` for queries
  * `'../api/workspace'.getWorkspaces` can be mocked
@@ -30,7 +27,7 @@ export default function EmployerHomeScreen(
   const { isFetching, data: workplaces, refetch, error } =
     useWorkplacesGetter();
   return (
-    <Surface style={styles.container}>
+    <SurfaceInStackNav>
       <ScreenProgressBar visible={isFetching} />
       {workplaces &&
         <WorkplacesViewer
@@ -40,7 +37,7 @@ export default function EmployerHomeScreen(
         />
       }
       {error && <GetWorkspacesErrorState />}
-    </Surface>
+    </SurfaceInStackNav>
   );
 }
 
@@ -54,7 +51,10 @@ function WorkplacesViewer(
   { workplaces, navigation, refetch }: WorkplacesViewerProps
 ) {
   return <>
-    <WorkplacesScrollView refetch={refetch}>
+    <ScrollViewInSurfaceWithRefetch
+      contentContainerStyle={styles.scrollViewContentContainer}
+      refetch={refetch}
+    >
       {workplaces &&
         (workplaces.length === 0
           ? <WorkplacesEmptyState />
@@ -67,44 +67,19 @@ function WorkplacesViewer(
             )
         )
       }
-    </WorkplacesScrollView>
-    <FAB
-      icon="map-marker-plus"
-      label="Añadir sitio de trabajo"
-      onPress={() => navigation.navigate('CreateWorkplace')}
-      // To offset from the first FAB (screen padding + FAB size + margin):
-      style={{ bottom: Layout.padding + 56 + 16 }}
-    />
-    <FAB
-      icon="face-recognition"
-      label="Registar asistencia"
-      onPress={() => navigation.navigate('RecordAttendance')}
-    />
+    </ScrollViewInSurfaceWithRefetch>
+    <Actions navigation={navigation} />
   </>;
 }
 
-interface WorkplacesScrollViewProps {
-  refetch: () => Promise<unknown>;
-  children: React.ReactNode;
-}
-
-function WorkplacesScrollView(
-  { refetch, children }: WorkplacesScrollViewProps
-) {
-  const [refreshing, onRefresh] = useRefreshControl(refetch);
+function WorkplacesEmptyState() {
   return (
-    <ScrollView
-      style={styles.scrollView}
-      contentContainerStyle={styles.scrollViewContentContainer}
-      refreshControl={
-        <RefreshControl
-          refreshing={refreshing}
-          onRefresh={onRefresh}
-        />
-      }
-    >
-      {children}
-    </ScrollView>
+    <AlternativeState
+      wrapperStyle={styles.centeredAlternativeState}
+      icon="map-marker-multiple"
+      title="No hay sitios de trabajo"
+      tagline="Añade un sitio de trabajo y aparecerá aquí"
+    />
   );
 }
 
@@ -124,14 +99,35 @@ function WorkplaceListItem({ workplace, navigation }: WorkplaceListItemProps) {
   );
 }
 
-function WorkplacesEmptyState() {
+interface ActionsProps {
+  navigation: EmployerStackScreensProps['Home']['navigation'];
+}
+
+function Actions({ navigation }: ActionsProps) {
+  const { visible, open, setOpen } = useFABGroup();
   return (
-    <AlternativeState
-      wrapperStyle={styles.centeredAlternativeState}
-      icon="map-marker-multiple"
-      title="No hay sitios de trabajo"
-      tagline="Añade un sitio de trabajo y aparecerá aquí"
-    />
+    <Portal>
+      <FAB.Group
+        visible={visible}
+        icon={open ? 'close' : 'plus'}
+        accessibilityLabel="Abrir acciones"
+        open={open}
+        onStateChange={({ open }) => setOpen(open)}
+        style={styles.fabGroup}
+        actions={[          
+          {
+            icon: 'face-recognition',
+            label: 'Registar asistencia',
+            onPress: () => navigation.navigate('RecordAttendance'),
+          },
+          {
+            icon: 'map-marker-plus',
+            label: 'Añadir sitio de trabajo',
+            onPress: () => navigation.navigate('CreateWorkplace'),
+          },
+        ]}
+      />
+    </Portal>
   );
 }
 
@@ -147,17 +143,13 @@ function GetWorkspacesErrorState() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    maxHeight: Platform.OS === 'web' ? Layout.window.height : undefined,
-  },
-  scrollView: {
-    margin: -Layout.padding,
-  },
   scrollViewContentContainer: {
-    padding: Layout.padding,
-    paddingBottom: 1.5 * Layout.padding + 2 * FABSize + 16,
+    paddingBottom: 1.5 * Layout.padding + FABSize,
   },
   centeredAlternativeState: {
     justifyContent: 'center'
   },
+  fabGroup: {
+    padding: Layout.padding - 16, // additional padding to the 16px default
+  }
 });

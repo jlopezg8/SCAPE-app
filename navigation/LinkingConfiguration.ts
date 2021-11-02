@@ -26,6 +26,7 @@ export default linking = {
         path: 'employer',
         screens: {
           Home: '',
+          CreateWorkplace: 'create-workplace',
           Workplace: {
             path: 'workplace/:id',
             parse: { id: Number },

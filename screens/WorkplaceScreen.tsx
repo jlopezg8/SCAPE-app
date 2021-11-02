@@ -1,11 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
-import {
-  Platform,
-  RefreshControl,
-  ScrollView,
-  StyleSheet,
-} from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 import {
   Avatar,
   Caption,
@@ -25,6 +20,7 @@ import {
   ListItem,
   Menu,
   ScreenProgressBar,
+  ScrollViewInSurfaceWithRefetch,
   Snackbar,
   Surface,
 } from '../components/styled';
@@ -32,7 +28,6 @@ import Layout from '../constants/Layout';
 import {
   useEmployeeDeleterByIdDoc,
   useLightHeader,
-  useRefreshControl,
   useSnackbar,
   useVisible,
   useWorkplaceGetter,
@@ -57,6 +52,9 @@ export default function WorkplaceScreen(
   const { isFetching, data: workplace, refetch, error } =
     useWorkplaceGetter(workplaceId);
   const [isDeletingEmployee, setDeletingEmployee] = React.useState(false);
+  // We use `Surface` instead of `SurfaceInStackNav` since that component
+  // substracts the navbar height from the container height, but this screen
+  // doesn't have a navbar:
   return (
     <Surface style={styles.container}>
       <ScreenProgressBar visible={isFetching || isDeletingEmployee} />
@@ -93,12 +91,16 @@ function WorkplaceViewer(
   const deleteEmployeeMutation =
     useEmployeeDeleterWithEffects(setDeletingEmployee, snackbar.setMessage);
   return <>
-    <WorkplaceScrollView refetch={refetch}>
+    <ScrollViewInSurfaceWithRefetch
+      contentContainerStyle={styles.scrollViewContentContainer}
+      refetch={refetch}
+      progressViewOffset={Layout.padding}
+    >
       <WorkplaceCard workplace={workplace} />
       <DeleteEmployeeMutationContext.Provider value={deleteEmployeeMutation}>
         <EmployeesSection employees={workplace.employees}/>
       </DeleteEmployeeMutationContext.Provider>
-    </WorkplaceScrollView>
+    </ScrollViewInSurfaceWithRefetch>
     <TheSnackbar self={snackbar} />
     <FAB
       icon="account-plus"
@@ -128,30 +130,6 @@ function useEmployeeDeleterWithEffects(
     }
   }, [isSuccess, error]);
   return mutation;
-}
-
-interface WorkplaceScrollViewProps {
-  refetch: () => Promise<unknown>;
-  children: React.ReactNode;
-}
-
-function WorkplaceScrollView({ refetch, children }: WorkplaceScrollViewProps) {
-  const [refreshing, onRefresh] = useRefreshControl(refetch);
-  return (
-    <ScrollView
-      style={styles.scrollView}
-      contentContainerStyle={styles.scrollViewContentContainer}
-      refreshControl={
-        <RefreshControl
-          refreshing={refreshing}
-          onRefresh={onRefresh}
-          progressViewOffset={Layout.padding}
-        />
-      }
-    >
-      {children}
-    </ScrollView>
-  );
 }
 
 function WorkplaceCard({ workplace }: { workplace: Workplace }) {
@@ -337,11 +315,7 @@ const styles = StyleSheet.create({
   container: {
     maxHeight: Platform.OS === 'web' ? Layout.window.height : undefined,
   },
-  scrollView: {
-    margin: -Layout.padding,
-  },
   scrollViewContentContainer: {
-    padding: Layout.padding,
     paddingBottom: 1.5 * Layout.padding + FABSize,
   },
   workplaceCard: {

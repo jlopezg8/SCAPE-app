@@ -34,10 +34,9 @@ function useAttendanceRecorder(
   return () => mutation.mutateAsync(employeeDocId);
 }
 
-// TODO: mid: return `mutation` instead
 export function useEmployeeCreator(workplaceId: number) {
   const queryClient = useQueryClient();
-  const mutation = useMutation(
+  return useMutation(
     (employee: EmployeeToCreate) => createEmployee(employee, workplaceId),
     {
       onSuccess: (_data, employee) => Promise.all([
@@ -47,7 +46,6 @@ export function useEmployeeCreator(workplaceId: number) {
       ]),
     }
   );
-  return (employee: EmployeeToCreate) => mutation.mutateAsync(employee);
 }
 
 export {
@@ -72,7 +70,7 @@ export function useEmployeeDeleterByIdDoc() {
 
 export function useEmployeeEditor(oldEmployee: Employee) {
   const queryClient = useQueryClient();
-  const mutation = useMutation(
+  return useMutation(
     (newEmployee: EmployeeToEdit) => editEmployee(oldEmployee, newEmployee),
     {
       onSuccess: (_data, newEmployee) => Promise.all([
@@ -83,7 +81,6 @@ export function useEmployeeEditor(oldEmployee: Employee) {
       ]),
     }
   );
-  return (employee: EmployeeToEdit) => mutation.mutateAsync(employee);
 }
 
 export function useEmployeeGetterByIdDoc(idDoc: string) {
