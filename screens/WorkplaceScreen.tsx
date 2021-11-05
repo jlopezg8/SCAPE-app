@@ -43,7 +43,8 @@ import { EmployerStackScreensProps } from '../types';
  * @requires `'react-native-paper'.Provider` for the Material Design components
  * @requires `'react-native-safe-area-context'.SafeAreaProvider` for insets
  * @requires `'react-query'.QueryClientProvider` for queries
- * `'../api/workspace'.getWorkspace` can be mocked
+ * `'../api/workplaces'.deleteEmployeeByIdDoc` can be mocked
+ * `'../api/workplaces'.getWorkplace` can be mocked
  */
 export default function WorkplaceScreen(
   { navigation, route }: EmployerStackScreensProps['Workplace']
@@ -67,7 +68,7 @@ export default function WorkplaceScreen(
         />
       }
       {error &&
-        <GetWorkspaceErrorState
+        <GetWorkplaceErrorState
           error={error as Error}
           workplaceId={workplaceId}
         />
@@ -287,7 +288,7 @@ function TheSnackbar({ self }: { self: ReturnType<typeof useSnackbar> }) {
   );
 }
 
-function GetWorkspaceErrorState(
+function GetWorkplaceErrorState(
   { error, workplaceId }: { error: Error; workplaceId: Workplace['id'] }
 ) {
   if (error instanceof WorkplaceNotFoundError) {
@@ -303,7 +304,7 @@ function GetWorkspaceErrorState(
   }
   return (
     <AlternativeState
-      wrapperStyle={styles.getWorkspaceErrorState}
+      wrapperStyle={styles.getWorkplaceErrorState}
       icon={icon}
       title={title}
       tagline={tagline}
@@ -337,7 +338,7 @@ const styles = StyleSheet.create({
   employeesEmptyState: {
     marginTop: Layout.padding / 2,
   },
-  getWorkspaceErrorState: {
+  getWorkplaceErrorState: {
     justifyContent: 'center'
   },
 });

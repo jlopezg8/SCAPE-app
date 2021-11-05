@@ -46,7 +46,7 @@ export default function EditEmployeeScreen(
   return (
     <SurfaceInStackNav>
       <ScreenProgressBar visible={isFetching} />
-      {employee && <EditEmployeeForm initialValues={employee!} />}
+      {employee && <EditEmployeeForm initialValues={employee} />}
       {error && <GetEmployeeErrorState error={error as Error} idDoc={idDoc} />}
     </SurfaceInStackNav>
   );
@@ -144,7 +144,6 @@ function GetEmployeeErrorState(
     var title = 'Error';
     var tagline = 'No se pudo obtener el empleado. Ponte en contacto con Soporte.';
   }
-  console.log(title);
   return (
     <AlternativeState
       wrapperStyle={{ justifyContent: 'center' }}

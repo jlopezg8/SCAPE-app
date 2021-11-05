@@ -2,9 +2,12 @@ import { useMutation, useQuery, useQueryClient } from 'react-query';
 
 import {
   createWorkplace,
+  deleteWorkplace,
+  editWorkplace,
   getWorkplace,
   getWorkplaces,
 } from '../api/workplaces';
+import { WorkplaceToCreateOrEdit } from '../models/Workplace';
 
 export const WORKPLACES_QUERY_KEY = 'workplaces';
 
@@ -15,8 +18,35 @@ export function useWorkplaceCreator() {
   });
 }
 
-export function useWorkplaceGetter(id: number) {
-  return useQuery([WORKPLACES_QUERY_KEY, id], () => getWorkplace(id));
+export function useWorkplaceDeleter() {
+  const queryClient = useQueryClient();
+  return useMutation(deleteWorkplace, {
+    onSuccess: (_data, workplaceId) => Promise.all([
+      queryClient.invalidateQueries(WORKPLACES_QUERY_KEY, { exact: true }),
+      queryClient.invalidateQueries([WORKPLACES_QUERY_KEY, workplaceId]),
+    ]),
+  });
+}
+
+export function useWorkplaceEditor(workplaceId: number) {
+  const queryClient = useQueryClient();
+  return useMutation(
+    (newWorkplace: WorkplaceToCreateOrEdit) =>
+      editWorkplace(workplaceId, newWorkplace),
+    {
+      onSuccess: () => Promise.all([
+        queryClient.invalidateQueries(WORKPLACES_QUERY_KEY, { exact: true }),
+        queryClient.invalidateQueries([WORKPLACES_QUERY_KEY, workplaceId]),
+      ]),
+    }
+  );
+}
+
+export function useWorkplaceGetter(workplaceId: number) {
+  return useQuery(
+    [WORKPLACES_QUERY_KEY, workplaceId],
+    () => getWorkplace(workplaceId)
+  );
 }
 
 export function useWorkplacesGetter() {

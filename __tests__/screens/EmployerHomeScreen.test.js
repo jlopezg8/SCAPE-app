@@ -1,3 +1,4 @@
+import { useNavigation } from '@react-navigation/native';
 import React from "react";
 
 import { EmployerHomeScreen } from "../../screens";
@@ -5,10 +6,14 @@ import { getWorkplaces } from "../../api/workplaces";
 import { render } from "../test-utils";
 
 jest.mock("@react-navigation/native");
+jest.mock("@react-navigation/stack");
 jest.mock("../../api/workplaces");
 
 describe("workplace list tests", () => {
-  beforeEach(() => jest.resetAllMocks());
+  beforeEach(() => {
+    jest.resetAllMocks();
+    useNavigation.mockReturnValue({ isFocused: () => true });
+  });
 
   it("displays workplaces correctly", async () => {
     getWorkplaces.mockReturnValue(

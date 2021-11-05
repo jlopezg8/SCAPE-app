@@ -61,7 +61,7 @@ export function useEmployeeDeleterByIdDoc() {
   const queryClient = useQueryClient();
   return useMutation(deleteEmployeeByIdDoc, {
     onSuccess: (_data, idDoc) => Promise.all([
-      queryClient.invalidateQueries(WORKPLACES_QUERY_KEY),
+      queryClient.invalidateQueries(WORKPLACES_QUERY_KEY, { exact: true }),
       queryClient.invalidateQueries([EMPLOYEES_QUERY_KEY, idDoc]),
       queryClient.invalidateQueries([EMPLOYEES_QUERY_KEY, 'byPhoto']),
     ]),
@@ -74,7 +74,7 @@ export function useEmployeeEditor(oldEmployee: Employee) {
     (newEmployee: EmployeeToEdit) => editEmployee(oldEmployee, newEmployee),
     {
       onSuccess: (_data, newEmployee) => Promise.all([
-        queryClient.invalidateQueries(WORKPLACES_QUERY_KEY),
+        queryClient.invalidateQueries(WORKPLACES_QUERY_KEY, { exact: true }),
         queryClient.invalidateQueries([EMPLOYEES_QUERY_KEY, oldEmployee.idDoc]),
         queryClient.invalidateQueries([EMPLOYEES_QUERY_KEY, newEmployee.idDoc]),
         queryClient.invalidateQueries([EMPLOYEES_QUERY_KEY, 'byPhoto']),

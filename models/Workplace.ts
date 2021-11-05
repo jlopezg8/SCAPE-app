@@ -13,7 +13,7 @@ export default interface Workplace {
 
 // TODO: mid: make `Workplace` extend this, after making `latitude` and
 // `longitude` required (or make this pick | omit properties from `Workplace`):
-export interface WorkplaceToCreate {
+export interface WorkplaceToCreateOrEdit {
   name: string;
   description?: string;
   address: string;
@@ -22,7 +22,7 @@ export interface WorkplaceToCreate {
 }
 
 const _workplaceToCreateInitialValues: {
-  [field in keyof Required<WorkplaceToCreate>]: undefined
+  [field in keyof Required<WorkplaceToCreateOrEdit>]: undefined
 } = {
   name: undefined,
   description: undefined,
@@ -31,13 +31,14 @@ const _workplaceToCreateInitialValues: {
   longitude: undefined,
 };
 export const workplaceToCreateInitialValues =
-  _workplaceToCreateInitialValues as unknown as WorkplaceToCreate;
+  _workplaceToCreateInitialValues as unknown as WorkplaceToCreateOrEdit;
 
-export const workplaceToCreateSchema: yup.SchemaOf<WorkplaceToCreate> =
-  yup.object({
-    name: yup.string().required(),
-    description: yup.string(),
-    address: yup.string().required(),
-    latitude: yup.number().required(),
-    longitude: yup.number().required(),
-  });
+export const workplaceToCreateOrEditSchema
+  : yup.SchemaOf<WorkplaceToCreateOrEdit>
+  = yup.object({
+      name: yup.string().required(),
+      description: yup.string(),
+      address: yup.string().required(),
+      latitude: yup.number().required(),
+      longitude: yup.number().required(),
+    });

@@ -1,4 +1,4 @@
-import Workspace from '../../models/Workplace';
+import Workplace, { WorkplaceToCreateOrEdit } from '../../models/Workplace';
 import { APIEmployee, mapApiEmployeeToEmployee } from '../employees/common';
 import { createEndpointGetter } from '../serverURL';
 
@@ -15,16 +15,28 @@ export interface APIWorkplace {
   employeeWorkPlace?: { employee: APIEmployee }[];
 }
 
-export class WorkplaceNotFoundError extends Error {
-  constructor(id?: number) {
-    const withId = id ? ` with ID "${id}" ` : ' ';
-    super(`workplace${withId}not found`);
-    this.name = 'WorkplaceNotFoundError';
-  }
+export interface APIWorkplaceToCreateOrEdit {
+  name: string;
+  address: string;
+  latitude: string;
+  longitude: string;
+  description?: string;
+}
+
+export function createAPIWorkplaceToCreateOrEdit(
+  workplace: WorkplaceToCreateOrEdit
+) : APIWorkplaceToCreateOrEdit {
+  return {
+    name: workplace.name,
+    address: workplace.address,
+    latitude: workplace.latitude.toString(),
+    longitude: workplace.longitude.toString(),
+    description: workplace.description,
+  };
 }
 
 export function mapAPIWorkplaceToWorkplace(workplace: APIWorkplace)
-  : Workspace
+  : Workplace
 {
   return {
     id: workplace.id || undefined,
@@ -42,4 +54,12 @@ export function mapAPIWorkplaceToWorkplace(workplace: APIWorkplace)
           ({ employee }) => mapApiEmployeeToEmployee(employee))
       : undefined,
   };
+}
+
+export class WorkplaceNotFoundError extends Error {
+  constructor(id?: number) {
+    const withId = id ? ` with ID "${id}" ` : ' ';
+    super(`workplace${withId}not found`);
+    this.name = 'WorkplaceNotFoundError';
+  }
 }

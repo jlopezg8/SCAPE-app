@@ -2,6 +2,7 @@ export { default as AdminHomeScreen } from './AdminHomeScreen';
 export { default as CreateEmployeeScreen } from './CreateEmployeeScreen';
 export { default as CreateWorkplaceScreen } from './CreateWorkplaceScreen';
 export { default as EditEmployeeScreen } from './EditEmployeeScreen';
+export { default as EditWorkplaceScreen } from './EditWorkplaceScreen';
 export { default as EmployeeHomeScreen } from './EmployeeHomeScreen';
 export { default as EmployerHomeScreen } from './EmployerHomeScreen';
 export { default as LoginScreen } from './LoginScreen';

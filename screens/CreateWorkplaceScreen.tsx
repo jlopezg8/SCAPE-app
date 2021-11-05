@@ -10,12 +10,12 @@ import {
 import { ScrollViewInSurface, SurfaceInStackNav } from '../components/styled';
 import { useWorkplaceCreator } from '../hooks';
 import {
-  WorkplaceToCreate,
   workplaceToCreateInitialValues,
-  workplaceToCreateSchema,
+  WorkplaceToCreateOrEdit,
+  workplaceToCreateOrEditSchema,
 } from '../models/Workplace';
 
-const TextField: TextFieldType<WorkplaceToCreate> = RawTextField;
+const TextField: TextFieldType<WorkplaceToCreateOrEdit> = RawTextField;
 
 /**
  * @requires `'react-native-paper'.Provider` for the Material Design components
@@ -28,8 +28,7 @@ export default function CreateWorkplaceScreen() {
     <Formik
       initialValues={workplaceToCreateInitialValues}
       onSubmit={submit}
-      validationSchema={workplaceToCreateSchema}
-      initialStatus="test"
+      validationSchema={workplaceToCreateOrEditSchema}
     >
       <SurfaceInStackNav>
         <ScrollViewInSurface>
@@ -50,8 +49,8 @@ function useSubmit() {
   const { mutateAsync: createWorkplace } = useWorkplaceCreator();
   return React.useCallback(
     async (
-      workplace: WorkplaceToCreate,
-      { resetForm, setStatus }: FormikHelpers<WorkplaceToCreate>
+      workplace: WorkplaceToCreateOrEdit,
+      { resetForm, setStatus }: FormikHelpers<WorkplaceToCreateOrEdit>
     ) => {
       try {
         await createWorkplace(workplace);

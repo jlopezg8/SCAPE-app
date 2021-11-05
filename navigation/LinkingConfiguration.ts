@@ -36,6 +36,10 @@ export default linking = {
             parse: { workplaceId: Number },
           },
           RecordAttendance: 'record-attendance',
+          EditWorkplace: {
+            path: 'workplace/:id/edit',
+            parse: { id: Number },
+          },
           EditEmployee: 'edit-employee/:idDoc',
           Settings: 'settings',
         },
