@@ -2,14 +2,14 @@ import { Formik, FormikHelpers } from 'formik';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import { Surface } from '../components/containers';
 import {
   StatusSnackbar,
   SubmitButton,
   TextField as RawTextField,
   TextFieldType,
 } from '../components/formik';
-import Logo from '../components/Logo';
-import { Surface } from '../components/styled';
+import { Logo } from '../components/misc';
 import { InvalidCredentialsError, useAuthContext } from '../hooks/useAuth';
 import LoginRequest, {
   loginRequestInitialValues,

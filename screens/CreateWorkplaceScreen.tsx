@@ -2,12 +2,15 @@ import { Formik, FormikHelpers } from 'formik';
 import React from 'react';
 
 import {
+  ScrollViewInSurface,
+  SurfaceInStackNav,
+} from '../components/containers';
+import {
   StatusSnackbar,
   SubmitButton,
   TextField as RawTextField,
   TextFieldType,
 } from '../components/formik';
-import { ScrollViewInSurface, SurfaceInStackNav } from '../components/styled';
 import { useWorkplaceCreator } from '../hooks';
 import {
   workplaceToCreateInitialValues,

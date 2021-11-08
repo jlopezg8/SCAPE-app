@@ -1,17 +1,13 @@
-// TODO: medium: refactor this module
+// TODO: medium: refactor this screen
 
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Divider } from 'react-native-paper';
 
-import { PhotoPicker } from '../components/PhotoPicker';
-import {
-  Button,
-  ListItem,
-  ScreenProgressBar,
-  Snackbar,
-  Surface,
-} from '../components/styled';
+import { Surface } from '../components/containers';
+import { Button } from '../components/controls';
+import { PhotoPicker } from '../components/inputs';
+import { ListItem, ScreenProgressBar, Snackbar } from '../components/misc';
 import {
   useClockIn,
   useClockOut,

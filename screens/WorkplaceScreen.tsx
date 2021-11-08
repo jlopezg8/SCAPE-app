@@ -12,18 +12,18 @@ import {
   Subheading,
 } from 'react-native-paper';
 
+import {
+  ScrollViewInSurfaceWithRefetch,
+  Surface,
+} from '../components/containers';
+import { FAB, FABSize, Menu } from '../components/controls';
 import { AlertDialog } from '../components/dialogs';
 import {
   AlternativeState,
-  FAB,
-  FABSize,
   ListItem,
-  Menu,
   ScreenProgressBar,
-  ScrollViewInSurfaceWithRefetch,
   Snackbar,
-  Surface,
-} from '../components/styled';
+} from '../components/misc';
 import Layout from '../constants/Layout';
 import {
   useEmployeeDeleterByIdDoc,

@@ -1,18 +1,17 @@
 import { useField, useFormikContext } from "formik";
 import React from 'react';
 
-import { PhotoPicker as DefaultPhotoPicker } from './PhotoPicker';
+import { Button } from './controls';
 import {
-  Button,
   DatePicker as StyledDatePicker,
   DropDown as StyledDropDown,
   DropDownProps as StyledDropDownProps,
   PasswordField as StyledPasswordField,
-  Snackbar,
-  SnackbarProps,
+  PhotoPicker as DefaultPhotoPicker,
   TextField as StyledTextField,
   TextFieldProps as StyledTextFieldProps,
-} from './styled';
+} from './inputs';
+import { Snackbar, SnackbarProps } from './misc';
 
 /**
  * @requires formik.Formik for Formik state and helpers

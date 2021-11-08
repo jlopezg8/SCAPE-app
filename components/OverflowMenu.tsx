@@ -4,7 +4,7 @@ import React from 'react';
 import { IconButton } from 'react-native-paper';
 
 import Layout from '../constants/Layout';
-import { Menu } from './styled';
+import { Menu } from './controls';
 
 export type OverflowMenuProps = {
   navigation: StackNavigationProp<ParamListBase, keyof ParamListBase>;

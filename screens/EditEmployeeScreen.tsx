@@ -2,6 +2,10 @@ import { Formik, FormikHelpers } from 'formik';
 import React from 'react';
 
 import {
+  ScrollViewInSurface,
+  SurfaceInStackNav,
+} from '../components/containers';
+import {
   DatePicker,
   DropDown,
   PhotoPicker,
@@ -10,12 +14,7 @@ import {
   TextField as RawTextField,
   TextFieldType,
 } from '../components/formik';
-import {
-  AlternativeState,
-  ScreenProgressBar,
-  ScrollViewInSurface,
-  SurfaceInStackNav,
-} from '../components/styled';
+import { AlternativeState, ScreenProgressBar } from '../components/misc';
 import {
   EmployeeNotFoundError,
   EmployeeWithEmailAlreadyExistsError,
