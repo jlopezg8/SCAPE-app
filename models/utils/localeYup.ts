@@ -10,6 +10,10 @@ setLocale({
     min: 'Debe tener al menos ${min} caracteres',
     url: 'URL inválida',
   },
+  number: {
+    min: 'Debe ser mayor o igual a ${min}',
+    max: 'Debe ser menor o igual a ${max}',
+  },
   // Neither of these work:
   //date: 'Fecha inválida',
   //date: { typeError: 'Fecha inválida' },

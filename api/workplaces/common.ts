@@ -29,8 +29,8 @@ export function createAPIWorkplaceToCreateOrEdit(
   return {
     name: workplace.name,
     address: workplace.address,
-    latitude: workplace.latitude.toString(),
-    longitude: workplace.longitude.toString(),
+    latitude: workplace.location.latitude.toString(),
+    longitude: workplace.location.longitude.toString(),
     description: workplace.description,
   };
 }
@@ -43,12 +43,14 @@ export function mapAPIWorkplaceToWorkplace(workplace: APIWorkplace)
     name: workplace.name,
     description: workplace.description || undefined,
     address: workplace.address,
-    latitude: workplace.latitudePosition
-      ? parseFloat(workplace.latitudePosition)
-      : undefined,
-    longitude: workplace.longitudePosition
-      ? parseFloat(workplace.longitudePosition)
-      : undefined,
+    location:
+         workplace.latitudePosition != null
+      && workplace.longitudePosition != null
+        ? {
+            latitude: parseFloat(workplace.latitudePosition),
+            longitude: parseFloat(workplace.longitudePosition),
+          }
+        : undefined,
     employees: workplace.employeeWorkPlace
       ? workplace.employeeWorkPlace.map(
           ({ employee }) => mapApiEmployeeToEmployee(employee))

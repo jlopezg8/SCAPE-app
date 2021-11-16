@@ -115,7 +115,7 @@ function WorkplaceViewer(
 
 function useEmployeeDeleterWithEffects(
   setDeletingEmployee: (isDeletingEmployee: boolean) => void,
-  setMessage: (status: string) => void
+  setMessage: (message: string) => void
 ) {
   const mutation = useEmployeeDeleterByIdDoc();
   const { isLoading: isDeletingEmployee, isSuccess, error } = mutation;

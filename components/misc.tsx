@@ -4,6 +4,7 @@ import {
   Platform,
   StyleProp,
   StyleSheet,
+  TextStyle,
   View,
   ViewStyle,
 } from 'react-native';
@@ -48,13 +49,14 @@ export type HelperTextProps = {
   error?: boolean;
   helperText?: string;
   errorText?: string;
+  style?: StyleProp<TextStyle>;
 };
 
 /**
  * @requires `'react-native-paper'.Provider` for the Material Design components
  */
 export function HelperText(
-  { label, error, helperText, errorText }: HelperTextProps
+  { label, error, helperText, errorText, style }: HelperTextProps
 ) {
   // Leave ' ' as is. '' makes the HelperText not take space
   helperText = helperText || (label?.endsWith('*') ? '*Requerido' : ' ');
@@ -62,7 +64,7 @@ export function HelperText(
   return (
     <DefaultHelperText
       type={error ? 'error' : 'info'}
-      style={styles.helperText}
+      style={[styles.helperText, style]}
     >
       {error ? errorText : helperText}
     </DefaultHelperText>

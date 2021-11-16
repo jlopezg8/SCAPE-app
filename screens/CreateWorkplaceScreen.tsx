@@ -6,6 +6,7 @@ import {
   SurfaceInStackNav,
 } from '../components/containers';
 import {
+  PlacePicker,
   StatusSnackbar,
   SubmitButton,
   TextField as RawTextField,
@@ -37,9 +38,11 @@ export default function CreateWorkplaceScreen() {
         <ScrollViewInSurface>
           <TextField label="Nombre*" name="name" />
           <TextField label="Descripción" name="description" />
-          <TextField label="Dirección*" name="address" />
-          <TextField label="Latitud*" name="latitude" />
-          <TextField label="Longitud*" name="longitude" />
+          <PlacePicker
+            addressLabel="Dirección*"
+            addressName="address"
+            coordinateName="location"
+          />
           <SubmitButton label="Guardar" />
         </ScrollViewInSurface>
         <StatusSnackbar />

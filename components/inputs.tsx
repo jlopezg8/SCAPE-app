@@ -133,6 +133,10 @@ export function PasswordField(props: TextFieldProps) {
 
 export { default as PhotoPicker, PhotoPickerProps } from './PhotoPicker';
 
+// Sadly this would result in a circular dependency, since PlacePicker imports
+// some stuff from here:
+//export { default as PlacePicker, PlacePickerProps } from './PlacePicker';
+
 export type TextFieldProps =
   React.ComponentProps<typeof TextInput>
   & { helperText?: string; errorText?: string; };
@@ -162,3 +166,5 @@ export function TextField(props: TextFieldProps) {
     </>
   );
 }
+
+TextField.Icon = TextInput.Icon;

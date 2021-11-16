@@ -1,3 +1,4 @@
+import Coordinate, { coordinateSchema } from './Coordinate';
 import { Employee } from "./Employee";
 import * as yup from './utils/localeYup';
 
@@ -6,8 +7,7 @@ export default interface Workplace {
   name: string;
   description?: string;
   address: string;
-  latitude?: number;
-  longitude?: number;
+  location?: Coordinate;
   employees?: Employee[];
 }
 
@@ -17,8 +17,7 @@ export interface WorkplaceToCreateOrEdit {
   name: string;
   description?: string;
   address: string;
-  latitude: number;
-  longitude: number;
+  location: Coordinate;
 }
 
 const _workplaceToCreateInitialValues: {
@@ -27,8 +26,7 @@ const _workplaceToCreateInitialValues: {
   name: undefined,
   description: undefined,
   address: undefined,
-  latitude: undefined,
-  longitude: undefined,
+  location: undefined,
 };
 export const workplaceToCreateInitialValues =
   _workplaceToCreateInitialValues as unknown as WorkplaceToCreateOrEdit;
@@ -39,6 +37,5 @@ export const workplaceToCreateOrEditSchema
       name: yup.string().required(),
       description: yup.string(),
       address: yup.string().required(),
-      latitude: yup.number().required(),
-      longitude: yup.number().required(),
+      location: coordinateSchema,
     });
