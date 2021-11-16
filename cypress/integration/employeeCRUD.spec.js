@@ -102,7 +102,7 @@ describe("Employee CRUD", () => {
         .should("be.visible");
       cy.get("@cancel").click();
       cy.reload();
-      cy.findByText(/Jimy Hendrix/).should("be.visible");
+      cy.findByText(/Jimy Hendrix/).should("exist");
     });
   });
 
