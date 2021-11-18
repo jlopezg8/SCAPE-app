@@ -131,7 +131,10 @@ export function PasswordField(props: TextFieldProps) {
   );
 }
 
-export { default as PhotoPicker, PhotoPickerProps } from './PhotoPicker';
+// On web this results in "export 'PhotoPickerProps' was not found in './PhotoPicker'":
+//export { default as PhotoPicker, PhotoPickerProps } from './PhotoPicker';
+export { default as PhotoPicker } from './PhotoPicker';
+export type { PhotoPickerProps } from './PhotoPicker';
 
 // Sadly this would result in a circular dependency, since PlacePicker imports
 // some stuff from here:

@@ -1,11 +1,14 @@
 import * as Location from 'expo-location';
 import React from 'react';
 import { Platform, StyleSheet } from 'react-native';
-import MapView, { Camera, LatLng, MapEvent, Marker } from 'react-native-maps';
+import MapView, { LatLng } from 'react-native-maps';
 
 import { TextField, TextFieldProps } from '../components/inputs';
 import { HelperText } from '../components/misc';
-import '../utils/setExpoLocationGoogleApiKeyOnWeb';
+import Layout from '../constants/Layout';
+// Currently we don't have a Google API key with billing enabled:
+//import '../utils/setExpoLocationGoogleApiKeyOnWeb';
+import CoordinatePicker from './CoordinatePicker';
 
 interface CoordinateProps {
   coordinate: LatLng | undefined;
@@ -36,7 +39,7 @@ export interface PlacePickerProps {
  *
  * `'expo-location'.geocodeAsync: (address: string) => Promise<LatLng>` can be
  *   mocked
- * 
+ *
  * "No setup required for use within the Expo Go app. [...] Web is
  * experimental! We do not recommend using this library on web yet."
  * (https://docs.expo.dev/versions/v41.0.0/sdk/map-view/)
@@ -57,8 +60,8 @@ export default function PlacePicker(props: PlacePickerProps) {
       props={addressTextFieldProps}
       searchAddress={searchAddress}
     />
-    <TheMapView
-      theRef={mapRef}
+    <CoordinatePicker
+      mapRef={mapRef}
       coordinate={coordinate}
       setCoordinate={setCoordinate}
       foundLocations={foundLocations}
@@ -118,8 +121,10 @@ function useSearchAddress(
     // On Android, you must request a location permission for geocoding:
     if (Platform.OS === 'android' && !locationPermissionsGranted) {
       setMessage('Para buscar una dirección permite el acceso a la ubicación');
+    // Currently we don't have a Google API key with billing enabled:
+    } else if (Platform.OS === 'web') {
+      setMessage('Actualmente no es posible buscar direcciones en la web');
     } else {
-      // Requires providing an API key by setGoogleApiKey (only on Web):
       const foundLocations = await Location.geocodeAsync(address);
       if (foundLocations.length >= 1) {
         setCoordinate(foundLocations[0]);
@@ -162,75 +167,6 @@ function AddressTextField({ props, searchAddress }: AddressTextFieldProps) {
   );
 }
 
-interface TheMapViewProps {
-  theRef: React.RefObject<MapView>;
-  coordinate: CoordinateProps['coordinate'];
-  setCoordinate: CoordinateProps['setCoordinate'];
-  foundLocations: LatLng[];
-  locationPermissionsGranted?: boolean;
-}
-
-function TheMapView(
-  {
-    theRef,
-    coordinate,
-    setCoordinate,
-    foundLocations,
-    locationPermissionsGranted,
-  }: TheMapViewProps
-) {
-  useMoveToInitialCoordinate(coordinate, theRef, locationPermissionsGranted);
-  const setCoordinateFromMapEvent = (e: MapEvent) => {
-    const { coordinate } = e.nativeEvent;
-    setCoordinate(coordinate);
-  };
-  const [mapReady, setMapReady] = React.useState(false);
-  return (
-    <MapView
-      ref={theRef}
-      loadingEnabled // show a loading indicator while the map is loading
-      onPress={setCoordinateFromMapEvent}
-      onPoiClick={setCoordinateFromMapEvent}
-      onMarkerPress={setCoordinateFromMapEvent}
-      // Solves "showsMyLocationButton not showing up on Android" issue:
-      // https://github.com/react-native-maps/react-native-maps/issues/2010
-      style={[styles.map, { margin: mapReady ? 0 : 1 }]}
-      onMapReady={() => setMapReady(true)}      
-      showsUserLocation // for showsMyLocationButton
-    >
-      {foundLocations.map((location, index) =>
-        <Marker key={index} coordinate={location} pinColor="blue" />
-      )}
-      {coordinate && <Marker coordinate={coordinate} zIndex={1} />}
-    </MapView>
-  );
-}
-
-function useMoveToInitialCoordinate(
-  initialCoordinate: LatLng | undefined,
-  mapRef: React.RefObject<MapView>,
-  locationPermissionsGranted: boolean = false,
-) {
-  React.useEffect(() => {
-    if (initialCoordinate) {
-      mapRef.current?.animateCamera(mapCoordinateToCamera(initialCoordinate));
-    } else if (locationPermissionsGranted) {
-      Location.getCurrentPositionAsync({
-        accuracy: Location.LocationAccuracy.Lowest,
-      }).then(({ coords }) =>
-        mapRef.current?.animateCamera(mapCoordinateToCamera(coords))
-      );
-    }
-  }, [locationPermissionsGranted]);
-}
-
-function mapCoordinateToCamera(coordinate: LatLng): Partial<Camera> {
-  return {
-    center: coordinate,
-    zoom: 17, // https://developers.google.com/maps/documentation/javascript/overview#zoom-levels
-  };
-}
-
 function CoordinatePickerHelperText({ props }: { props: CoordinateProps }) {
   const {
     helperText =
@@ -243,18 +179,14 @@ function CoordinatePickerHelperText({ props }: { props: CoordinateProps }) {
       helperText={helperText}
       error={error}
       errorText={errorText}
-      style={styles.mapHelperText}
+      style={styles.coordinatePickerHelperText}
     />
   );
 }
 
 const styles = StyleSheet.create({
-  map: {
-    width: '100%',
-    aspectRatio: 4 / 3,    
-  },
-  mapHelperText: {
-    height: 38.5, // 2 lines
+  coordinatePickerHelperText: {
+    height: Layout.isSmallDevice ? 38.5 : undefined, // 38.5px = 2 lines
     marginBottom: 16,
   },
 });

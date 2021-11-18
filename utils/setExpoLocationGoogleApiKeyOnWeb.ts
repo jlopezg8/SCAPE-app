@@ -3,8 +3,9 @@ import { Platform } from 'react-native';
 
 if (Platform.OS === 'web') {
   (async function () {
-    const { default: requireEnvVar } = await import('./requireEnvVar');
-    const googleApiKey = requireEnvVar('GOOGLE_MAPS_API_KEY');
-    setGoogleApiKey(googleApiKey);
+    // https://github.com/goatandsheep/react-native-dotenv#typescript
+    // @ts-ignore: Option 1 still requires us to specify types manually
+    const { GOOGLE_MAPS_API_KEY } = await import('react-native-dotenv');
+    setGoogleApiKey(GOOGLE_MAPS_API_KEY);
   })();
 }
