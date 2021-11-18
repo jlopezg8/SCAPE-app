@@ -26,19 +26,25 @@
 import "@testing-library/cypress/add-commands";
 import "cypress-file-upload";
 
-Cypress.Commands.add("fetchEmployer", () => {
-  return cy
-    .request({
-      method: "POST",
-      url: Cypress.env("loginUrl"),
-      form: true,
-      body: {
-        username: Cypress.env("employerUsername"),
-        password: Cypress.env("employerPassword"),
-      },
-    })
-    .its("body");
-});
+Cypress.Commands.add(
+  "fetchEmployer",
+  (
+    user = Cypress.env("employerUsername"),
+    pass = Cypress.env("employerPassword")
+  ) => {
+    return cy
+      .request({
+        method: "POST",
+        url: Cypress.env("loginUrl"),
+        form: true,
+        body: {
+          username: user,
+          password: pass,
+        },
+      })
+      .its("body");
+  }
+);
 Cypress.Commands.add("setUser", (user) => {
   localStorage.setItem("access_token", user["access_token"]);
   cy.visit("/", {

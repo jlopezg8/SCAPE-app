@@ -23,6 +23,7 @@ module.exports = (on, config) => {
   config.env.employerPassword = process.env.TEST_EMPLOYER_PASSWORD;
   config.env.employeeUsername = process.env.TEST_EMPLOYEE_USERNAME;
   config.env.employeePassword = process.env.TEST_EMPLOYEE_PASSWORD;
+  config.env.noWorkplaceEmployer = process.env.TEST_EMPLOYER_EMPTY_WORKPLACE;
   config.env.adminUsername = process.env.TEST_ADMIN_USERNAME;
   config.env.adminPassword = process.env.TEST_ADMIN_PASSWORD;
 
