@@ -11,7 +11,14 @@ import './utils/androidIntlPolyfill';
 import './utils/ignoreReactQueryLongTimerWarning';
 
 // For fetching, caching and updating data
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 export default function App() {
   // We don't need to load any resources, yet:

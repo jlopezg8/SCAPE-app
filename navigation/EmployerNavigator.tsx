@@ -8,7 +8,9 @@ import { useAuthContext } from '../hooks/useAuth';
 import {
   EmployerHomeScreen,
   CreateEmployeeScreen,
+  CreateWorkplaceScreen,
   EditEmployeeScreen,
+  EditWorkplaceScreen,
   RecordAttendanceScreen,
   SettingsScreen,
   WorkplaceScreen,
@@ -41,12 +43,16 @@ export default function EmployerNavigator() {
         })}
       />
       <Stack.Screen
+        name="CreateWorkplace"
+        component={CreateWorkplaceScreen}
+        options={{ title: 'Crear sitio de trabajo' }}
+      />
+      <Stack.Screen
         name="Workplace"
         component={WorkplaceScreen}
         options={{
           title: '',
           headerTransparent: true,
-          headerTintColor: 'white',
         }}
       />
       <Stack.Screen
@@ -58,6 +64,11 @@ export default function EmployerNavigator() {
         name="RecordAttendance"
         component={RecordAttendanceScreen}
         options={{ title: 'Registrar asistencia' }}
+      />
+      <Stack.Screen
+        name="EditWorkplace"
+        component={EditWorkplaceScreen}
+        options={{ title: 'Editar sitio de trabajo' }}
       />
       <Stack.Screen
         name="EditEmployee"

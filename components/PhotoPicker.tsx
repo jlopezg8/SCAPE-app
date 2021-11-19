@@ -15,7 +15,7 @@ import {
 } from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { HelperText } from './styled';
+import { HelperText } from './misc';
 import useVisible from '../hooks/useVisible';
 
 abstract class ImagePickerBase {
@@ -112,19 +112,19 @@ function useActions(
   return { imageURI, pickImage, takePhoto, removePhoto };
 }
 
-type PhotoPickerProps = {
-  base64Image: string;
+export interface PhotoPickerProps {
+  base64Image?: string;
   setBase64Image: ImagePickerBase['setBase64Image'];
   setStatus: ImagePickerBase['setStatus'];
   accessibilityLabel?: string;
-};
+}
 
 /**
  * @requires react-native-paper.Provider for the Material Design components
  * @requires react-native-safe-area-context.SafeAreaProvider for safe area insets
  * expo-image-picker can be mocked
  */
-export function PhotoPicker({
+export default function PhotoPicker({
   base64Image,
   setBase64Image,
   setStatus,

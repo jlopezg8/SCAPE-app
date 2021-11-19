@@ -2,6 +2,10 @@ import { Formik, FormikHelpers } from 'formik';
 import React from 'react';
 
 import {
+  ScrollViewInSurface,
+  SurfaceInStackNav,
+} from '../components/containers';
+import {
   DatePicker,
   DropDown,
   PhotoPicker,
@@ -10,13 +14,7 @@ import {
   TextField as RawTextField,
   TextFieldType,
 } from '../components/formik';
-import {
-  AlternativeState,
-  ScreenProgressBar,
-  ScrollingSurface,
-  Surface,
-} from '../components/styled';
-import Layout from '../constants/Layout';
+import { AlternativeState, ScreenProgressBar } from '../components/misc';
 import {
   EmployeeNotFoundError,
   EmployeeWithEmailAlreadyExistsError,
@@ -31,36 +29,26 @@ import { EmployerStackScreensProps } from '../types';
 
 /**
  * @param route.params.idDoc the employee's ID document
- * @requires react-native-paper.Provider for the Material Design components
- * @requires react-native-safe-area-context.SafeAreaProvider for safe area insets
- * @requires react-query.QueryClientProvider for queries and mutating data
- * expo-image-picker can be mocked
- * ../api/employees.getEmployeeByIdDoc can be mocked
- * ../api/employees.editEmployee can be mocked
+ * @requires `'react-native-paper'.Provider` for the Material Design components
+ * @requires `'react-native-safe-area-context'.SafeAreaProvider` for safe area
+ *           insets
+ * @requires `'react-query'.QueryClientProvider` for queries and mutating data
+ * `expo-image-picker` can be mocked
+ * `'../api/employees'.getEmployeeByIdDoc` can be mocked
+ * `'../api/employees'.editEmployee` can be mocked
  */
- export default function EditEmployeeScreen(
+export default function EditEmployeeScreen(
   { route }: EmployerStackScreensProps['EditEmployee']
 ) {
   const { idDoc } = route.params;
-  const { status, data: employee, error } = useEmployeeGetterByIdDoc(idDoc);
-  switch (status) {
-    case 'loading':
-      return (
-        <Surface>
-          <ScreenProgressBar />
-        </Surface>
-      );
-    case 'success':
-      return <EditEmployeeForm initialValues={employee!} />;
-    case 'error':
-      return (
-        <Surface>
-          <GetEmployeeErrorState error={error as Error} idDoc={idDoc} />
-        </Surface>
-      );
-    default:
-      return null;
-  }
+  const { isFetching, data: employee, error } = useEmployeeGetterByIdDoc(idDoc);
+  return (
+    <SurfaceInStackNav>
+      <ScreenProgressBar visible={isFetching} />
+      {employee && <EditEmployeeForm initialValues={employee} />}
+      {error && <GetEmployeeErrorState error={error as Error} idDoc={idDoc} />}
+    </SurfaceInStackNav>
+  );
 }
 
 const TextField: TextFieldType<EmployeeToEdit> = RawTextField;
@@ -68,12 +56,7 @@ const TextField: TextFieldType<EmployeeToEdit> = RawTextField;
 function EditEmployeeForm(
   { initialValues }: { initialValues: EmployeeToEdit }
 ) {
-  const editEmployee = useEmployeeEditor(initialValues);
-  const submit = React.useCallback(
-    (employee: EmployeeToEdit, formikHelpers: FormikHelpers<EmployeeToEdit>) =>
-      _submit(editEmployee, employee, formikHelpers),
-    [editEmployee]
-  );
+  const submit = useSubmit(initialValues);
   return (
     <Formik
       initialValues={initialValues}
@@ -81,7 +64,7 @@ function EditEmployeeForm(
       validationSchema={employeeToEditSchema}
     >
       <>
-        <ScrollingSurface>
+        <ScrollViewInSurface>
           <PhotoPicker name="photo" />
           <TextField
             label="Documento de identidad*"
@@ -107,27 +90,29 @@ function EditEmployeeForm(
             secureTextEntry
           />
           <SubmitButton label="Guardar" />
-        </ScrollingSurface>
-        <StatusSnackbar
-          // TODO: mid: shouldn't need to do this:
-          wrapperStyle={{ paddingHorizontal: Layout.padding }}
-        />
+        </ScrollViewInSurface>
+        <StatusSnackbar />
       </>
     </Formik>
   );
 }
 
-async function _submit(
-  editEmployee: ReturnType<typeof useEmployeeEditor>,
-  employee: EmployeeToEdit,
-  { setStatus }: FormikHelpers<EmployeeToEdit>
-) {
-  try {
-    await editEmployee(employee);
-    setStatus('Empleado editado');
-  } catch (err) {
-    setStatus(getEditEmployeeErrorMessage(err as Error));
-  }
+function useSubmit(initialValues: EmployeeToEdit) {
+  const { mutateAsync: editEmployee } = useEmployeeEditor(initialValues);
+  return React.useCallback(
+    async (
+      employee: EmployeeToEdit,
+      { setStatus }: FormikHelpers<EmployeeToEdit>
+    ) => {
+      try {
+        await editEmployee(employee);
+        setStatus('Empleado editado');
+      } catch (err) {
+        setStatus(getEditEmployeeErrorMessage(err as Error));
+      }
+    },
+    [editEmployee]
+  );
 }
 
 function getEditEmployeeErrorMessage(error: Error): string {
@@ -158,7 +143,6 @@ function GetEmployeeErrorState(
     var title = 'Error';
     var tagline = 'No se pudo obtener el empleado. Ponte en contacto con Soporte.';
   }
-  console.log(title);
   return (
     <AlternativeState
       wrapperStyle={{ justifyContent: 'center' }}

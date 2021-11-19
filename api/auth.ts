@@ -36,11 +36,10 @@ interface LoginResponse {
   scope: string;
 }
 
-// FIXME: high: rename API roles when the time comes:
 const roles = new Map<string, Role>([
-  ['Admin'    , 'admin'   ],
-  ['Employeer', 'employer'], // [sic]
-  ['Employee' , 'employee'],
+  ['Admin'   , 'admin'   ],
+  ['Employer', 'employer'],
+  ['Employee', 'employee'],
 ]);
 
 export class InvalidCredentialsError extends Error {

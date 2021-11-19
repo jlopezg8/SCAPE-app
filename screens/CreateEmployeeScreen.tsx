@@ -2,6 +2,10 @@ import { Formik, FormikHelpers } from 'formik';
 import React from 'react';
 
 import {
+  ScrollViewInSurface,
+  SurfaceInStackNav,
+} from '../components/containers';
+import {
   DatePicker,
   DropDown,
   PhotoPicker,
@@ -10,7 +14,6 @@ import {
   TextField as RawTextField,
   TextFieldType,
 } from '../components/formik';
-import { ScrollingSurface } from '../components/styled';
 import {
   EmployeeWithEmailAlreadyExistsError,
   EmployeeWithIdDocAlreadyExistsError,
@@ -28,75 +31,77 @@ import { EmployerStackScreensProps } from '../types';
 const TextField: TextFieldType<EmployeeToCreate> = RawTextField;
 
 /**
- * @param route.params.workplaceId
- * @requires react-native-paper.Provider for the Material Design components
- * @requires react-native-safe-area-context.SafeAreaProvider for safe area insets
- * @requires react-query.QueryClientProvider for mutating data
- * expo-image-picker can be mocked
- * ../api/employees.createEmployee can be mocked
+ * @param route.params.workplaceId the ID of the workplace the new employee
+ *        works in
+ * @requires `'react-native-paper'.Provider` for the Material Design components
+ * @requires `'react-native-safe-area-context'.SafeAreaProvider` for safe area
+ *           insets
+ * @requires `'react-query'.QueryClientProvider` for queries and mutating data
+ * `expo-image-picker` can be mocked
+ * `'../api/employees'.createEmployee` can be mocked
  */
 export default function CreateEmployeeScreen(
   { route }: EmployerStackScreensProps['CreateEmployee']
 ) {
   const { workplaceId } = route.params;
-  const createEmployee = useEmployeeCreator(workplaceId);
-  const submit = React.useCallback(
-    (
-      employee: EmployeeToCreate,
-      formikHelpers: FormikHelpers<EmployeeToCreate>
-    ) => _submit(createEmployee, employee, formikHelpers),
-    [createEmployee]
-  );
+  const submit = useSubmit(workplaceId);
   return (
     <Formik
       initialValues={employeeToCreateInitialValues}
       onSubmit={submit}
       validationSchema={employeeToCreateSchema}
     >
-      <ScrollingSurface>
-        <PhotoPicker name="photo" />
-        <TextField
-          label="Documento de identidad*"
-          name="idDoc"
-          keyboardType="number-pad"
-        />
-        <TextField label="Nombre*" name="firstName" />
-        <TextField label="Apellido*" name="lastName" />
-        <TextField
-          label="Correo electrónico*"
-          name="email"
-          keyboardType="email-address"
-        />
-        <DropDown label="Sexo" name="sex" options={[
-          { label: 'Hombre', value: 'hombre' },
-          { label: 'Mujer', value: 'mujer' },
-          { label: 'Intersexo', value: 'intersexo' },
-        ]} />
-        <DatePicker label="Fecha de nacimiento" name="birthDate" />
-        <TextField
-          label="Contraseña*"
-          name="password"
-          secureTextEntry
-        />
-        <SubmitButton label="Guardar" />
+      <SurfaceInStackNav>
+        <ScrollViewInSurface>
+          <PhotoPicker name="photo" />
+          <TextField
+            label="Documento de identidad*"
+            name="idDoc"
+            keyboardType="number-pad"
+          />
+          <TextField label="Nombre*" name="firstName" />
+          <TextField label="Apellido*" name="lastName" />
+          <TextField
+            label="Correo electrónico*"
+            name="email"
+            keyboardType="email-address"
+          />
+          <DropDown label="Sexo" name="sex" options={[
+            { label: 'Hombre', value: 'hombre' },
+            { label: 'Mujer', value: 'mujer' },
+            { label: 'Intersexo', value: 'intersexo' },
+          ]} />
+          <DatePicker label="Fecha de nacimiento" name="birthDate" />
+          <TextField
+            label="Contraseña*"
+            name="password"
+            secureTextEntry
+          />
+          <SubmitButton label="Guardar" />
+        </ScrollViewInSurface>
         <StatusSnackbar />
-      </ScrollingSurface>
+      </SurfaceInStackNav>
     </Formik>
   );
 }
 
-async function _submit(
-  createEmployee: ReturnType<typeof useEmployeeCreator>,
-  employee: EmployeeToCreate,
-  { resetForm, setStatus }: FormikHelpers<EmployeeToCreate>
-) {
-  try {
-    await createEmployee(employee);
-    resetForm();
-    setStatus('Empleado creado');
-  } catch (err) {
-    setStatus(getCreateEmployeeErrorMessage(err as Error));
-  }
+function useSubmit(workplaceId: number) {
+  const { mutateAsync: createEmployee } = useEmployeeCreator(workplaceId);
+  return React.useCallback(
+    async (
+      employee: EmployeeToCreate,
+      { resetForm, setStatus }: FormikHelpers<EmployeeToCreate>
+    ) => {
+      try {
+        await createEmployee(employee);
+        resetForm();
+        setStatus('Empleado creado');
+      } catch (err) {
+        setStatus(getCreateEmployeeErrorMessage(err as Error));
+      }
+    },
+    [createEmployee]
+  );
 }
 
 function getCreateEmployeeErrorMessage(error: Error): string {

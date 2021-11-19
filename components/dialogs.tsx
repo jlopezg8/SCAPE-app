@@ -9,7 +9,7 @@ import {
 
 import Layout from '../constants/Layout';
 import { useVisible } from '../hooks';
-import { TextField } from './styled';
+import { TextField } from './inputs';
 
 export interface AlertDialogProps {
   self: ReturnType<typeof useVisible>;

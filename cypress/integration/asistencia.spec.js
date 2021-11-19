@@ -12,7 +12,11 @@ describe("Register attendance", () => {
   beforeEach(() => {
     cy.setUser(user);
     cy.visit("/");
-    cy.get(".r-pointerEvents-105ug2t > .css-cursor-18t94o4").click();
+    cy.findByLabelText("Abrir acciones")
+      .click()
+      .then(() => {
+        cy.findByLabelText("Registar asistencia").click();
+      });
   });
   describe("detects employee properly and registers attendances", () => {
     beforeEach(() => {

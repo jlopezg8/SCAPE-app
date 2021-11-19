@@ -2,8 +2,9 @@ import React from 'react';
 import { Portal } from 'react-native-paper';
 
 import serverURL from '../api/serverURL';
+import { Surface } from '../components/containers';
 import { PromptDialog } from '../components/dialogs';
-import { ListItem, Surface } from '../components/styled';
+import { ListItem } from '../components/misc';
 import useVisible from '../hooks/useVisible';
 import {
   createValidator,

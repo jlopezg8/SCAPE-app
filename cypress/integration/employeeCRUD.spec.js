@@ -82,11 +82,6 @@ describe("Employee CRUD", () => {
       cy.findByText(/No hay empleados/).should("be.visible");
       cy.findByText(/Radamel Falcao/, { timeout: 10000 }).should("not.exist");
     });
-    it("Message on invalid workplace", () => {
-      cy.visit("/employer/workplace/0");
-      cy.findByText(/No fue encontrado/i).should("be.visible");
-      cy.findByText(/Radamel Falcao/, { timeout: 10000 }).should("not.exist");
-    });
   });
 
   describe("delete employees", () => {
@@ -107,7 +102,7 @@ describe("Employee CRUD", () => {
         .should("be.visible");
       cy.get("@cancel").click();
       cy.reload();
-      cy.findByText(/Jimy Hendrix/).should("be.visible");
+      cy.findByText(/Jimy Hendrix/).should("exist");
     });
   });
 
@@ -127,7 +122,7 @@ describe("Employee CRUD", () => {
       cy.findByRole("button", { name: /Guardar/ }).click();
       cy.findByText(/Empleado editado/).should("be.visible");
       cy.visit("/employer/workplace/1");
-      cy.findByText(/Jimi Hendrix/).should("be.visible");
+      cy.findByText(/Jimi Hendrix/).should("exist");
       restoreHendrix();
     });
     /*it.skip("changes photo", () => {
@@ -168,5 +163,5 @@ function restoreHendrix() {
   cy.findByRole("button", { name: /Guardar/ }).click();
   cy.findByText(/Empleado editado/).should("be.visible");
   cy.visit("/employer/workplace/1");
-  cy.findByText(/Jimy Hendrix/).should("be.visible");
+  cy.findByText(/Jimy Hendrix/).should("exist");
 }

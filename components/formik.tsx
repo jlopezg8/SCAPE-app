@@ -1,18 +1,22 @@
 import { useField, useFormikContext } from "formik";
 import React from 'react';
 
-import { PhotoPicker as DefaultPhotoPicker } from './PhotoPicker';
+import { Button } from './controls';
 import {
-  Button,
   DatePicker as StyledDatePicker,
   DropDown as StyledDropDown,
   DropDownProps as StyledDropDownProps,
   PasswordField as StyledPasswordField,
-  Snackbar,
-  SnackbarProps,
+  PhotoPicker as DefaultPhotoPicker,
   TextField as StyledTextField,
   TextFieldProps as StyledTextFieldProps,
-} from './styled';
+} from './inputs';
+import { Snackbar, SnackbarProps } from './misc';
+import {
+  Coordinate,
+  default as DefaultPlacePicker,
+  PlacePickerProps as DefaultPlacePickerProps,
+} from './PlacePicker';
 
 /**
  * @requires formik.Formik for Formik state and helpers
@@ -78,6 +82,89 @@ export function DropDown({ label, name, options }: DropDownProps) {
 }
 
 // TODO: medium: make a PhotoPickerWithHelperText?
+
+export interface PlacePickerProps {
+  addressLabel: string;
+  addressName: string;
+  coordinateName: string;
+}
+
+/**
+ * @requires `'formik'.Formik` for Formik state and helpers
+ * @requires `'react-native-paper'.Provider` for the Material Design components
+ *
+ * `'expo-location'.requestForegroundPermissionsAsync:
+ *   () => Promise<{ status: 'granted' | 'denied' | 'undetermined' }>` can be
+ *   mocked
+ *
+ * `'expo-location'.getCurrentPositionAsync:
+ *   (options: { accuracy: 1..6 }) => Promise<{ coords: LatLng }>` can be
+ *   mocked
+ *
+ * `'expo-location'.geocodeAsync: (address: string) => Promise<LatLng>` can be
+ *   mocked
+ * 
+ * "No setup required for use within the Expo Go app. [...] Web is
+ * experimental! We do not recommend using this library on web yet."
+ * (https://docs.expo.dev/versions/v41.0.0/sdk/map-view/)
+ */
+export function PlacePicker(props: PlacePickerProps) {
+  const addressTextFieldProps = useAddressTextFieldProps(props);
+  const coordinateProps = useCoordinateProps(props);
+  const { setStatus } = useFormikContext();
+  return (
+    <DefaultPlacePicker
+      addressTextFieldProps={addressTextFieldProps}
+      coordinateProps={coordinateProps}
+      setMessage={setStatus}
+    />
+  );
+}
+
+function useAddressTextFieldProps(
+  { addressLabel, addressName }: PlacePickerProps
+): DefaultPlacePickerProps['addressTextFieldProps'] {
+  const [field, meta] = useField<string>(addressName);
+  return {
+    label: addressLabel,
+    value: field.value,
+    onChangeText: field.onChange(addressName),
+    onBlur: field.onBlur(addressName),
+    error: Boolean(meta.touched && meta.error),
+    errorText: meta.error,
+  };
+}
+
+function useCoordinateProps(
+  { coordinateName }: PlacePickerProps
+): DefaultPlacePickerProps['coordinateProps'] {
+  const [field, meta, helpers] = useField<Coordinate>(coordinateName);
+  return {
+    coordinate: field.value,
+    setCoordinate: helpers.setValue,
+    error: Boolean(meta.touched && meta.error),
+    errorText: getCoordinateErrorText(meta.error),
+  };
+}
+
+function getCoordinateErrorText(error: string | undefined) {
+  if (error === undefined) {
+    return undefined;
+  }
+  const theError = error as unknown as { [field in keyof Coordinate]: string };
+  const { latitude: latitudeError, longitude: longitudeError } = theError;
+  if (latitudeError === longitudeError) {
+    return latitudeError;
+  }
+  const errors: string[] = [];
+  if (latitudeError) {
+    errors.push(`Latitud: ${latitudeError}`);
+  }
+  if (longitudeError) {
+    errors.push(`Longitud: ${longitudeError}`);
+  }
+  return errors.join(', ');
+}
 
 /**
  * @requires formik.Formik for Formik state and helpers

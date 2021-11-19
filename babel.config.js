@@ -5,7 +5,15 @@ module.exports = function(api) {
     plugins: ['react-native-reanimated/plugin'],
     env: {
       production: {
-        plugins: ['react-native-paper/babel'],
+        plugins: [
+          // https://callstack.github.io/react-native-paper/getting-started.html
+          'react-native-paper/babel',
+          // https://github.com/goatandsheep/react-native-dotenv#usage
+          ['module:react-native-dotenv', {
+            'allowUndefined': false,
+            'moduleName': 'react-native-dotenv',
+          }],
+        ],
       },
     },
   };

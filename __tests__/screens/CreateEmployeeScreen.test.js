@@ -5,6 +5,7 @@ import { CreateEmployeeScreen } from "../../screens";
 import { fillInEmployee } from "../helpers/employee";
 import { fireEvent, render } from "../test-utils";
 
+jest.mock("@react-navigation/stack");
 jest.mock("expo-image-manipulator");
 jest.mock("expo-image-picker");
 jest.mock("../../api/employees");

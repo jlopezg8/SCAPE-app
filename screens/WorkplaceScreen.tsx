@@ -1,166 +1,184 @@
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
-import { Platform, StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 import {
-  ActivityIndicator,
   Avatar,
+  Caption,
   Card,
   Divider,
   Headline,
   IconButton,
-  List,
   Paragraph,
   Subheading,
 } from 'react-native-paper';
 
+import {
+  ScrollViewInSurfaceWithRefetch,
+  Surface,
+} from '../components/containers';
+import { FAB, FABSize, Menu } from '../components/controls';
 import { AlertDialog } from '../components/dialogs';
 import {
   AlternativeState,
-  FAB,
-  FABSize,
-  Menu,
-  ScrollingSurface,
+  ListItem,
+  ScreenProgressBar,
   Snackbar,
-} from '../components/styled';
+} from '../components/misc';
 import Layout from '../constants/Layout';
 import {
   useEmployeeDeleterByIdDoc,
-  useEmployeesGetterByWorkplace,
-  useLightStatusBar,
+  useLightHeader,
   useSnackbar,
   useVisible,
+  useWorkplaceGetter,
   WorkplaceNotFoundError,
 } from '../hooks';
 import { Employee } from '../models/Employee';
+import Workplace from '../models/Workplace';
 import { EmployerStackScreensProps } from '../types';
 
 /**
- * @param navigation.navigate can be mocked
  * @param route.params.id workplace ID
  * @requires `navigator` better mock `'@react-navigation/native'`
  * @requires `'react-native-paper'.Provider` for the Material Design components
  * @requires `'react-native-safe-area-context'.SafeAreaProvider` for insets
  * @requires `'react-query'.QueryClientProvider` for queries
- * `'../api/employees'.getEmployeesByWorkplace` can be mocked
+ * `'../api/workplaces'.deleteEmployeeByIdDoc` can be mocked
+ * `'../api/workplaces'.getWorkplace` can be mocked
  */
 export default function WorkplaceScreen(
   { navigation, route }: EmployerStackScreensProps['Workplace']
 ) {
-  useLightStatusBar();
   const { id: workplaceId } = route.params;
-  const snackbar = useSnackbar();
+  const { isFetching, data: workplace, refetch, error } =
+    useWorkplaceGetter(workplaceId);
+  const [isDeletingEmployee, setDeletingEmployee] = React.useState(false);
+  // We use `Surface` instead of `SurfaceInStackNav` since that component
+  // substracts the navbar height from the container height, but this screen
+  // doesn't have a navbar:
   return (
-    <View style={styles.container}>
-      {/* Defined inline so it overrides the default padding-bottom: */}
-      <ScrollingSurface style={{ paddingBottom: Layout.padding + FABSize }}>
-        <WorkplaceCard />
-        <EmployeesSection
-          workplaceId={workplaceId}
-          setStatus={snackbar.setMessage}
+    <Surface style={styles.container}>
+      <ScreenProgressBar visible={isFetching || isDeletingEmployee} />
+      {workplace &&
+        <WorkplaceViewer
+          workplace={Object.assign(workplace, { id: workplaceId })}
+          navigation={navigation}
+          setDeletingEmployee={setDeletingEmployee}
+          refetch={refetch}
         />
-      </ScrollingSurface>
-      <TheSnackbar snackbar={snackbar} />
-      <FAB
-        icon="account-plus"
-        onPress={() => navigation.navigate('CreateEmployee', { workplaceId })}
-      />
-    </View>
-  );
-}
-
-function WorkplaceCard() {
-  return (
-    <>
-      <Card style={styles.card}>
-        <Card.Cover source={{ uri: 'https://images.unsplash.com/photo-1501523460185-2aa5d2a0f981?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=640' }} />
-        {/* Defined inline so it overrides the default padding-bottom: */}
-        <Card.Content style={{ padding: Layout.padding }}>
-          <Headline>Nombre del sitio de trabajo</Headline>
-          <Paragraph>Descripción del sitio de trabajo</Paragraph>
-        </Card.Content>
-      </Card>
-      <Divider style={styles.divider} />
-    </>
-  );
-}
-
-const DeleteEmployeeContext =
-  React.createContext<ReturnType<typeof useEmployeeDeleterByIdDoc>>(undefined!);
-
-interface EmployeesSectionProps {
-  workplaceId: number;
-  setStatus: (status: string) => void;
-}
-
-function EmployeesSection(props: EmployeesSectionProps) {
-  const { isLoading: isLoadingEmployees, data: employees } =
-    useEmployeesGetterByWorkplaceSettingErrors(props);
-  const mutation = useEmployeeDeleterByIdDocSettingStatus(props);
-  const { isLoading: isDeletingEmployee } = mutation;
-  return (
-    <DeleteEmployeeContext.Provider value={mutation}>
-      <Subheading style={styles.employeesHeading}>Empleados</Subheading>
-      {(isLoadingEmployees || isDeletingEmployee) &&
-        <ActivityIndicator style={styles.employeesLoadingIndicator} />}
-      <EmployeesList employees={employees} />
-    </DeleteEmployeeContext.Provider>
-  );
-}
-
-function useEmployeesGetterByWorkplaceSettingErrors(
-  { workplaceId, setStatus }: EmployeesSectionProps
-) {
-  const query = useEmployeesGetterByWorkplace(workplaceId);
-  const { isError, error } = query;
-  React.useEffect(() => {
-    if (isError) {
-      if (error instanceof WorkplaceNotFoundError) {
-        setStatus('Este sitio de trabajo no fue encontrado');
-      } else {
-        setStatus('No se pudieron consultar los empleados. Ponte en contacto con Soporte.');
-        console.error(error);
       }
-    }
-  }, [isError, error]);
-  return query;
+      {error &&
+        <GetWorkplaceErrorState
+          error={error as Error}
+          workplaceId={workplaceId}
+        />
+      }
+    </Surface>
+  );
 }
 
-function useEmployeeDeleterByIdDocSettingStatus(
-  { setStatus }: EmployeesSectionProps
+interface WorkplaceViewerProps {
+  workplace: Workplace;
+  navigation: EmployerStackScreensProps['Workplace']['navigation'];
+  setDeletingEmployee: (isDeletingEmployee: boolean) => void;
+  refetch: () => Promise<unknown>;
+}
+
+function WorkplaceViewer(
+  { workplace, navigation, setDeletingEmployee, refetch }: WorkplaceViewerProps
+) {
+  useLightHeader();
+  const snackbar = useSnackbar();
+  const deleteEmployeeMutation =
+    useEmployeeDeleterWithEffects(setDeletingEmployee, snackbar.setMessage);
+  return <>
+    <ScrollViewInSurfaceWithRefetch
+      contentContainerStyle={styles.scrollViewContentContainer}
+      refetch={refetch}
+      progressViewOffset={Layout.padding}
+    >
+      <WorkplaceCard workplace={workplace} />
+      <DeleteEmployeeMutationContext.Provider value={deleteEmployeeMutation}>
+        <EmployeesSection employees={workplace.employees}/>
+      </DeleteEmployeeMutationContext.Provider>
+    </ScrollViewInSurfaceWithRefetch>
+    <TheSnackbar self={snackbar} />
+    <FAB
+      icon="account-plus"
+      label="Añadir empleado"
+      onPress={() =>
+        navigation.navigate('CreateEmployee', { workplaceId: workplace.id! })
+      }
+    />
+  </>;
+}
+
+function useEmployeeDeleterWithEffects(
+  setDeletingEmployee: (isDeletingEmployee: boolean) => void,
+  setMessage: (message: string) => void
 ) {
   const mutation = useEmployeeDeleterByIdDoc();
-  const { isSuccess, isError, error } = mutation;
+  const { isLoading: isDeletingEmployee, isSuccess, error } = mutation;
+  React.useEffect(() => {
+    setDeletingEmployee(isDeletingEmployee);
+  }, [isDeletingEmployee]);
   React.useEffect(() => {
     if (isSuccess) {
-      setStatus('Empleado borrado');
-    } else if (isError) {
-      setStatus('No se pudo borrar el empleado. Ponte en contacto con Soporte.');
+      setMessage('Empleado borrado');
+    } else if (error) {
+      setMessage('No se pudo borrar el empleado. Ponte en contacto con Soporte.');
       console.error(error);
     }
-  }, [isSuccess, isError, error]);
+  }, [isSuccess, error]);
   return mutation;
 }
 
-function EmployeesList({ employees }: { employees: Employee[] | undefined }) {
-  if (employees === undefined) {
-    return null;
-  } else if (employees.length === 0) {
-    return <EmployeesEmptyState />;
-  } else {
-    return (
-      <>
-        {employees?.map(employee =>
-          <EmployeeListItem key={employee.idDoc} employee={employee} />)
+function WorkplaceCard({ workplace }: { workplace: Workplace }) {
+  return <>
+    <Card style={styles.workplaceCard}>
+      {/* TODO: high: replace with map view */}
+      <Card.Cover source={{ uri: 'https://images.unsplash.com/photo-1501523460185-2aa5d2a0f981?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=640' }} />
+      <Card.Content
+        // Defined inline so it overrides the default paddingHorizontal and
+        // paddingBottom:
+        style={{ paddingHorizontal: Layout.padding, paddingVertical: 16 }}
+      >
+        <Headline style={styles.workplaceHeading}>{workplace.name}</Headline>
+        <Caption>{workplace.address}</Caption>
+        {workplace.description &&
+          <Paragraph style={styles.workplaceDescription}>
+            {workplace.description}
+          </Paragraph>
         }
-      </>
-    );
-  }
+      </Card.Content>
+    </Card>
+    <Divider style={styles.workplaceCardDivider} />
+  </>;
+}
+
+const DeleteEmployeeMutationContext =
+  React.createContext<ReturnType<typeof useEmployeeDeleterByIdDoc>>(undefined!);
+
+function EmployeesSection(
+  { employees }: { employees: Employee[] | undefined }
+) {
+  return <>
+    <Subheading style={styles.employeesHeading}>Empleados</Subheading>
+    {employees &&
+      (employees.length === 0
+        ? <EmployeesEmptyState />
+        : employees?.map(employee =>
+            <EmployeeListItem key={employee.idDoc} employee={employee} />
+          )
+      )
+    }
+  </>;
 }
 
 function EmployeesEmptyState() {
   return (
     <AlternativeState
-      wrapperStyle={{ marginTop: Layout.padding / 2 }}
+      wrapperStyle={styles.employeesEmptyState}
       icon="account-multiple"
       title="No hay empleados"
       tagline="Añade a un empleado y aparecerá aquí"
@@ -173,8 +191,7 @@ function EmployeeListItem({ employee }: { employee: Employee }) {
   const navigation =
     useNavigation<EmployerStackScreensProps['Workplace']['navigation']>();
   return (
-    <List.Item
-      key={idDoc}
+    <ListItem
       title={`${firstName} ${lastName}`}
       description="Cargo"
       left={props => <EmployeeAvatar employee={employee} props={props} />}
@@ -205,38 +222,36 @@ function EmployeeAvatar<SidePropsType>(
 }
 
 interface EmployeePopupMenuProps<SidePropsType> {
-  props: SidePropsType;
   employeeIdDoc: Employee['idDoc'];
+  props: SidePropsType;
 }
 
 function EmployeePopupMenu<SidePropsType>(
-  { props, employeeIdDoc }: EmployeePopupMenuProps<SidePropsType>
+  { employeeIdDoc, props }: EmployeePopupMenuProps<SidePropsType>
 ) {
   const deleteEmployeeDialog = useVisible();
-  return (
-    <>
-      <Menu
-        anchor={openMenu =>
-          <IconButton
-            icon="dots-vertical"
-            onPress={openMenu}
-            accessibilityLabel="Abrir menú emergente"
-            {...props}
-          />
-        }
-        items={closeMenuAfter =>
-          <Menu.Item
-            title="Borrar"
-            onPress={closeMenuAfter(deleteEmployeeDialog.open)}
-          />
-        }
-      />
-      <DeleteEmployeeDialog
-        self={deleteEmployeeDialog}
-        employeeIdDoc={employeeIdDoc}
-      />
-    </>
-  );
+  return <>
+    <Menu
+      anchor={openMenu =>
+        <IconButton
+          icon="dots-vertical"
+          onPress={openMenu}
+          accessibilityLabel="Abrir menú emergente"
+          {...props}
+        />
+      }
+      items={closeMenuAfter =>
+        <Menu.Item
+          title="Borrar"
+          onPress={closeMenuAfter(deleteEmployeeDialog.open)}
+        />
+      }
+    />
+    <DeleteEmployeeDialog
+      self={deleteEmployeeDialog}
+      employeeIdDoc={employeeIdDoc}
+    />
+  </>;
 }
 
 interface DeleteEmployeeDialogProps {
@@ -247,7 +262,8 @@ interface DeleteEmployeeDialogProps {
 function DeleteEmployeeDialog(
   { self, employeeIdDoc }: DeleteEmployeeDialogProps
 ) {
-  const { mutate: deleteEmployee } = React.useContext(DeleteEmployeeContext);
+  const { mutate: deleteEmployee } =
+    React.useContext(DeleteEmployeeMutationContext);
   return (
     <AlertDialog
       self={self}
@@ -258,43 +274,71 @@ function DeleteEmployeeDialog(
   );
 }
 
-function TheSnackbar(
-  { snackbar }: { snackbar: ReturnType<typeof useSnackbar> }
-) {
+function TheSnackbar({ self }: { self: ReturnType<typeof useSnackbar> }) {
   return (
     <Snackbar
-      visible={snackbar.visible}
-      onDismiss={snackbar.close}
-      message={snackbar.message}
+      visible={self.visible}
+      onDismiss={self.close}
+      message={self.message}
       // Defined inline so it overrides the default style:
-      // TODO: mid: shouldn't need to do this:
       wrapperStyle={{
         bottom: FABSize + Layout.padding / 2,
-        paddingHorizontal: Layout.padding,
       }}
+    />
+  );
+}
+
+function GetWorkplaceErrorState(
+  { error, workplaceId }: { error: Error; workplaceId: Workplace['id'] }
+) {
+  if (error instanceof WorkplaceNotFoundError) {
+    var icon = 'cloud-question';
+    var title = 'Sitio de trabajo no encontrado';
+    var tagline = `El sitio de trabajo con ID "${workplaceId}" no se encuentra.`
+                  + ' Retrocede a la página anterior.';
+  } else {
+    var icon = 'cloud-alert';
+    var title = 'Error';
+    var tagline = 'No se pudo obtener el sitio de trabajo.'
+                  + ' Ponte en contacto con Soporte.';
+  }
+  return (
+    <AlternativeState
+      wrapperStyle={styles.getWorkplaceErrorState}
+      icon={icon}
+      title={title}
+      tagline={tagline}
     />
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     maxHeight: Platform.OS === 'web' ? Layout.window.height : undefined,
   },
-  scrollingSurface: {
-    paddingBottom: Layout.padding + FABSize,
+  scrollViewContentContainer: {
+    paddingBottom: 1.5 * Layout.padding + FABSize,
   },
-  card: {
+  workplaceCard: {
     marginHorizontal: -Layout.padding,
     marginTop: -Layout.padding,
   },
-  divider: {
+  workplaceHeading: {
+    lineHeight: 24, // same as its fontSize
+  },
+  workplaceDescription: {
+    marginTop: 16,
+  },
+  workplaceCardDivider: {
     marginHorizontal: -Layout.padding,
   },
   employeesHeading: {
     marginVertical: Layout.padding / 2,
   },
-  employeesLoadingIndicator: {
+  employeesEmptyState: {
     marginTop: Layout.padding / 2,
+  },
+  getWorkplaceErrorState: {
+    justifyContent: 'center'
   },
 });
