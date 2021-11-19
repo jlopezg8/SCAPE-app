@@ -1,5 +1,5 @@
 import React from "react";
-
+import { requestForegroundPermissionsAsync } from "expo-location";
 import { editWorkplace, getWorkplace } from "../../api/workplaces";
 import { EditWorkplaceScreen } from "../../screens";
 import { fillInWorkplace } from "../helpers/workplace";
@@ -7,9 +7,17 @@ import { fireEvent, render } from "../test-utils";
 
 jest.mock("@react-navigation/stack");
 jest.mock("../../api/workplaces");
+jest.mock("expo-location");
 
-describe("tests for editing an employee", () => {
-  beforeEach(() => jest.resetAllMocks());
+describe("tests for editing a workplace", () => {
+  beforeEach(() => {
+    jest.resetAllMocks();
+    requestForegroundPermissionsAsync.mockReturnValue({
+      then: () => {
+        "granted";
+      },
+    });
+  });
 
   const originalWorkplace = {
     name: "Colanta",
@@ -24,8 +32,8 @@ describe("tests for editing an employee", () => {
       name: "Celema",
       description: "Deliciosa",
       address: "Calle",
-      latitude: "50.0",
-      longitude: "-70.5",
+      //latitude: "50.0",
+      //longitude: "-70.5",
     };
     getWorkplace.mockReturnValue(Promise.resolve(originalWorkplace));
     const renderResult = render(
@@ -46,8 +54,8 @@ describe("tests for editing an employee", () => {
       name: "Celema",
       description: "Deliciosa",
       address: "Calle",
-      latitude: " ",
-      longitude: " ",
+      //latitude: " ",
+      //longitude: " ",
     };
     getWorkplace.mockReturnValue(Promise.resolve(originalWorkplace));
     const renderResult = render(
