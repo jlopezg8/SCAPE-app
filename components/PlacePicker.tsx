@@ -106,7 +106,7 @@ function useLocationPermissions(setMessage: MessageSetter) {
           'Permite el acceso a tu ubicación para encontrarla en el mapa');
       }
     });
-  });
+  }, []);
   return permissionsGranted;
 }
 

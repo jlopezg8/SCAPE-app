@@ -9,88 +9,80 @@ jest.mock("@react-navigation/native");
 jest.mock("../../api/workplaces");
 
 describe("workplace screen tests", () => {
-  beforeEach(() => jest.resetAllMocks());
+  const workplaceId = 1;
+
+  beforeEach(() => getWorkplace.mockClear());
 
   it("displays the employees correctly", async () => {
-    getWorkplace.mockReturnValue(
-      Promise.resolve({
-        employees: [
-          {
-            idDoc: "9999",
-            firstName: "Falcao",
-            lastName: "García",
-          },
-        ],
-      })
-    );
-    const workplaceId = 1;
+    getWorkplace.mockResolvedValueOnce({
+      employees: [
+        { idDoc: "9999", firstName: "Falcao", lastName: "García" },
+      ],
+    });
+
     const { findByText } = render(
       <WorkplaceScreen
         navigation={{ navigate: jest.fn() }}
         route={{ params: { id: workplaceId } }}
       />
     );
+
     await findByText(/Falcao/);
     expect(getWorkplace).toHaveBeenCalledWith(workplaceId);
   });
 
   it("displays an empty state when there are no employees", async () => {
-    getWorkplace.mockReturnValue(
-      Promise.resolve({
-        employees: [],
-      })
-    );
-    const workplaceId = 1;
+    getWorkplace.mockResolvedValueOnce({ employees: [] });
+
     const { findByText } = render(
       <WorkplaceScreen
         navigation={{ navigate: jest.fn() }}
         route={{ params: { id: workplaceId } }}
       />
     );
+
     await findByText("No hay empleados");
     expect(getWorkplace).toHaveBeenCalledWith(workplaceId);
   });
 
   it("displays an error message for a nonexistent workplace", async () => {
-    getWorkplace.mockReturnValue(Promise.reject(new WorkplaceNotFoundError()));
-    const workplaceId = 1;
+    getWorkplace.mockRejectedValueOnce(new WorkplaceNotFoundError());
+
     const { findByText } = render(
       <WorkplaceScreen
         navigation={{ navigate: jest.fn() }}
         route={{ params: { id: workplaceId } }}
       />
     );
+
     await findByText("Sitio de trabajo no encontrado");
     expect(getWorkplace).toHaveBeenCalledWith(workplaceId);
   });
 
-  it("displays workplaces info properly", async () => {
-    getWorkplace.mockReturnValue(
-      Promise.resolve({
-        name: "Colanta",
-        address: "Barrio caribe, Medellin",
-        latitudePosition: "-70",
-        longitudePosition: "50",
-        description: "Cooperativa",
-        employees: [
-          {
-            idDoc: "9999",
-            firstName: "Falcao",
-            lastName: "García",
-          },
-        ],
-      })
-    );
-    const workplaceId = 1;
+  it("displays a workplace info properly", async () => {    
+    getWorkplace.mockResolvedValueOnce({
+      name: "Colanta",
+      description: "Cooperativa",
+      address: "Barrio Caribe, Medellín",
+      location: {
+        latitude: -70,
+        longitude: 50,
+      },
+      employees: [
+        { idDoc: "9999", firstName: "Falcao", lastName: "García" },
+      ],
+    });
+
     const { findByText } = render(
       <WorkplaceScreen
         navigation={{ navigate: jest.fn() }}
         route={{ params: { id: workplaceId } }}
       />
     );
+
     await findByText(/Colanta/);
-    await findByText(/Barrio caribe/);
     await findByText(/Cooperativa/);
+    await findByText(/Barrio Caribe/);
     expect(getWorkplace).toHaveBeenCalledWith(workplaceId);
   });
 });

@@ -43,6 +43,7 @@ export default function CoordinatePicker(
       onPoiClick={setCoordinateFromMapEvent} // currently not supported
       onMarkerPress={setCoordinateFromMapEvent} // currently not supported
       style={styles.map}
+      accessibilityLabel="Selector de coordenada"
     >
       {foundLocations.map((location, index) =>
         // @ts-expect-error: react-native-web-maps exports Marker not on its

@@ -24,11 +24,10 @@ const fillInFunctions = {
     fireEvent.changeText(getByLabelText("Descripción"), description);
   },
 
-  latitude(latitude, { getByLabelText }) {
-    fireEvent.changeText(getByLabelText("Latitud*"), latitude);
-  },
-
-  longitude(longitude, { getByLabelText }) {
-    fireEvent.changeText(getByLabelText("Longitud*"), longitude);
+  location(location, { getByLabelText }) {
+    // fireEvent.press doesn't work for some reason
+    fireEvent(getByLabelText("Selector de coordenada"), 'press', {
+      nativeEvent: { coordinate: location },
+    });
   },
 };
