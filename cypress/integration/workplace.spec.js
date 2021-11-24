@@ -13,7 +13,7 @@ describe("Workplace CRUD", () => {
   describe("Workplace list", () => {
     it("shows at least one workplace", () => {
       cy.visit("/employer");
-      cy.findByText(/TestWorkPlace/).should("be.visible");
+      cy.findByText(/Empresa de Metales/).should("be.visible");
     });
     it("message on invalid workplace", () => {
       cy.visit("/employer/workplace/0");
