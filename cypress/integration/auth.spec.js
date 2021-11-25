@@ -37,10 +37,7 @@ describe("Login", () => {
       password: Cypress.env("employerPassword"),
     });
     //Find attendance button
-    cy.get(".r-pointerEvents-105ug2t > .css-cursor-18t94o4").should(
-      "be.visible"
-    );
-    cy.findAllByText(/sitio/i).should("be.visible");
+    cy.findByLabelText("Abrir acciones").should("be.visible");
   });
 
   it("Does not login with ID", () => {

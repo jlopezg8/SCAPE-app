@@ -24,7 +24,22 @@ const TextField: TextFieldType<WorkplaceToCreateOrEdit> = RawTextField;
 /**
  * @requires `'react-native-paper'.Provider` for the Material Design components
  * @requires `'react-query'.QueryClientProvider` for mutating data
- * `'../api/workplaces'.createWorkplace` can be mocked
+ * 
+ * `'@react-navigation/stack'` can be mocked
+ * 
+ * `'expo-location'.requestForegroundPermissionsAsync:
+ *   () => Promise<{ status: 'granted' | 'denied' | 'undetermined' }>` can be
+ *   mocked
+ *
+ * `'expo-location'.getCurrentPositionAsync:
+ *   (options: { accuracy: 1..6 }) => Promise<{ coords: LatLng }>` can be
+ *   mocked
+ *
+ * `'expo-location'.geocodeAsync: (address: string) => Promise<LatLng>` can be
+ *   mocked
+ * 
+ * `'../api/workplaces'.createWorkplace:
+ *   (workplace: WorkplaceToCreateOrEdit) => Promise<void>` can be mocked
  */
 export default function CreateWorkplaceScreen() {
   const submit = useSubmit();

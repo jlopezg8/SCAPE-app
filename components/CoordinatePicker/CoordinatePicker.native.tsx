@@ -20,8 +20,8 @@ export default function CoordinatePicker(
   const ref = useMapRef(mapRef);
   useMoveToInitialCoordinate(
     coordinate, ref, mapCoordinateToCamera, locationPermissionsGranted);
-  const setCoordinateFromMapEvent = (e: MapEvent) => {
-    const { coordinate } = e.nativeEvent;
+  const setCoordinateFromMapEvent = ({ nativeEvent }: MapEvent) => {
+    const { coordinate } = nativeEvent;
     setCoordinate(coordinate);
   };
   const [mapReady, setMapReady] = React.useState(false);
@@ -37,6 +37,7 @@ export default function CoordinatePicker(
       style={[styles.mapView, { margin: mapReady ? 0 : 1 }]}
       onMapReady={() => setMapReady(true)}
       showsUserLocation // for showsMyLocationButton
+      accessibilityLabel="Selector de coordenada"
     >
       {foundLocations.map((location, index) =>
         <Marker key={index} coordinate={location} pinColor="blue" />

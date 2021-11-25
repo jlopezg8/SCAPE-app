@@ -144,7 +144,7 @@ function WorkplaceListItem({ workplace, navigation }: WorkplaceListItemProps) {
   return (
     <ListItem
       title={workplace.name}
-      description={workplace.address}
+      description={workplace.address || ' '} // ' ' so that it takes space
       left={props => <ListItem.Icon {...props} icon="factory" />}
       right={props =>
         <WorkplacePopupMenu

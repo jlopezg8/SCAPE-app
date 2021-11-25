@@ -144,8 +144,11 @@ export function Snackbar(
       wrapperStyle={[
         {
           alignSelf: 'center',
-          paddingHorizontal: Platform.OS === 'web' ? Layout.padding : 0,
           paddingVertical: Layout.padding,
+          // If we use paddingHorizontal it inexplicably gets overriden by
+          // env(safe-area-inset-[left | right]) = 0
+          paddingLeft: Platform.OS === 'web' ? Layout.padding : 0,
+          paddingRight: Platform.OS === 'web' ? Layout.padding : 0,
         },
         wrapperStyle,
       ]}

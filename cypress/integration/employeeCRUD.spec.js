@@ -1,3 +1,4 @@
+const baseWorkplace = "/employer/workplace/68";
 describe("Employee CRUD", () => {
   // login just once using API
   let user;
@@ -16,7 +17,7 @@ describe("Employee CRUD", () => {
 
   describe("Adding employees", () => {
     beforeEach(() => {
-      cy.visit("/employer/workplace/1");
+      cy.visit(baseWorkplace);
       cy.get(
         '[style="display: flex;"] > :nth-child(2) > :nth-child(2) > :nth-child(1) > .r-minHeight-2llsf > .r-flexDirection-1d5kdc7 > :nth-child(1) > :nth-child(1) > .r-pointerEvents-105ug2t > .css-cursor-18t94o4'
       ).click();
@@ -68,7 +69,7 @@ describe("Employee CRUD", () => {
 
   describe("List employees", () => {
     beforeEach(() => {
-      cy.visit("/employer/workplace/1");
+      cy.visit(baseWorkplace);
     });
 
     it.skip("Shows employee after adding", () => {});
@@ -78,7 +79,7 @@ describe("Employee CRUD", () => {
     });
 
     it("Doesn't show any employees on empty workplace", () => {
-      cy.visit("/employer/workplace/2");
+      cy.visit("/employer/workplace/7");
       cy.findByText(/No hay empleados/).should("be.visible");
       cy.findByText(/Radamel Falcao/, { timeout: 10000 }).should("not.exist");
     });
@@ -86,7 +87,7 @@ describe("Employee CRUD", () => {
 
   describe("delete employees", () => {
     beforeEach(() => {
-      cy.visit("/employer/workplace/1");
+      cy.visit(baseWorkplace);
     });
     it("Shows warning before deleting", () => {
       cy.contains("Jimy Hendrix")
@@ -108,7 +109,7 @@ describe("Employee CRUD", () => {
 
   describe("edit employees", () => {
     beforeEach(() => {
-      cy.visit("/employer/workplace/1");
+      cy.visit(baseWorkplace);
     });
     //it.skip("Shows warning before modify", () => {});
     it("modifies employee properly", () => {
@@ -121,7 +122,7 @@ describe("Employee CRUD", () => {
       typeData(jimi);
       cy.findByRole("button", { name: /Guardar/ }).click();
       cy.findByText(/Empleado editado/).should("be.visible");
-      cy.visit("/employer/workplace/1");
+      cy.visit(baseWorkplace);
       cy.findByText(/Jimi Hendrix/).should("exist");
       restoreHendrix();
     });
@@ -162,6 +163,6 @@ function restoreHendrix() {
   typeData(hendrix);
   cy.findByRole("button", { name: /Guardar/ }).click();
   cy.findByText(/Empleado editado/).should("be.visible");
-  cy.visit("/employer/workplace/1");
+  cy.visit();
   cy.findByText(/Jimy Hendrix/).should("exist");
 }
