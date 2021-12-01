@@ -16,6 +16,12 @@ export interface APIEmployee {
   image?: { image: string }[];
 }
 
+export interface APISchedule {
+  dayOfWeek: number;
+  startMinute: number;
+  endMinute: number;
+}
+
 export class EmployeeNotFoundError extends Error {
   constructor(idDoc?: string) {
     const withId = idDoc ? ` with ID "${idDoc}" ` : ' ';

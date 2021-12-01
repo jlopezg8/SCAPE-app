@@ -7,7 +7,12 @@ export function delete_(url: string, body?: any) {
   );
 }
 
-export async function get(url: string) {
+export async function get(url: string, body?: any) {
+  if (body != null) {
+    const theUrl = new URL(url);
+    theUrl.search = createURLSearchParamsFrom(body).toString();
+    url = theUrl.toString();
+  }
   return request('GET', url);
 }
 
