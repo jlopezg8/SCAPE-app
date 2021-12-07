@@ -31,8 +31,16 @@ export default linking = {
             path: 'workplace/:id',
             parse: { id: Number },
           },
+          AddEmployeeToWorkplace: {
+            path: 'workplace/:workplaceId/add-employee',
+            parse: { workplaceId: Number },
+          },
           CreateEmployee: {
             path: 'workplace/:workplaceId/create-employee',
+            parse: { workplaceId: Number },
+          },
+          SetEmployeeEmploymentInWorkplace: {
+            path: 'workplace/:workplaceId/set-employment',
             parse: { workplaceId: Number },
           },
           RecordAttendance: 'record-attendance',
@@ -41,6 +49,10 @@ export default linking = {
             parse: { id: Number },
           },
           EditEmployee: 'edit-employee/:idDoc',
+          EditEmployeeEmploymentInWorkplace: {
+            path: 'workplace/:workplaceId/edit-employment',
+            parse: { workplaceId: Number },
+          },
           Settings: 'settings',
         },
       },

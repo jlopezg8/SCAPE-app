@@ -11,6 +11,17 @@ export default interface Schedule {
   endTime: Time;
 }
 
+export function getScheduleInitialValues(): Schedule {
+  const _scheduleInitialValues: {
+    [field in keyof Required<Schedule>]: undefined
+  } = {
+    dayOfWeek: undefined,
+    startTime: undefined,
+    endTime: undefined,
+  };
+  return _scheduleInitialValues as unknown as Schedule;
+}
+
 export const scheduleSchema: yup.SchemaOf<Schedule> = yup.object({
   dayOfWeek: yup.number().required().min(1).max(7),
   startTime: timeSchema.required(),

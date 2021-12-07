@@ -1,4 +1,4 @@
-import { Employee, Schedule, Workplace } from '../../models';
+import { Employee, Schedule, WorkplaceId } from '../../models';
 import { getTimeFromMinutesSinceMidnight } from '../../models/Time';
 import { RequiredArgumentError } from '../errors';
 import { get } from '../utils';
@@ -15,7 +15,7 @@ import { APISchedule, EmployeeNotFoundError, getEndpoint } from './common';
  * @throws `Error` if there was a network failure or an unknown error
  */
 export default async function getEmployeeSchedulesInWorkplace(
-  employeeIdDoc: Employee['idDoc'], workplaceId: NonNullable<Workplace['id']>
+  employeeIdDoc: Employee['idDoc'], workplaceId: WorkplaceId
 ): Promise<Schedule[]> {
   if (!employeeIdDoc) throw new RequiredArgumentError('employeeIdDoc');
   if (workplaceId == null) throw new RequiredArgumentError('workplaceId');

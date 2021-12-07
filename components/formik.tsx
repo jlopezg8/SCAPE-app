@@ -1,38 +1,61 @@
 import { useField, useFormikContext } from "formik";
 import React from 'react';
 
+import { Time } from '../models';
 import { Button } from './controls';
 import {
-  DatePicker as StyledDatePicker,
-  DropDown as StyledDropDown,
-  DropDownProps as StyledDropDownProps,
-  PasswordField as StyledPasswordField,
-  PhotoPicker as DefaultPhotoPicker,
-  TextField as StyledTextField,
-  TextFieldProps as StyledTextFieldProps,
+  DayOfWeekDropDown as DayOfWeekDropDownBase,
+  DatePicker as DatePickerBase,
+  DropDown as DropDownBase,
+  DropDownProps as DropDownPropsBase,
+  PasswordField as PasswordFieldBase,
+  PhotoPicker as PhotoPickerBase,
+  TextField as TextFieldBase,
+  TextFieldProps as TextFieldPropsBase,
+  TimePicker as TimePickerBase,
 } from './inputs';
 import { Snackbar, SnackbarProps } from './misc';
-import {
+import PlacePickerBase, {
   Coordinate,
-  default as DefaultPlacePicker,
-  PlacePickerProps as DefaultPlacePickerProps,
+  PlacePickerProps as PlacePickerPropsBase,
 } from './PlacePicker';
+
+export interface FormikInputProps {
+  label: string;
+  name: string;
+  helperText?: string;
+}
 
 /**
  * @requires formik.Formik for Formik state and helpers
  * @requires react-native-paper.Provider for the Material Design components
  */
-export function DatePicker(
-  { label, name }: { label: string; name: string; }
-) {
+export function DatePicker({ label, name, helperText }: FormikInputProps) {
   const [{ value }, { touched, error }, { setValue }] = useField<Date>(name);
   const hasError = Boolean(touched && error);
   return (
-    <StyledDatePicker
+    <DatePickerBase
       label={label}
       value={value}
       setValue={setValue}
       error={hasError}
+      helperText={helperText}
+      errorText={error}
+    />
+  );
+}
+
+export function DayOfWeekDropDown(
+  { label, name, helperText }: FormikInputProps
+) {
+  const [{ value }, { touched, error }, { setValue }] = useField<number>(name);
+  return (
+    <DayOfWeekDropDownBase
+      value={value}
+      setValue={setValue}
+      label={label}
+      error={Boolean(touched && error)}
+      helperText={helperText}
       errorText={error}
     />
   );
@@ -41,7 +64,7 @@ export function DatePicker(
 export type DropDownProps = {
   label: string;
   name: string;
-  options: StyledDropDownProps['options'];
+  options: DropDownPropsBase['options'];
 };
 
 /**
@@ -52,7 +75,7 @@ export function DropDown({ label, name, options }: DropDownProps) {
   const [field, meta] = useField(name);
   const hasError = Boolean(meta.touched && meta.error);
   return (
-    <StyledDropDown
+    <DropDownBase
       value={field.value}
       setValue={field.onChange(name)}
       label={label}
@@ -73,7 +96,7 @@ export function DropDown({ label, name, options }: DropDownProps) {
   const { setStatus } = useFormikContext();
   const [{ value, onChange }] = useField(name);
   return (
-    <DefaultPhotoPicker
+    <PhotoPickerBase
       base64Image={value}
       setBase64Image={onChange(name)}
       setStatus={setStatus}
@@ -113,7 +136,7 @@ export function PlacePicker(props: PlacePickerProps) {
   const coordinateProps = useCoordinateProps(props);
   const { setStatus } = useFormikContext();
   return (
-    <DefaultPlacePicker
+    <PlacePickerBase
       addressTextFieldProps={addressTextFieldProps}
       coordinateProps={coordinateProps}
       setMessage={setStatus}
@@ -123,7 +146,7 @@ export function PlacePicker(props: PlacePickerProps) {
 
 function useAddressTextFieldProps(
   { addressLabel, addressName }: PlacePickerProps
-): DefaultPlacePickerProps['addressTextFieldProps'] {
+): PlacePickerPropsBase['addressTextFieldProps'] {
   const [field, meta] = useField<string>(addressName);
   return {
     label: addressLabel,
@@ -137,7 +160,7 @@ function useAddressTextFieldProps(
 
 function useCoordinateProps(
   { coordinateName }: PlacePickerProps
-): DefaultPlacePickerProps['coordinateProps'] {
+): PlacePickerPropsBase['coordinateProps'] {
   const [field, meta, helpers] = useField<Coordinate>(coordinateName);
   return {
     coordinate: field.value,
@@ -202,7 +225,7 @@ export function SubmitButton({ label }: { label: string }) {
   );
 }
 
-export type TextFieldProps<Model> = StyledTextFieldProps & {
+export type TextFieldProps<Model> = TextFieldPropsBase & {
   label: string;
   name: keyof Model & string;
 };
@@ -217,7 +240,7 @@ export type TextFieldProps<Model> = StyledTextFieldProps & {
 export function TextField<Model>(
   { secureTextEntry, label, name, ...otherProps }: TextFieldProps<Model>
 ) {
-  const TheTextField = secureTextEntry ? StyledPasswordField : StyledTextField;
+  const TheTextField = secureTextEntry ? PasswordFieldBase : TextFieldBase;
   const [field, meta] = useField(name);
   const hasError = Boolean(meta.touched && meta.error);
   return (
@@ -235,4 +258,21 @@ export function TextField<Model>(
 
 export interface TextFieldType<Model> {
   (props: TextFieldProps<Model>): ReturnType<typeof TextField>
+}
+
+export function TimePicker({ label, name, helperText }: FormikInputProps) {
+  const [{ value: time, onBlur }, { touched, error }, { setValue }] =
+    useField<Time>(name);
+  const isError = touched && typeof error === 'string';
+  return (
+    <TimePickerBase
+      label={label}
+      value={time}
+      setValue={setValue}
+      error={isError}
+      helperText={helperText}
+      errorText={isError ? error : undefined}
+      onBlur={onBlur(name)}
+    />
+  );
 }

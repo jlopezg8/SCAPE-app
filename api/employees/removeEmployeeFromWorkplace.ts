@@ -1,4 +1,4 @@
-import { Employee, Workplace } from '../../models';
+import { Employee, WorkplaceId } from '../../models';
 import { RequiredArgumentError } from '../errors';
 import { delete_ } from '../utils';
 import { WorkplaceNotFoundError } from '../workplaces/common';
@@ -14,7 +14,7 @@ import { EmployeeNotFoundError, getEndpoint } from './common';
  * @throws `Error` if there was a network failure or an unknown error
  */
 export default async function removeEmployeeFromWorkplace(
-  employeeIdDoc: Employee['idDoc'], workplaceId: NonNullable<Workplace['id']>
+  employeeIdDoc: Employee['idDoc'], workplaceId: WorkplaceId
 ) {
   if (!employeeIdDoc) throw new RequiredArgumentError('employeeIdDoc');
   if (workplaceId == null) throw new RequiredArgumentError('workplaceId');

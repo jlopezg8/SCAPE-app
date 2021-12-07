@@ -33,3 +33,12 @@ export function getTimeFromMinutesSinceMidnight(minutesSinceMidnight: number)
     minutes: minutesSinceMidnight % 60,
   };
 }
+
+export function mapTimeToString({ hours, minutes }: Time) {
+  const date = new Date();
+  date.setHours(hours, minutes);
+  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toLocaleTimeString#using_options
+  return date.toLocaleTimeString([],
+    { hour: '2-digit', minute: '2-digit', hour12: true }
+  );
+}

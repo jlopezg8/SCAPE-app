@@ -1,14 +1,29 @@
 import { Employee, idDocSchema } from './Employee';
 import Schedule, { doesAnyScheduleConflict, scheduleSchema } from './Schedule';
 import * as yup from './utils/localeYup';
-import Workplace from './Workplace';
+import { WorkplaceId } from './Workplace';
 
 export default interface Employment {
   employeeIdDoc: Employee['idDoc'];
-  workplaceId: NonNullable<Workplace['id']>;
+  workplaceId: WorkplaceId;
   schedules: Schedule[];
   startDate?: Date;
   endDate?: Date;
+}
+
+export function getEmploymentInitialValues(
+  employeeIdDoc: Employee['idDoc'], workplaceId: WorkplaceId
+): Employment {
+  const _employmentInitialValues: {
+    [field in keyof Required<Employment>]: Employment[field] | undefined
+  } = {
+    employeeIdDoc,
+    workplaceId,
+    schedules: [],
+    startDate: undefined,
+    endDate: undefined,
+  };
+  return _employmentInitialValues as unknown as Employment;
 }
 
 const optionalDateSchema = yup.date().typeError('Fecha inválida');
@@ -36,17 +51,3 @@ function areSchedulesConflictFree(schedules: DeepMaybeSchedules) {
   const theSchedules = schedules as Schedule[] | undefined;
   return !(theSchedules && doesAnyScheduleConflict(theSchedules));
 }
-
-/**
- * Annoyingly, yup's test execution order "cannot be guaranteed", so the
- * `areSchedulesConflictFree` test could run before the `required` test.
- */
-/*function ensureSchedules(schedules: DeepMaybeSchedules)
-  : Schedule[] | undefined
-{
-  return schedules && schedules.every(schedule =>
-    schedule?.dayOfWeek != null
-    && schedule?.startTime != null
-    && schedule?.endTime != null
-  ) ? schedules as Schedule[] : undefined;
-}*/

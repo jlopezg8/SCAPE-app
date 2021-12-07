@@ -94,7 +94,8 @@ export function Surface(props: React.ComponentProps<typeof DefaultSurface>) {
   };
   return (
     <DefaultSurface
-      style={[styles.surface, containerStyle, style]} {...otherProps}
+      style={[styles.surface, containerStyle, style]}
+      {...otherProps}
     />
   );
 }
