@@ -21,6 +21,7 @@ describe("Employee CRUD", () => {
       cy.get(
         '[style="display: flex;"] > :nth-child(2) > :nth-child(2) > :nth-child(1) > .r-minHeight-2llsf > .r-flexDirection-1d5kdc7 > :nth-child(1) > :nth-child(1) > .r-pointerEvents-105ug2t > .css-cursor-18t94o4'
       ).click();
+      cy.findByText(/crear empleado/i).click();
     });
 
     //TODO: Detect red
@@ -62,8 +63,11 @@ describe("Employee CRUD", () => {
       cy.pickPhoto("juan.jpg");
       typeData(employee);
       cy.findByRole("button", { name: /Guardar/ }).click();
-      cy.findByText(/Empleado creado/).should("be.visible");
-      deleteEmployee(employee["Documento"], user);
+      cy.findByText(/Empleado creado/)
+        .should("be.visible")
+        .then(() => {
+          deleteEmployee(employee["Documento"], user);
+        });
     });
   });
 
@@ -72,7 +76,7 @@ describe("Employee CRUD", () => {
       cy.visit(baseWorkplace);
     });
 
-    it.skip("Shows employee after adding", () => {});
+    /*it.skip("Shows employee after adding", () => {});*/
 
     it("Shows at least one employee", () => {
       cy.findByText(/Radamel Falcao/).should("be.visible");
@@ -163,6 +167,6 @@ function restoreHendrix() {
   typeData(hendrix);
   cy.findByRole("button", { name: /Guardar/ }).click();
   cy.findByText(/Empleado editado/).should("be.visible");
-  cy.visit();
+  cy.visit(baseWorkplace);
   cy.findByText(/Jimy Hendrix/).should("exist");
 }
