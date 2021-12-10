@@ -11,6 +11,7 @@ import {
 import { SurfaceInStackNav } from '../components/containers';
 import { Button } from '../components/controls';
 import { EmployeeListItem } from '../components/employees';
+import Layout from '../constants/Layout';
 import {
   EmployeeNotFoundError,
   useEmployeeGetterByIdDoc,
@@ -63,7 +64,10 @@ function EmployeeSearchBar(
   const searchEmployee = () => setEmployeeIdDoc(searchQuery);
   return (
     <Searchbar
-      placeholder="Buscar empleado por documento de identidad"
+      placeholder={Layout.isSmallDevice
+        ? 'Buscar por documento'
+        : 'Buscar empleado por documento de identidad'
+      }
       value={searchQuery}
       onChangeText={setSearchQuery}
       onIconPress={searchEmployee}

@@ -39,11 +39,15 @@ function SchedulesList({ name }: { name: string }) {
       name={name}
       render={arrayHelpers => <>
         {schedules && schedules.map((_schedule, index) =>
-          <SchedulesListItem
-            key={index}
-            name={`${name}[${index}]`}
-            removeThisItem={() => arrayHelpers.remove(index)}
-          />
+          <View key={index} style={styles.schedulesListItemContainer}>
+            <SchedulesListItem              
+              name={`${name}[${index}]`}
+              removeThisItem={() => arrayHelpers.remove(index)}
+            />
+            {Layout.isSmallDevice && index < schedules.length - 1 &&
+              <Divider />
+            }
+          </View>
         )}
         <AddScheduleButton
           addSchedule={() => arrayHelpers.push(getScheduleInitialValues())}
@@ -56,12 +60,12 @@ function SchedulesList({ name }: { name: string }) {
 function SchedulesListItem(
   { name, removeThisItem }: { name: string; removeThisItem: () => void; }
 ) {
-  return (
+  return <>
     <View style={styles.schedulesListItem}>
       <SchedulePicker name={name}/>
       <Button onPress={removeThisItem}>X</Button>
     </View>
-  );
+  </>;
 }
 
 function AddScheduleButton({ addSchedule }: { addSchedule: () => void }) {
@@ -107,15 +111,19 @@ const styles = StyleSheet.create({
   label: {
     paddingLeft: 12,
   },
+  schedulesListItemContainer: {
+    paddingBottom: Layout.isSmallDevice ? 12 : undefined,
+  },
   schedulesListItem: {
     flexDirection: 'row',
-    alignItems: 'baseline',
+    alignItems: Layout.isSmallDevice ? 'flex-start' : 'baseline',
   },
   addScheduleButton: {
     alignSelf: 'center',
   },
   schedulePicker: {
-    flexDirection: 'row',
+    flexDirection: Layout.isSmallDevice ? 'column' : 'row',
+    alignItems: 'stretch',
     flex: 1,
   }
 });
