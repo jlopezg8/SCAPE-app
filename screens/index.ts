@@ -1,6 +1,11 @@
+export { default as AddEmployeeToWorkplaceScreen } from './AddEmployeeToWorkplaceScreen';
 export { default as AdminHomeScreen } from './AdminHomeScreen';
 export { default as CreateEmployeeScreen } from './CreateEmployeeScreen';
 export { default as CreateWorkplaceScreen } from './CreateWorkplaceScreen';
+export {
+  EditEmployeeEmploymentInWorkplaceScreen,
+  SetEmployeeEmploymentInWorkplaceScreen,
+} from './EmployeeEmploymentInWorkplaceScreens';
 export { default as EditEmployeeScreen } from './EditEmployeeScreen';
 export { default as EditWorkplaceScreen } from './EditWorkplaceScreen';
 export { default as EmployeeHomeScreen } from './EmployeeHomeScreen';

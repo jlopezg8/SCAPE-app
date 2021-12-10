@@ -8,12 +8,16 @@ import {
   editEmployee,
   getEmployeeByIdDoc,
   getEmployeeByPhoto,
+  getEmployeeEmploymentInWorkplace,
+  putEmployeeEmploymentInWorkplace,
+  removeEmployeeFromWorkplace,
 } from '../api/employees';
 import {
   Employee,
   EmployeeToCreate,
   EmployeeToEdit,
-} from '../models/Employee';
+  WorkplaceId,
+} from '../models';
 import { WORKPLACES_QUERY_KEY } from './useWorkplaces';
 
 const EMPLOYEES_QUERY_KEY = 'employees';
@@ -61,7 +65,7 @@ export function useEmployeeDeleterByIdDoc() {
   const queryClient = useQueryClient();
   return useMutation(deleteEmployeeByIdDoc, {
     onSuccess: (_data, idDoc) => Promise.all([
-      queryClient.invalidateQueries(WORKPLACES_QUERY_KEY, { exact: true }),
+      queryClient.invalidateQueries(WORKPLACES_QUERY_KEY),
       queryClient.invalidateQueries([EMPLOYEES_QUERY_KEY, idDoc]),
       queryClient.invalidateQueries([EMPLOYEES_QUERY_KEY, 'byPhoto']),
     ]),
@@ -74,7 +78,7 @@ export function useEmployeeEditor(oldEmployee: Employee) {
     (newEmployee: EmployeeToEdit) => editEmployee(oldEmployee, newEmployee),
     {
       onSuccess: (_data, newEmployee) => Promise.all([
-        queryClient.invalidateQueries(WORKPLACES_QUERY_KEY, { exact: true }),
+        queryClient.invalidateQueries(WORKPLACES_QUERY_KEY),
         queryClient.invalidateQueries([EMPLOYEES_QUERY_KEY, oldEmployee.idDoc]),
         queryClient.invalidateQueries([EMPLOYEES_QUERY_KEY, newEmployee.idDoc]),
         queryClient.invalidateQueries([EMPLOYEES_QUERY_KEY, 'byPhoto']),
@@ -83,10 +87,44 @@ export function useEmployeeEditor(oldEmployee: Employee) {
   );
 }
 
-export function useEmployeeGetterByIdDoc(idDoc: string) {
+export function useEmployeeEmploymentInWorkplaceEditor() {
+  const queryClient = useQueryClient();
+  return useMutation(
+    putEmployeeEmploymentInWorkplace,
+    {
+      onSuccess: (_data, { employeeIdDoc, workplaceId }) => Promise.all([
+        queryClient.invalidateQueries([WORKPLACES_QUERY_KEY, workplaceId]),
+        queryClient.invalidateQueries(
+          getEmployeeEmploymentInWorkplaceQueryKey(employeeIdDoc, workplaceId)
+        ),
+      ]),
+    }
+  );
+}
+
+const getEmployeeEmploymentInWorkplaceQueryKey = (
+  employeeIdDoc: Employee['idDoc'], workplaceId: WorkplaceId
+) => ([
+  EMPLOYEES_QUERY_KEY,
+  employeeIdDoc,
+  'employmentInWorkplace',
+  workplaceId,
+] as const);
+
+export function useEmployeeEmploymentInWorkplaceGetter(
+  employeeIdDoc: Employee['idDoc'], workplaceId: WorkplaceId
+) {
+  return useQuery(
+    getEmployeeEmploymentInWorkplaceQueryKey(employeeIdDoc, workplaceId),
+    () => getEmployeeEmploymentInWorkplace(employeeIdDoc, workplaceId)
+  );
+}
+
+export function useEmployeeGetterByIdDoc(idDoc?: string) {
   return useQuery(
     [EMPLOYEES_QUERY_KEY, idDoc],
-    () => getEmployeeByIdDoc(idDoc)
+    () => getEmployeeByIdDoc(idDoc!),
+    { enabled: Boolean(idDoc) }
   );
 }
 
@@ -95,6 +133,22 @@ export function useEmployeeGetterByPhoto(photo?: string) {
     [EMPLOYEES_QUERY_KEY, 'byPhoto', photo],
     () => getEmployeeByPhoto(photo!),
     { enabled: Boolean(photo) }
+  );
+}
+
+export function useEmployeeRemoverFromWorkplace(workplaceId: WorkplaceId) {
+  const queryClient = useQueryClient();
+  return useMutation(
+    (employeeIdDoc: Employee['idDoc']) =>
+      removeEmployeeFromWorkplace(employeeIdDoc, workplaceId),
+    {
+      onSuccess: (_data, employeeIdDoc) => Promise.all([
+        queryClient.invalidateQueries([WORKPLACES_QUERY_KEY, workplaceId]),
+        queryClient.invalidateQueries(
+          getEmployeeEmploymentInWorkplaceQueryKey(employeeIdDoc, workplaceId)
+        ),
+      ]),
+    }
   );
 }
 

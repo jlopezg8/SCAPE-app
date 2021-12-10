@@ -22,10 +22,19 @@ export type EmployerStackParamList = {
   Home: undefined;
   CreateWorkplace: undefined;
   Workplace: { id: number };
+  AddEmployeeToWorkplace: { workplaceId: number };
   CreateEmployee: { workplaceId: number };
+  SetEmployeeEmploymentInWorkplace: {
+    employeeIdDoc: string;
+    workplaceId: number;
+  };
   RecordAttendance: undefined;
   EditWorkplace: { id: number };
   EditEmployee: { idDoc: string };
+  EditEmployeeEmploymentInWorkplace: {
+    employeeIdDoc: string;
+    workplaceId: number;
+  };
   Settings: undefined;
 };
 

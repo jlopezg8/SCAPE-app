@@ -1,9 +1,11 @@
 import React from 'react';
+import { View } from 'react-native';
 import { TextInput } from 'react-native-paper';
-import { DatePickerModal } from 'react-native-paper-dates';
+import { DatePickerModal, TimePickerModal } from 'react-native-paper-dates';
 import DefaultDropDown from 'react-native-paper-dropdown';
 
 import { useVisible } from '../hooks';
+import Time, { mapTimeToString } from '../models/Time';
 import { HelperText } from './misc';
 
 export interface DatePickerProps {
@@ -13,7 +15,6 @@ export interface DatePickerProps {
   error?: boolean;
   helperText?: string;
   errorText?: string;
-  accessibilityLabel?: string;
 }
 
 /**
@@ -61,6 +62,43 @@ export function DatePicker(
   );
 }
 
+export interface DayOfWeekDropDownProps {
+  value: number;
+  setValue: (dayOfWeek: number) => void;
+  label: string;
+  error?: boolean;
+  helperText?: string;
+  errorText?: string;
+}
+
+/**
+ * @requires `'react-native-paper'.Provider` for the Material Design components
+ */
+export function DayOfWeekDropDown(
+  { value, setValue, ...otherProps }: DayOfWeekDropDownProps
+) {
+  return (
+    <DropDown
+      value={value?.toString() ?? ''}
+      setValue={value => setValue(Number(value))}
+      options={daysOfTheWeek.map((dayOfTheWeek, index) => (
+        { label: dayOfTheWeek, value: (index + 1).toString() }
+      ))}
+      {...otherProps}
+    />
+  );
+}
+
+const daysOfTheWeek = [
+  'Lunes',
+  'Martes',
+  'Miércoles',
+  'Jueves',
+  'Viernes',
+  'Sábado',
+  'Domingo',
+];
+
 export interface DropDownProps {
   value: string;
   setValue: (value: string) => void;
@@ -88,7 +126,7 @@ export function DropDown(
   const dropDown = useVisible();
   const _setValue = (value: string | number) => setValue(value.toString());
   return (
-    <>
+    <View style={{ flex: 1 }}>
       <DefaultDropDown
         visible={dropDown.visible}
         onDismiss={dropDown.close}
@@ -107,7 +145,7 @@ export function DropDown(
         helperText={helperText}
         errorText={errorText}
       />
-    </>
+    </View>
   );
 }
 
@@ -171,3 +209,75 @@ export function TextField(props: TextFieldProps) {
 }
 
 TextField.Icon = TextInput.Icon;
+
+export interface TimePickerProps {
+  label: string;
+  value: Time;
+  setValue: (time: Time) => void;
+  error?: boolean;
+  helperText?: string;
+  errorText?: string;
+  onBlur?: React.ComponentProps<typeof TextInput>['onBlur'];
+}
+
+/**
+ * @requires `'react-native-paper'.Provider` for the Material Design components
+ */
+ export function TimePicker(
+  {
+    label,
+    value,
+    setValue,
+    error,
+    helperText,
+    errorText,
+    onBlur,
+  }: TimePickerProps
+) {
+  const picker = useVisible();
+  const onConfirmSingle = (time: Time) => {
+    if (time) {
+      const { hours, minutes } = time;
+      setValue({
+        // There's a bug with react-native-paper-dates, where using the 12-hour
+        // clock results in (12 AM).hours = 12, and (12 PM).hours = 24:
+        hours: hours % 12 === 0 ? hours - 12 : hours,
+        minutes,
+      });
+    };
+    picker.close();
+  };
+  return (
+    <View style={{ flex: 1 }}>
+      <TextInput
+        value={value ? mapTimeToString(value) : ''}
+        label={label}
+        dense
+        mode="outlined"
+        onFocus={picker.open}
+        right={<TextInput.Icon name="menu-down"/>}
+        showSoftInputOnFocus={false}
+        accessibilityLabel={label}
+        onBlur={onBlur}
+      />
+     <HelperText
+        label={label}
+        error={error}
+        helperText={helperText}
+        errorText={errorText}
+      />
+      <TimePickerModal
+        visible={picker.visible}
+        onDismiss={picker.close}
+        onConfirm={onConfirmSingle}
+        hours={value?.hours}
+        minutes={value?.minutes}        
+        label={label}
+        cancelLabel="Cancelar"
+        confirmLabel="Aceptar"
+        animationType="fade"
+        locale="es-CO"
+      />
+    </View>
+  );
+}

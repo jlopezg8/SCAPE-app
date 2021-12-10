@@ -2,8 +2,10 @@ import Coordinate, { coordinateSchema } from './Coordinate';
 import { Employee } from "./Employee";
 import * as yup from './utils/localeYup';
 
+export type WorkplaceId = number;
+
 export default interface Workplace {
-  id?: number;
+  id?: WorkplaceId;
   name: string;
   description?: string;
   address: string;

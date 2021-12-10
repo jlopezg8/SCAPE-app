@@ -23,7 +23,7 @@ describe("Register attendance", () => {
       const valid_employee = "falcao.png";
       cy.pickPhoto(valid_employee);
     });
-    it("registers exit attendance", () => {
+    it.skip("registers exit attendance", () => {
       cy.findByText(/Falcao/).should("be.visible");
       cy.findByRole("button", { name: /Registrar Entrada/i }).should(
         "be.visible"
@@ -33,7 +33,7 @@ describe("Register attendance", () => {
         .click();
       cy.findByText(/registrado la salida/).should("be.visible");
     });
-    it("registers entrance attendance", () => {
+    it.skip("registers entrance attendance", () => {
       cy.findByText(/Falcao/).should("be.visible");
       cy.findByRole("button", { name: /Registrar Salida/i }).should(
         "be.visible"

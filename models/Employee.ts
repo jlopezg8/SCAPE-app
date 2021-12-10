@@ -40,8 +40,11 @@ const _employeeToCreateInitialValues: {
 export const employeeToCreateInitialValues =
   _employeeToCreateInitialValues as unknown as EmployeeToCreate;
 
+export const idDocSchema: yup.SchemaOf<Employee['idDoc']> =
+  yup.string().required().matches(/^\d+$/, 'Debe ser un número');
+
 export const employeeSchema: yup.SchemaOf<Employee> = yup.object({
-  idDoc: yup.string().required().matches(/^\d+$/, 'Debe ser un número'),
+  idDoc: idDocSchema,
   firstName: yup.string().required(),
   lastName: yup.string().required(),
   email: yup.string().email().required(),

@@ -6,12 +6,15 @@ import { Menu } from 'react-native-paper';
 import OverflowMenu from '../components/OverflowMenu';
 import { useAuthContext } from '../hooks/useAuth';
 import {
-  EmployerHomeScreen,
+  AddEmployeeToWorkplaceScreen,
   CreateEmployeeScreen,
   CreateWorkplaceScreen,
+  EditEmployeeEmploymentInWorkplaceScreen,
   EditEmployeeScreen,
   EditWorkplaceScreen,
+  EmployerHomeScreen,
   RecordAttendanceScreen,
+  SetEmployeeEmploymentInWorkplaceScreen,
   SettingsScreen,
   WorkplaceScreen,
 } from '../screens';
@@ -56,9 +59,19 @@ export default function EmployerNavigator() {
         }}
       />
       <Stack.Screen
+        name="AddEmployeeToWorkplace"
+        component={AddEmployeeToWorkplaceScreen}
+        options={{ title: 'Añadir empleado al sitio de trabajo' }}
+      />
+      <Stack.Screen
         name="CreateEmployee"
         component={CreateEmployeeScreen}
         options={{ title: 'Crear empleado' }}
+      />
+      <Stack.Screen
+        name="SetEmployeeEmploymentInWorkplace"
+        component={SetEmployeeEmploymentInWorkplaceScreen}
+        options={{ title: 'Establecer relación laboral' }}
       />
       <Stack.Screen
         name="RecordAttendance"
@@ -74,6 +87,11 @@ export default function EmployerNavigator() {
         name="EditEmployee"
         component={EditEmployeeScreen}
         options={{ title: 'Editar empleado' }}
+      />
+      <Stack.Screen
+        name="EditEmployeeEmploymentInWorkplace"
+        component={EditEmployeeEmploymentInWorkplaceScreen}
+        options={{ title: 'Editar relación laboral' }}
       />
       <Stack.Screen
         name="Settings"
