@@ -4,6 +4,7 @@ import React from 'react';
 import { Menu } from 'react-native-paper';
 
 import OverflowMenu from '../components/OverflowMenu';
+import Layout from '../constants/Layout';
 import { useAuthContext } from '../hooks/useAuth';
 import {
   AddEmployeeToWorkplaceScreen,
@@ -61,7 +62,11 @@ export default function EmployerNavigator() {
       <Stack.Screen
         name="AddEmployeeToWorkplace"
         component={AddEmployeeToWorkplaceScreen}
-        options={{ title: 'Añadir empleado al sitio de trabajo' }}
+        options={{
+          title: Layout.isSmallDevice
+            ? 'Añadir empleado'
+            : 'Añadir empleado al sitio de trabajo',
+        }}
       />
       <Stack.Screen
         name="CreateEmployee"

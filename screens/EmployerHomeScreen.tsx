@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
-import { IconButton, Portal } from 'react-native-paper';
+import { IconButton } from 'react-native-paper';
 
 import {
   ScrollViewInSurfaceWithRefetch,
@@ -16,7 +16,6 @@ import {
 } from '../components/misc';
 import Layout from '../constants/Layout';
 import {
-  useFABGroup,
   useSnackbar,
   useVisible,
   useWorkplaceDeleter,
@@ -96,7 +95,11 @@ function WorkplacesViewer(
         }
       </ScrollViewInSurfaceWithRefetch>
       <TheSnackbar self={snackbar} />
-      <Actions navigation={navigation} />
+      <FAB
+        icon="map-marker-plus"
+        label="Añadir sitio de trabajo"
+        onPress={() => navigation.navigate('CreateWorkplace')}
+      />
     </DeleteWorkplaceMutationContext.Provider>
   );
 }
@@ -234,34 +237,6 @@ function TheSnackbar({ self }: { self: ReturnType<typeof useSnackbar> }) {
   );
 }
 
-function Actions({ navigation }: { navigation: Navigation }) {
-  const { visible, open, setOpen } = useFABGroup();
-  return (
-    <Portal>
-      <FAB.Group
-        visible={visible}
-        icon={open ? 'close' : 'plus'}
-        accessibilityLabel="Abrir acciones"
-        open={open}
-        onStateChange={({ open }) => setOpen(open)}
-        style={styles.fabGroup}
-        actions={[          
-          {
-            icon: 'face-recognition',
-            label: 'Registar asistencia',
-            onPress: () => navigation.navigate('RecordAttendance'),
-          },
-          {
-            icon: 'map-marker-plus',
-            label: 'Añadir sitio de trabajo',
-            onPress: () => navigation.navigate('CreateWorkplace'),
-          },
-        ]}
-      />
-    </Portal>
-  );
-}
-
 function GetWorkplacesErrorState() {
   return (
     <AlternativeState
@@ -280,7 +255,4 @@ const styles = StyleSheet.create({
   centeredAlternativeState: {
     justifyContent: 'center'
   },
-  fabGroup: {
-    padding: Layout.padding - 16, // additional padding to the 16px default
-  }
 });

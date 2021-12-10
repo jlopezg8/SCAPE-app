@@ -1,26 +1,36 @@
+import { Employee, WorkplaceId } from '../../models';
 import { createEndpointGetter } from '../serverURL';
-import { post, translateBadRequestErrorMessage as t } from '../utils';
+import { post } from '../utils';
 
-export function clockIn(employeeDocId: string, timestamp?: Date) {
-  return recordAttendance({ employeeDocId, type: 'clock-in', timestamp });
+export function clockIn(
+  employeeIdDoc: Employee['idDoc'], workplaceId: WorkplaceId, timestamp?: Date
+) {
+  return recordAttendance(
+    { employeeIdDoc, workplaceId, type: 'clock-in', timestamp });
 }
 
-export function clockOut(employeeDocId: string, timestamp?: Date) {
-  return recordAttendance({ employeeDocId, type: 'clock-out', timestamp });
+export function clockOut(
+  employeeIdDoc: Employee['idDoc'], workplaceId: WorkplaceId, timestamp?: Date
+) {
+  return recordAttendance(
+    { employeeIdDoc, workplaceId, type: 'clock-out', timestamp });
 }
 
 interface RecordAttendanceParams {
-  employeeDocId: string;
+  employeeIdDoc: Employee['idDoc'];
+  workplaceId: WorkplaceId;
   type: 'clock-in' | 'clock-out';
   timestamp?: Date;
 }
 
 async function recordAttendance(
-  { employeeDocId, type, timestamp = new Date() }: RecordAttendanceParams
+  { employeeIdDoc, workplaceId, type, timestamp = new Date() }
+    : RecordAttendanceParams
 ) {
   const endpoint = createEndpointGetter('api/attendance/')();
   const body: AddAttendanceParams = {
-    documentEmployee: employeeDocId,
+    documentEmployee: employeeIdDoc,
+    workPlaceId: workplaceId,
     type: type === 'clock-in' ? 'I' : 'O',
     dateTime: timestamp.toISOString(),
   };
@@ -29,6 +39,7 @@ async function recordAttendance(
 
 interface AddAttendanceParams {
   documentEmployee: string;
+  workPlaceId: number;
   type: 'I' | 'O';
   dateTime: string;
 }

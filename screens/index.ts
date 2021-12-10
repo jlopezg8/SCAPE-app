@@ -13,5 +13,6 @@ export { default as EmployerHomeScreen } from './EmployerHomeScreen';
 export { default as LoginScreen } from './LoginScreen';
 export { default as NotFoundScreen } from './NotFoundScreen';
 export { default as RecordAttendanceScreen } from './RecordAttendanceScreen';
+export { default as RecordAttendanceByEmployeeScreen } from './RecordAttendanceByEmployeeScreen';
 export { default as SettingsScreen } from './SettingsScreen';
 export { default as WorkplaceScreen } from './WorkplaceScreen';

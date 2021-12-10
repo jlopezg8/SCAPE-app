@@ -6,6 +6,7 @@ import {
   editWorkplace,
   getWorkplace,
   getWorkplaces,
+  getWorkplacesNearLocation,
 } from '../api/workplaces';
 import { WorkplaceToCreateOrEdit } from '../models/Workplace';
 
@@ -51,6 +52,10 @@ export function useWorkplaceGetter(workplaceId: number) {
 
 export function useWorkplacesGetter() {
   return useQuery(WORKPLACES_QUERY_KEY, getWorkplaces);
+}
+
+export function useWorkplacesNearLocationGetter() {
+  return useQuery(WORKPLACES_QUERY_KEY, getWorkplacesNearLocation);
 }
 
 export { WorkplaceNotFoundError } from '../api/workplaces/common';

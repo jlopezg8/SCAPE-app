@@ -22,19 +22,24 @@ import { WORKPLACES_QUERY_KEY } from './useWorkplaces';
 
 const EMPLOYEES_QUERY_KEY = 'employees';
 
-export function useClockIn(employeeDocId: string) {
-  return useAttendanceRecorder('clock-in', employeeDocId);
+export function useClockIn(employeeDocId: string, workplaceId: WorkplaceId) {
+  return useAttendanceRecorder('clock-in', employeeDocId, workplaceId);
 }
 
-export function useClockOut(employeeDocId: string) {
-  return useAttendanceRecorder('clock-out', employeeDocId);
+export function useClockOut(employeeDocId: string, workplaceId: WorkplaceId) {
+  return useAttendanceRecorder('clock-out', employeeDocId, workplaceId);
 }
 
 // TODO: mid: return `mutation` instead
 function useAttendanceRecorder(
-  type: 'clock-in' | 'clock-out', employeeDocId: string
+  type: 'clock-in' | 'clock-out',
+  employeeDocId: string,
+  workplaceId: WorkplaceId
 ) {
-  const mutation = useMutation(type === 'clock-in' ? clockIn : clockOut);
+  const mutation = useMutation(type === 'clock-in'
+    ? (employeeDocId: string) => clockIn(employeeDocId, workplaceId)
+    : (employeeDocId: string) => clockOut(employeeDocId, workplaceId)
+  );
   return () => mutation.mutateAsync(employeeDocId);
 }
 

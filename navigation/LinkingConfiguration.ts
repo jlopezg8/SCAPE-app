@@ -43,7 +43,10 @@ export default linking = {
             path: 'workplace/:workplaceId/set-employment',
             parse: { workplaceId: Number },
           },
-          RecordAttendance: 'record-attendance',
+          RecordAttendance: {
+            path: 'workplace/:workplaceId/record-attendance',
+            parse: { workplaceId: Number },
+          },
           EditWorkplace: {
             path: 'workplace/:id/edit',
             parse: { id: Number },
@@ -62,6 +65,7 @@ export default linking = {
         screens: {
           Home: '',
           Settings: 'settings',
+          RecordAttendance: 'record-attendance',
         },
       },
       NotFound: '*',
