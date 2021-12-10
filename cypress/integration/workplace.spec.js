@@ -90,11 +90,11 @@ describe("Workplace CRUD", () => {
       expectInput();
     });
   });
-  it.skip("Complete CRUD", () => {
+  /*it.skip("Complete CRUD", () => {
     addWorkplaceProperly();
     editWorkplaceProperly();
     deleteWorkplaceProperly();
-  });
+  });*/
 });
 
 function addWorkplaceProperly() {
