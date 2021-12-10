@@ -5,8 +5,11 @@ import { Menu } from 'react-native-paper';
 
 import OverflowMenu from '../components/OverflowMenu';
 import { useAuthContext } from '../hooks/useAuth';
-import EmployeeHomeScreen from '../screens/EmployeeHomeScreen';
-import SettingsScreen from '../screens/SettingsScreen';
+import {
+  EmployeeHomeScreen,
+  RecordAttendanceByEmployeeScreen,
+  SettingsScreen,
+} from '../screens';
 import { EmployeeStackParamList } from '../types';
 
 const Stack = createStackNavigator<EmployeeStackParamList>();
@@ -30,6 +33,11 @@ export default function EmployeeNavigator() {
             </OverflowMenu>
           ),
         })}
+      />
+      <Stack.Screen
+        name="RecordAttendance"
+        component={RecordAttendanceByEmployeeScreen}
+        options={{ headerTitle: 'Registrar asistencia' }}
       />
       <Stack.Screen
         name="Settings"

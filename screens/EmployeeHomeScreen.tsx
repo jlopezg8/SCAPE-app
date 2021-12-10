@@ -1,17 +1,26 @@
 import React from 'react';
 import { Headline } from 'react-native-paper';
 
-import { Surface } from '../components/containers';
+import { SurfaceInStackNav } from '../components/containers';
+import { FAB } from '../components/controls';
+import { EmployeeStackScreensProps } from '../types';
 
 /**
  * @requires react-native-paper.Provider for the Material Design components
  */
-export default function EmployeeHomeScreen() {
+export default function EmployeeHomeScreen(
+  { navigation }: EmployeeStackScreensProps['Home']
+) {
   return (
-    <Surface style={{ justifyContent: 'center' }}>
+    <SurfaceInStackNav style={{ justifyContent: 'center' }}>
       <Headline style={{ textAlign: 'center', fontSize: 32 }}>
         ¡Hola empleado!
       </Headline>
-    </Surface>
+      <FAB
+        icon="face-recognition"
+        label="Registar asistencia"
+        onPress={() => navigation.navigate('RecordAttendance')}
+      />
+    </SurfaceInStackNav>
   );
 }

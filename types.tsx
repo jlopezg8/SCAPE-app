@@ -28,7 +28,7 @@ export type EmployerStackParamList = {
     employeeIdDoc: string;
     workplaceId: number;
   };
-  RecordAttendance: undefined;
+  RecordAttendance: { workplaceId: number };
   EditWorkplace: { id: number };
   EditEmployee: { idDoc: string };
   EditEmployeeEmploymentInWorkplace: {
@@ -46,4 +46,10 @@ export type EmployerStackScreensProps = {
 export type EmployeeStackParamList = {
   Home: undefined;
   Settings: undefined;
+  RecordAttendance: undefined;
+};
+
+export type EmployeeStackScreensProps = {
+  [Screen in keyof EmployeeStackParamList]:
+    StackScreenProps<EmployeeStackParamList, Screen>;
 };

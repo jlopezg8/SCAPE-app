@@ -8,6 +8,7 @@ import {
   Headline,
   IconButton,
   Paragraph,
+  Portal,
   Subheading,
 } from 'react-native-paper';
 
@@ -27,6 +28,7 @@ import Layout from '../constants/Layout';
 import {
   useEmployeeDeleterByIdDoc,
   useEmployeeRemoverFromWorkplace,
+  useFABGroup,
   useLightHeader,
   useSnackbar,
   useVisible,
@@ -139,13 +141,7 @@ function WorkplaceViewer(
       />
     </ScrollViewInSurfaceWithRefetch>
     <TheSnackbar self={snackbar} />
-    <FAB
-      icon="account-plus"
-      label="Añadir empleado"
-      onPress={() => navigation.navigate(
-        'AddEmployeeToWorkplace', { workplaceId: workplace.id! }
-      )}
-    />
+    <Actions navigation={navigation} workplaceId={workplace.id!} />
   </>;
 }
 
@@ -437,6 +433,38 @@ function TheSnackbar({ self }: { self: ReturnType<typeof useSnackbar> }) {
   );
 }
 
+function Actions({ navigation, workplaceId }: ActionsProps) {
+  const { visible, open, setOpen } = useFABGroup();
+  return (
+    <Portal>
+      <FAB.Group
+        visible={visible}
+        icon={open ? 'close' : 'plus'}
+        accessibilityLabel="Abrir acciones"
+        open={open}
+        onStateChange={({ open }) => setOpen(open)}
+        style={styles.fabGroup}
+        actions={[          
+          {
+            icon: 'face-recognition',
+            label: 'Registar asistencia',
+            onPress: () => navigation.navigate(
+              'RecordAttendance', { workplaceId }
+            ),
+          },
+          {
+            icon: 'account-plus',
+            label: 'Añadir empleado',
+            onPress: () => navigation.navigate(
+              'AddEmployeeToWorkplace', { workplaceId }
+            ),
+          },
+        ]}
+      />
+    </Portal>
+  );
+}
+
 function GetWorkplaceErrorState(
   { error, workplaceId }: { error: Error; workplaceId: Workplace['id'] }
 ) {
@@ -493,4 +521,12 @@ const styles = StyleSheet.create({
   getWorkplaceErrorState: {
     justifyContent: 'center'
   },
+  fabGroup: {
+    padding: Layout.padding - 16, // additional padding to the 16px default
+  }
 });
+
+interface ActionsProps {
+  navigation: Navigation;
+  workplaceId: WorkplaceId;
+}

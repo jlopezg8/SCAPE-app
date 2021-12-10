@@ -2,9 +2,9 @@
 
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Divider } from 'react-native-paper';
+import { Divider, Headline } from 'react-native-paper';
 
-import { Surface } from '../components/containers';
+import { Surface, SurfaceInStackNav } from '../components/containers';
 import { Button } from '../components/controls';
 import { PhotoPicker } from '../components/inputs';
 import { ListItem, ScreenProgressBar, Snackbar } from '../components/misc';
@@ -13,9 +13,9 @@ import {
   useClockOut,
   useEmployeeGetterByPhoto,
   usePhotoPicker,
+  useWorkplacesNearLocationGetter,
 } from '../hooks';
 import { Employee, WorkplaceId } from '../models';
-import { EmployerStackScreensProps } from '../types';
 
 function useEmployeeGetterByPhotoSettingErrors(
   base64Photo: string | undefined, setStatus: (status: string) => void
@@ -44,10 +44,20 @@ function useEmployeeGetterByPhotoSettingErrors(
  * ../api/employees.getEmployeeByPhoto can be mocked
  * FIXME: high: pressing "Remover foto" crashes the app on mobile
  */
-export default function RecordAttendanceScreen(
-  { route }: EmployerStackScreensProps['RecordAttendance']
+export default function RecordAttendanceByEmployeeScreen() {
+  const { isLoading, data: workplaces } = useWorkplacesNearLocationGetter();
+  return isLoading
+    ? <SurfaceInStackNav style={{ justifyContent: 'center' }}>
+        <Headline style={{ textAlign: 'center', fontSize: 32 }}>
+          Buscando sitios de trabajo cercanos...
+        </Headline>
+      </SurfaceInStackNav>
+    : <RecordAttendanceView workplaceId={workplaces![0].id!} />;
+}
+
+export function RecordAttendanceView(
+  { workplaceId }: { workplaceId: WorkplaceId }
 ) {
-  const { workplaceId } = route.params;
   const {
     base64Photo,
     setBase64Photo,
